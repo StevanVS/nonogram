@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../libs/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Nonogram</title>
+  </head>
+  <body>
+    <label for="input-img" class="input-img-field" data-input-img-field>
+      <input
+        id="input-img"
+        class="input-img"
+        type="file"
+        multiple
+        data-input-img
+      />
+      <i class="fa fa-cloud-upload"></i> Subir Imagenes
+    </label>
+    <div class="error-msg" data-error-msg></div>
+    <div class="game" data-game>
+      <div class="board-container" data-game-board>
+        <div class="space-container">
+          <div class="filled-tiles-counter" data-filled-tiles-counter></div>
+          <button class="history-back-btn" data-history-back>
+            <i class="fa fa-arrow-left" data-history-back></i>
+          </button>
+        </div>
+        <div class="column-numbers-container" data-column-numbers></div>
+        <div class="row-numbers-container" data-row-numbers></div>
+        <div id="grid-tile" class="grid-tile" data-grid-tile></div>
+      </div>
+    </div>
+
+    <script src="./js/script.js" type="module"></script>
+  </body>
+</html>

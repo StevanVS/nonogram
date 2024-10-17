@@ -1,0 +1,251 @@
+*,
+::before,
+::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+
+  --background-color: #2f4f4f;
+  --font-color: #ffebcd;
+  --error-font-color: #8b0000;
+
+  --grid-line-color: #f8f8ff;
+  --tile-background: #282828;
+  --filled-tile-color: #ffebcd;
+
+  --numbers-backgound-color: #132727;
+  --dark-numbers-backgound-color: #0c1b1b;
+
+  --border-radius: 5px;
+  --numbers-and-grid-ratio: 25% auto;
+  --numbers-font-size: 16px;
+}
+
+html {
+  height: 100vh;
+}
+
+body {
+  height: 100%;
+  color: var(--font-color);
+  background-color: var(--background-color);
+}
+
+.input-img-field {
+  border: 1px solid var(--font-color);
+  border-radius: var(--border-radius);
+  display: inline-block;
+  padding: 6px 12px;
+  margin: 10px;
+  cursor: pointer;
+
+  & input[type="file"] {
+    /* display: none; */
+    width: 1px;
+    height: 1px;
+  }
+}
+
+.error-msg {
+  margin: 10px;
+  padding: 8px;
+
+  font-weight: 500;
+
+  background-color: var(--error-font-color);
+  border-radius: var(--border-radius);
+
+  display: none;
+}
+
+.game {
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  display: none;
+}
+
+.filled-tiles-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  & .tile-icon {
+    fill: var(--filled-tile-color);
+  }
+}
+
+.history-back-btn {
+  cursor: pointer;
+  color: var(--tile-background);
+  background-color: var(--grid-line-color);
+  border: 2px solid var(--tile-background);
+  border-radius: var(--border-radius);
+
+  width: 2rem;
+  height: 2rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & i {
+    padding-top: 2px;
+    display: block;
+  }
+}
+
+.history-back-btn:hover {
+  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.25)) brightness(1.1);
+}
+
+.history-back-btn:active {
+  filter: drop-shadow(0px -2px 2px rgba(0, 0, 0, 0.25));
+}
+
+.board-container {
+  aspect-ratio: 1;
+  padding: 8px;
+
+  width: min(100vw, 100vh);
+  height: min(100vw, 100vh);
+
+  display: grid;
+  grid-template-columns: var(--numbers-and-grid-ratio);
+  grid-template-rows: var(--numbers-and-grid-ratio);
+  grid-template-areas:
+    "space column-numbers"
+    "row-numbers grid-tile";
+}
+
+.space-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  grid-area: space;
+}
+
+.column-numbers-container {
+  margin: 3px;
+
+  display: grid;
+  /* grid-template-columns: repeat(5, 1fr); */
+  grid-area: column-numbers;
+
+  & .group-numbers {
+    padding-bottom: 8px;
+    margin: 0px 2px;
+    flex-direction: column;
+  }
+}
+
+.row-numbers-container {
+  margin: 3px;
+
+  display: grid;
+  /* grid-template-rows: repeat(5, 1fr); */
+  grid-area: row-numbers;
+
+  & .group-numbers {
+    padding-right: 8px;
+    margin: 2px 0;
+    flex-direction: row;
+  }
+}
+
+.group-numbers.complete {
+  background-color: transparent;
+  opacity: 0.6;
+}
+
+.group-numbers {
+  border-radius: var(--border-radius);
+  border: 2px solid var(--dark-numbers-backgound-color);
+  background-color: var(--numbers-backgound-color);
+
+  line-height: 100%;
+  font-size: var(--numbers-font-size);
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 8px;
+}
+
+.group-numbers:not(.complete) > .number.complete {
+  opacity: 0.6;
+}
+
+.grid-tile {
+  width: 100%;
+  height: 100%;
+  border: 3px solid var(--grid-line-color);
+
+  display: grid;
+  grid-area: grid-tile;
+}
+
+.inner-grid-tile {
+  width: auto;
+  height: auto;
+
+  border: 1px solid ghostwhite;
+
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.tile {
+  aspect-ratio: 1;
+  background-color: var(--tile-background);
+  border: 1px solid var(--grid-line-color);
+}
+
+.tile.filled {
+  background-color: var(--filled-tile-color);
+}
+
+/* .tile.cross::after {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  content: "X";
+  line-height: 100%;
+  font-size: calc(var(--numbers-font-size) * 2);
+  font-weight: 500;
+
+  width: 100%;
+  height: 100%;
+} */
+
+.tile.cross::after {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: calc(var(--numbers-font-size) * 1.5);
+  content: "\58";
+  color: var(--filled-tile-color);
+
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
