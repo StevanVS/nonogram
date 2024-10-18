@@ -36,58 +36,42 @@ const errorMsgEl = document.querySelector("[data-error-msg]");
 
 const imageReader = new ImageReader(inputImgEl, inputImgFieldEl);
 
-imageReader
-  .onFileChange()
-  .then(() => {
-    game.setTiles(
-      imageReader.filledTiles,
-      imageReader.coloredTiles,
-      imageReader.width,
-      imageReader.height
-    );
-    game.init();
-  })
-  .catch((err) => {
-    errorMsgEl.innerText = err;
-    errorMsgEl.style.display = 'block'
-  });
+// imageReader
+//   .onFileChange()
+//   .then(() => {
+//     game.setTiles(
+//       imageReader.filledTiles,
+//       imageReader.coloredTiles,
+//       imageReader.width,
+//       imageReader.height
+//     );
+//     game.init();
+//   })
+//   .catch((err) => {
+//     errorMsgEl.innerText = err;
+//     errorMsgEl.style.display = "block";
+//   });
 
-// inputImgFieldEl.style.display = "none";
+async function fetchBoard(id) {
+  const res = await fetch(`http://localhost:3050/boards/${id}`).then((r) =>
+    r.json()
+  );
 
-// filledTiles = [
-//   0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0,
-// ];
+  if (!res.ok) {
+    errorMsgEl.innerText = res.error;
+    errorMsgEl.style.display = "block";
+    return;
+  }
+  const board = res.datos;
 
-// coloredTiles = [
-//   "#2cd3ad",
-//   "#f27070",
-//   "#2cd3ad",
-//   "#f21414",
-//   "#2cd3ad",
-//   "#f27070",
-//   "#ffffff",
-//   "#f21414",
-//   "#f21414",
-//   "#f21414",
-//   "#f21414",
-//   "#f21414",
-//   "#f21414",
-//   "#f21414",
-//   "#f21414",
-//   "#2cd3ad",
-//   "#f21414",
-//   "#f21414",
-//   "#ab0e0e",
-//   "#2cd3ad",
-//   "#2cd3ad",
-//   "#2cd3ad",
-//   "#ab0e0e",
-//   "#2cd3ad",
-//   "#2cd3ad",
-// ];
+  filledTiles = board.filledTiles;
+  coloredTiles = board.coloredTiles;
+  width = board.width;
+  height = board.height;
 
-// width = 5;
-// height = 5;
+  game.setTiles(filledTiles, coloredTiles, width, height);
+  game.init();
+}
 
-// game.setTiles(filledTiles, coloredTiles, width, height);
-// game.init();
+fetchBoard("67117c655a3f3328edfe6911");
+inputImgFieldEl.style.display = "none";
