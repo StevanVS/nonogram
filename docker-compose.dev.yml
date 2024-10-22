@@ -1,0 +1,5 @@
+services:
+  api:
+    command: ["npm", "run", "dev"]
+    volumes:
+      - ./api:/usr/src/app:ro

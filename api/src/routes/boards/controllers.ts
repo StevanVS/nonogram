@@ -25,3 +25,18 @@ export const getBoard: RequestHandler = async (req, res) => {
     serverError(res, error);
   }
 };
+
+// export const newBoard: RequestHandler = async (req, res) => {
+//   try {
+//     const newBoard = req.body
+//     const query = { _id: new ObjectId(req.params.id) };
+//     const result = await db.collection("boards").findOne(query);
+//     if (!result) {
+//       notFound(res, "Board no encontrado");
+//       return;
+//     }
+//     ok(res, result);
+//   } catch (error) {
+//     serverError(res, error);
+//   }
+// };
