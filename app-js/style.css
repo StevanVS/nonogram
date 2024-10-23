@@ -21,8 +21,8 @@
   --dark-numbers-backgound-color: #0c1b1b;
 
   --border-radius: 5px;
-  --numbers-and-grid-ratio: 25% auto;
-  --numbers-font-size: 16px;
+  --numbers-and-grid-ratio: 20% auto;
+  --numbers-font-size: 20px;
 }
 
 html {
@@ -39,6 +39,7 @@ body {
   border: 1px solid var(--font-color);
   border-radius: var(--border-radius);
   display: inline-block;
+  height: 80px;
   padding: 6px 12px;
   margin: 10px;
   cursor: pointer;
@@ -69,47 +70,7 @@ body {
   align-items: center;
   justify-content: center;
 
-  gap: 10px;
-
   display: none;
-}
-
-.filled-tiles-counter {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  & .tile-icon {
-    fill: var(--filled-tile-color);
-  }
-}
-
-.history-back-btn {
-  cursor: pointer;
-  color: var(--tile-background);
-  background-color: var(--grid-line-color);
-  border: 2px solid var(--tile-background);
-  border-radius: var(--border-radius);
-
-  width: 2rem;
-  height: 2rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  & i {
-    padding-top: 2px;
-    display: block;
-  }
-}
-
-.history-back-btn:hover {
-  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.25)) brightness(1.1);
-}
-
-.history-back-btn:active {
-  filter: drop-shadow(0px -2px 2px rgba(0, 0, 0, 0.25));
 }
 
 .board-container {
@@ -128,6 +89,7 @@ body {
 }
 
 .space-container {
+  container-type: size;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -135,6 +97,47 @@ body {
   gap: 16px;
 
   grid-area: space;
+}
+
+.filled-tiles-counter {
+  font-size: 20cqmin;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  & .tile-icon {
+    fill: var(--filled-tile-color);
+  }
+}
+
+.history-back-btn {
+  cursor: pointer;
+  color: var(--tile-background);
+  background-color: var(--grid-line-color);
+  border: 2px solid var(--tile-background);
+  border-radius: var(--border-radius);
+
+  width: 40cqmin;
+  height: 40cqmin;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & i {
+    font-size: 20cqmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.history-back-btn:hover {
+  filter: brightness(0.9);
+}
+
+.history-back-btn:active {
+  filter: brightness(1.1);
 }
 
 .column-numbers-container {
@@ -145,9 +148,13 @@ body {
   grid-area: column-numbers;
 
   & .group-numbers {
-    padding-bottom: 8px;
+    padding-bottom: 14%;
     margin: 0px 2px;
     flex-direction: column;
+
+    & .number {
+      font-size: 40cqw;
+    }
   }
 }
 
@@ -159,9 +166,13 @@ body {
   grid-area: row-numbers;
 
   & .group-numbers {
-    padding-right: 8px;
+    padding-right: 14%;
     margin: 2px 0;
     flex-direction: row;
+
+    & .number {
+      font-size: 40cqh;
+    }
   }
 }
 
@@ -171,18 +182,18 @@ body {
 }
 
 .group-numbers {
+  container-type: size;
+
   border-radius: var(--border-radius);
   border: 2px solid var(--dark-numbers-backgound-color);
   background-color: var(--numbers-backgound-color);
 
-  line-height: 100%;
-  font-size: var(--numbers-font-size);
-  font-weight: 500;
+  text-align: center;
 
   display: flex;
   align-items: center;
   justify-content: end;
-  gap: 8px;
+  gap: 8%;
 }
 
 .group-numbers:not(.complete) > .number.complete {
@@ -202,7 +213,7 @@ body {
   width: auto;
   height: auto;
 
-  border: 1px solid ghostwhite;
+  border: 1px solid red;
 
   display: grid;
   grid-template-rows: repeat(2, 1fr);
@@ -211,33 +222,21 @@ body {
 
 .tile {
   aspect-ratio: 1;
+  container-type: size;
   background-color: var(--tile-background);
   border: 1px solid var(--grid-line-color);
 }
 
 .tile.filled {
+  transition: all 0.1s linear;
   background-color: var(--filled-tile-color);
 }
 
-/* .tile.cross::after {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  content: "X";
-  line-height: 100%;
-  font-size: calc(var(--numbers-font-size) * 2);
-  font-weight: 500;
-
-  width: 100%;
-  height: 100%;
-} */
-
-.tile.cross::after {
+.tile::after {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
-  font-size: calc(var(--numbers-font-size) * 1.5);
-  content: "\58";
+
+  content: "";
   color: var(--filled-tile-color);
 
   top: 0;
@@ -248,4 +247,9 @@ body {
   display: grid;
   align-items: center;
   justify-content: center;
+}
+
+.tile.cross::after {
+  font-size: 100cqmin;
+  content: "\f00d";
 }

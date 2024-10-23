@@ -1,0 +1,9 @@
+.new-btn {
+  margin-bottom: 1.5rem;
+}
+
+.list-board-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}

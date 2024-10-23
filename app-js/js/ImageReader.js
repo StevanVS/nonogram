@@ -5,71 +5,118 @@ export default class ImageReader {
   width = 0;
   height = 0;
 
-  inputImgEl = document.createElement("input");
-  inputImgFieldEl = document.createElement("label");
+  filledImage = "";
+  coloredImage = "";
+
+  #inputImgEl = document.createElement("input");
+  #inputImgFieldEl = document.createElement("label");
 
   constructor(inputImgEl, inputImgFieldEl) {
-    this.inputImgEl = inputImgEl;
-    this.inputImgFieldEl = inputImgFieldEl;
+    this.#inputImgEl = inputImgEl;
+    this.#inputImgFieldEl = inputImgFieldEl;
+
+    this.#inputImgFieldEl.ondragover = (e) => {
+      e.preventDefault();
+    };
   }
 
   onFileChange() {
     return new Promise((resolve, reject) => {
-      this.inputImgEl.oninput = (e) => {
+      this.#inputImgEl.oninput = async (e) => {
         const files = e.target.files;
 
         const filteredFiles = [...files].filter(
           (f) => f.name.match("_fill.") || f.name.match("_color.")
         );
+        const result = await this.#processFiles(filteredFiles);
+        if (result[0] === true) {
+          resolve();
+        } else if (result[0] === false) {
+          reject(result[1]);
+        }
+      };
 
-        filteredFiles.forEach(async (file) => {
-          const fileName = file.name;
-
-          const imgSrc = await this.#readAsDataURL(file);
-          const img = await this.#loadImage(imgSrc);
-
-          const ctx = document.createElement("canvas").getContext("2d");
-          ctx.drawImage(img, 0, 0);
-
-          const pixels = ctx.getImageData(0, 0, img.width, img.height).data;
-
-          if (this.width == 0 || this.height == 0) {
-            this.width = img.width;
-            this.height = img.height;
-          } else if (this.width != img.width || this.height != img.height) {
-            reject(`El ancho o alto de las imagenes no cuadran.
-              - Tamaño de la primera imagen: ${this.width} x ${this.height}.
-              - Tamaño de la segunda imagen: ${img.width} x ${img.height}.`);
-          }
-
-          if (fileName.match("_fill.")) this.filledTiles = [];
-          else if (fileName.match("_color.")) this.coloredTiles = [];
-
-          for (let i = 0; i < pixels.length; i += 4) {
-            const r = pixels[i];
-            const g = pixels[i + 1];
-            const b = pixels[i + 2];
-
-            const hex = this.rgbToHex(r, g, b);
-
-            if (fileName.match("_fill.")) {
-              if (hex == "#000000") this.filledTiles.push(1);
-              else this.filledTiles.push(0);
-            } else if (fileName.match("_color.")) {
-              this.coloredTiles.push(hex);
-            }
-          }
-          if (
-            this.filledTiles.length > 0 &&
-            (this.coloredTiles.length > 0) & (this.width > 0) &&
-            this.height > 0
-          ) {
-            this.inputImgFieldEl.style.display = "none";
-            resolve();
-          }
-        });
+      this.#inputImgFieldEl.ondrop = async (e) => {
+        e.preventDefault();
+        let files;
+        if (e.dataTransfer.items) {
+          files = [...e.dataTransfer.items].map((i) => i.getAsFile());
+        } else {
+          files = [...e.dataTransfer.files];
+        }
+        const filteredFiles = [...files].filter(
+          (f) => f.name.match("_fill.") || f.name.match("_color.")
+        );
+        const result = await this.#processFiles(filteredFiles);
+        if (result[0] === true) {
+          resolve();
+        } else if (result[0] === false) {
+          reject(result[1]);
+        }
       };
     });
+  }
+
+  async #processFiles(files) {
+    let result = [null];
+
+    for await (const file of files) {
+      const fileName = file.name;
+
+      const imgSrc = await this.#readAsDataURL(file);
+      const img = await this.#loadImage(imgSrc);
+
+      const ctx = document.createElement("canvas").getContext("2d");
+      ctx.drawImage(img, 0, 0);
+
+      const pixels = ctx.getImageData(0, 0, img.width, img.height).data;
+
+      if (this.width == 0 || this.height == 0) {
+        this.width = img.width;
+        this.height = img.height;
+      } else if (this.width != img.width || this.height != img.height) {
+        result = [
+          false,
+          `El ancho o alto de las imagenes no cuadran.
+            - Tamaño de la primera imagen: ${this.width} x ${this.height}.
+            - Tamaño de la segunda imagen: ${img.width} x ${img.height}.`,
+        ];
+      }
+
+      if (fileName.match("_fill.")) {
+        this.filledTiles = [];
+        this.filledImage = imgSrc;
+      } else if (fileName.match("_color.")) {
+        this.coloredTiles = [];
+        this.coloredImage = imgSrc;
+      }
+
+      for (let i = 0; i < pixels.length; i += 4) {
+        const r = pixels[i];
+        const g = pixels[i + 1];
+        const b = pixels[i + 2];
+
+        const hex = this.rgbToHex(r, g, b);
+
+        if (fileName.match("_fill.")) {
+          if (hex == "#000000") this.filledTiles.push(1);
+          else this.filledTiles.push(0);
+        } else if (fileName.match("_color.")) {
+          this.coloredTiles.push(hex);
+        }
+      }
+      if (
+        this.filledTiles.length > 0 &&
+        this.coloredTiles.length > 0 &&
+        this.width > 0 &&
+        this.height > 0
+      ) {
+        this.#inputImgFieldEl.style.display = "none";
+        result = [true];
+      }
+    }
+
+    return result;
   }
 
   rgbToHex(r, g, b) {

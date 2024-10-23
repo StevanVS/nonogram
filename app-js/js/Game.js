@@ -280,6 +280,27 @@ export default class Game {
   }
 
   #renderGrid(colored = false) {
+    if (this.gridTileEl.innerHTML == "") {
+      this.#createGridTiles();
+      return;
+    }
+
+    const tileEls = this.gridTileEl.children;
+    [...tileEls].forEach((t, i) => {
+      t.classList.remove("filled", "cross");
+      if (!colored) {
+        if (this.gameTiles[i] === 1) t.classList.add("filled");
+        if (this.gameTiles[i] === -1) t.classList.add("cross");
+      } else {
+        t.classList.remove("filled");
+        t.classList.remove("cross");
+        t.style.border = "none";
+        t.style.backgroundColor = this.coloredTiles[i];
+      }
+    });
+  }
+
+  #createGridTiles() {
     const tileEls = this.gameTiles.map((t, i) => {
       const tileEl = document.createElement("div");
 
@@ -288,27 +309,33 @@ export default class Game {
       tileEl.setAttribute("data-y", Math.floor(i / this.width));
 
       tileEl.classList.add("tile");
-      if (!colored) {
-        if (t === 1) tileEl.classList.add("filled");
-        if (t === -1) tileEl.classList.add("cross");
-      } else {
-        tileEl.classList.remove("filled");
-        tileEl.classList.remove("cross");
-        tileEl.style.border = "none";
-        tileEl.style.backgroundColor = this.coloredTiles[i];
-      }
       return tileEl;
     });
-
     this.gridTileEl.style.gridTemplateRows = `repeat(${this.height}, 1fr)`;
     this.gridTileEl.style.gridTemplateColumns = `repeat(${this.width}, 1fr)`;
 
     this.gridTileEl.innerHTML = "";
     tileEls.forEach((tileEl) => this.gridTileEl.appendChild(tileEl));
-    // this.gridTileEl.innerHTML = tileEls
-    //   .map((t) => t.outerHTML)
-    //   .toString()
-    //   .replaceAll(",", " ");
+
+    const w = tileEls[0].getBoundingClientRect().width;
+
+    const ns = [];
+    for (let x = 0; x < this.width - 1; x++) {
+      ns.push(
+        this.#getFilledTilesNumbers(this.#getColumnTiles(this.filledTiles, x))
+          .length
+      );
+    }
+    const n = Math.max(...ns);
+    const h = (w * 0.4 + ((w * 0.4) / 100) * 50) * n;
+
+    const boardH = w * this.height;
+    const p = (h / boardH) * 100;
+    console.log({ w, n, h, boardH, p });
+    this.gameBoardEl.style.setProperty(
+      "--numbers-and-grid-ratio",
+      `${p}% auto`
+    );
   }
 
   #renderRowNumbers(hide = false) {
@@ -494,8 +521,8 @@ export default class Game {
   }
 
   #getTilesCounter(tiles = [0]) {
-    return [...tiles].reduce((prev, curr, i) => {
-      if (i == 1 && prev == -1) return curr;
+    return [...tiles].reduce((prev, curr) => {
+      if (prev == -1 && curr == -1) return 0;
       return curr == -1 ? prev : prev + curr;
     });
   }

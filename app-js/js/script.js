@@ -36,21 +36,23 @@ const errorMsgEl = document.querySelector("[data-error-msg]");
 
 const imageReader = new ImageReader(inputImgEl, inputImgFieldEl);
 
-// imageReader
-//   .onFileChange()
-//   .then(() => {
-//     game.setTiles(
-//       imageReader.filledTiles,
-//       imageReader.coloredTiles,
-//       imageReader.width,
-//       imageReader.height
-//     );
-//     game.init();
-//   })
-//   .catch((err) => {
-//     errorMsgEl.innerText = err;
-//     errorMsgEl.style.display = "block";
-//   });
+imageReader
+  .onFileChange()
+  .then(() => {
+    console.log(imageReader);
+    
+    game.setTiles(
+      imageReader.filledTiles,
+      imageReader.coloredTiles,
+      imageReader.width,
+      imageReader.height
+    );
+    game.init();
+  })
+  .catch((err) => {
+    errorMsgEl.innerText = err;
+    errorMsgEl.style.display = "block";
+  });
 
 async function fetchBoard(id) {
   const res = await fetch(`http://localhost:3050/boards/${id}`).then((r) =>
@@ -73,5 +75,5 @@ async function fetchBoard(id) {
   game.init();
 }
 
-fetchBoard("67117c655a3f3328edfe6911");
-inputImgFieldEl.style.display = "none";
+// fetchBoard("67117c655a3f3328edfe6911");
+// inputImgFieldEl.style.display = "none";

@@ -1,0 +1,14 @@
+<label
+  for="input-img"
+  class="input-img-field"
+  (drop)="onInputFiles($event)"
+  (dragover)="$event.preventDefault()"
+>
+  <input
+    id="input-img"
+    class="input-img"
+    type="file"
+    (change)="onInputFiles($event)"
+  />
+  <i class="fa fa-cloud-upload"></i> Subir Imagenes
+</label>

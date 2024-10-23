@@ -1,0 +1,39 @@
+@if (edit) {
+<app-image-reader (onImageRead)="onImageRead($event)" />
+<form>
+  <div class="form-field" [hidden]="board._id == null">
+    <label for="id">
+      ID
+      <input id="id" type="text" [(value)]="board.name" />
+    </label>
+  </div>
+  <div class="form-field" [hidden]="board.name == null">
+    <label for="name">
+      Name
+      <input id="name" type="text" [(value)]="board.name" />
+    </label>
+  </div>
+  <div class="form-field" [hidden]="board.order == null">
+    <label for="order">
+      Order
+      <input id="order" type="text" [(value)]="board.order" />
+    </label>
+  </div>
+</form>
+<button>
+  <i class="fa-solid fa-check"></i>
+  New board
+</button>
+<br />
+
+} @if (list) {
+<button>
+  <i class="fa-solid fa-plus"></i>
+  New board
+</button>
+<div class="list-board-details">
+  @if (boards.length > 0) { @for (b of boards; track $index) {
+  <app-board-details [board]="b" />
+  } }
+</div>
+}
