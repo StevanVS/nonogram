@@ -16,7 +16,7 @@ services:
       - nonogram-network
     
   api:
-    container_name: nongram-api
+    container_name: nonogram-api
     build: ./api
     image: nonogram-api
     depends_on:
@@ -28,6 +28,17 @@ services:
     networks:
       - nonogram-network
 
+  app: 
+    container_name: nonogram-app
+    build: ./app
+    image: nonogram-app
+    depends_on:
+      - api
+    ports:
+      - 80:80
+    networks:
+      - nonogram-network
+    
 volumes:
   mongo-data:
   mongo-config:
