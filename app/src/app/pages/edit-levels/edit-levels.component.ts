@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { BoardService } from '../../services/board.service';
-import { Board } from '../../interfaces/board.interface';
+import { Board, voidBoard } from '../../interfaces/board.interface';
 import { BoardDetailsComponent } from '../../components/board-details/board-details.component';
 import { ImageReaderComponent } from '../../components/image-reader/image-reader.component';
 
@@ -17,7 +17,7 @@ export class EditLevelsComponent {
 
   boards: Board[] = [];
 
-  board: Board = {};
+  board: Board = voidBoard();
 
   private boardService: BoardService = inject(BoardService);
   constructor() {}

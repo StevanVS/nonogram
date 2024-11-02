@@ -7,7 +7,7 @@
 }
 
 :root {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  --font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 16px;
 
   --background-color: #2f4f4f;
@@ -24,24 +24,34 @@
   --border-radius: 5px;
   --numbers-and-grid-ratio: 20% auto;
   --numbers-font-size: 20px;
+
+  --text-color: #fafaff;
+  --background-color: #132727;
+  --primary-color: #ffebcd;
+  --secondary-color: #1a5656;
+
+  --border-radius: .4rem;
 }
 
-/* html {
+html {
   height: 100vh;
-} */
+}
 
 body {
-  /* height: 100%; */
+  height: 100%;
   color: var(--font-color);
   background-color: var(--background-color);
+  font-family: var(--font-family);
 }
 
+
 button {
+  font-family: var(--font-family);
   font-size: 1rem;
   cursor: pointer;
-  color: var(--tile-background);
-  background-color: var(--font-color);
-  border: 2px solid var(--tile-background);
+  color: none;
+  background-color: none;
+  border: none;
   border-radius: var(--border-radius);
   padding: 0.5rem;
 }
@@ -54,6 +64,21 @@ button:active {
   filter: brightness(1.05);
 }
 
+button.primary {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+}
+
+.page-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+
+/*
 button.icon-btn {
   display: flex;
   align-items: center;
@@ -62,7 +87,7 @@ button.icon-btn {
 
 .form-field {
   margin-bottom: 0.5rem;
-  
+
   & label {
     font-weight: bold;
   }
@@ -76,5 +101,6 @@ button.icon-btn {
     background-color: var(--grid-line-color);
     border: 2px solid var(--tile-background);
     border-radius: var(--border-radius);
-  }  
+  }
 }
+ */

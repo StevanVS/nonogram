@@ -1,7 +1,7 @@
 <div class="board-details">
   <div class="images">
-    <img class="image" [src]="board.coloredImage" />
-    <img class="image" [src]="board.filledImage" />
+    <img class="image" [src]="getImageSrc(board.coloredTiles)"/>
+    <img class="image" [src]="getImageSrc(board.filledTiles)"/>
   </div>
   <div class="text">
     <div>{{ board.order }}. {{ board.name }}</div>

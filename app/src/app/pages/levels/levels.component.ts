@@ -8,5 +8,21 @@ import { Component } from '@angular/core';
   styleUrl: './levels.component.css'
 })
 export class LevelsComponent {
-
+  levels: any = [{
+    level: 1,
+    complete: true,
+  },{
+    level: 2,
+    complete: false,
+  },{
+    level: 3,
+    complete: false,
+  }, {
+    level:4,
+    complete: false,
+  }, {
+    level:5,
+    complete: false,
+  },
+  ]
 }

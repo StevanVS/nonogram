@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, output } from '@angular/core';
-import { Board } from '../../interfaces/board.interface';
+import { Board, voidBoard } from '../../interfaces/board.interface';
 
 @Component({
   selector: 'app-image-reader',
@@ -11,16 +11,7 @@ import { Board } from '../../interfaces/board.interface';
 export class ImageReaderComponent {
   @Output() onImageRead: EventEmitter<Board> = new EventEmitter();
 
-  board: Board = {
-    order: 0,
-    name: '', 
-    filledTiles: [],
-    coloredTiles: [],
-    width: 0,
-    height: 0,
-    filledImage: '',
-    coloredImage: '',
-  };
+  board: Board = voidBoard();
 
   async onInputFiles(event: Event | DragEvent) {
     event.preventDefault();
@@ -81,10 +72,8 @@ export class ImageReaderComponent {
 
       if (fileName.match('_fill.')) {
         this.board.filledTiles = [];
-        this.board.filledImage = imgSrc.toString();
       } else if (fileName.match('_color.')) {
         this.board.coloredTiles = [];
-        this.board.coloredImage = imgSrc.toString();
       }
 
       for (let i = 0; i < pixels.length; i += 4) {
