@@ -1,7 +1,7 @@
 services:
-  mongo:
+  mongodb:
     container_name: nonogram-mongodb
-    image: mongo
+    image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGODB_USER
       MONGO_INITDB_ROOT_PASSWORD: $MONGODB_PASS
@@ -20,7 +20,7 @@ services:
     build: ./api
     image: nonogram-api
     depends_on:
-      - mongo
+      - mongodb
     ports:
       - "3050:3050"
     env_file:

@@ -8,29 +8,16 @@
 
 :root {
   --font-family: Verdana, Geneva, Tahoma, sans-serif;
-  font-size: 16px;
-
-  --background-color: #2f4f4f;
-  --font-color: #ffebcd;
-  --error-font-color: #8b0000;
-
-  --grid-line-color: #f8f8ff;
-  --tile-background: #282828;
-  --filled-tile-color: #ffebcd;
-
-  --numbers-backgound-color: #132727;
-  --dark-numbers-backgound-color: #0c1b1b;
-
-  --border-radius: 5px;
-  --numbers-and-grid-ratio: 20% auto;
-  --numbers-font-size: 20px;
+  --font-size: 16px;
 
   --text-color: #fafaff;
   --background-color: #132727;
   --primary-color: #ffebcd;
   --secondary-color: #1a5656;
 
-  --border-radius: .4rem;
+  --border-radius: 0.4rem;
+
+  font-size: var(--font-size);
 }
 
 html {
@@ -39,18 +26,17 @@ html {
 
 body {
   height: 100%;
-  color: var(--font-color);
+  color: var(--text-color);
   background-color: var(--background-color);
   font-family: var(--font-family);
 }
 
-
 button {
+  font-size: var(--font-size);
   font-family: var(--font-family);
-  font-size: 1rem;
   cursor: pointer;
-  color: none;
-  background-color: none;
+  color: var(--background-color);
+  background-color: var(--text-color);
   border: none;
   border-radius: var(--border-radius);
   padding: 0.5rem;
@@ -62,6 +48,13 @@ button:hover {
 
 button:active {
   filter: brightness(1.05);
+}
+
+button.icon-btn {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button.primary {
@@ -76,7 +69,6 @@ button.primary {
   justify-content: center;
   height: 100%;
 }
-
 
 /*
 button.icon-btn {

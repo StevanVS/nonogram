@@ -1,0 +1,125 @@
+.tile-counter {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  & > i.fa {
+    color: var(--primary-color);
+  }
+}
+
+.btn-history {
+  background: var(--text-color);
+  font-size: 1.5rem;
+  display: block;
+  margin: auto;
+  margin-top: 1.5rem;
+  width: 4ch;
+}
+
+.game {
+  display: grid;
+  grid-template-columns: 20% auto;
+  grid-template-rows: 20% auto;
+  grid-template-areas:
+    "space column-numbers"
+    "row-numbers grid-tile";
+}
+
+.number {
+  line-height: 1;
+}
+
+.group-numbers {
+  container-type: size;
+  margin: 2px;
+
+  align-items: center;
+  gap: 5px;
+
+  display: flex;
+  background-color: var(--secondary-color);
+  border: 2px solid color-mix(in srgb, var(--secondary-color) 70%, black);
+  border-radius: var(--border-radius);
+}
+
+.group-numbers.complete {
+  background-color: transparent;
+  opacity: 0.6;
+}
+
+.group-numbers:not(.complete) > .number.complete {
+  opacity: 0.6;
+}
+
+.column-numbers {
+  grid-area: column-numbers;
+  display: grid;
+
+  & .group-numbers {
+    flex-direction: column-reverse;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+  }
+
+  & .number {
+    font-size: min(1rem, 50cqw);
+  }
+}
+
+.row-numbers {
+  grid-area: row-numbers;
+  display: grid;
+
+  & .group-numbers {
+    flex-direction: row-reverse;
+    padding-right: 4px;
+    margin-right: 6px;
+  }
+  & .number {
+    font-size: min(1rem, 50cqh);
+  }
+}
+
+.grid-tile {
+  width: 100%;
+  height: 100%;
+  outline: 3px solid var(--text-color);
+
+  display: grid;
+  grid-area: grid-tile;
+}
+
+.tile {
+  position: relative;
+  /* aspect-ratio: 1; */
+  container-type: size;
+  border: 1px solid var(--text-color);
+}
+
+.tile.filled {
+  transition: all 0.1s linear;
+  background-color: var(--primary-color);
+}
+
+.tile::after {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  line-height: 1;
+
+  content: "";
+  color: var(--primary-color);
+
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile.cross::after {
+  font-size: 90cqmin;
+  content: "\f00d";
+}

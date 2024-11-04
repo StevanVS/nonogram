@@ -1,10 +1,14 @@
 <div class="page-center">
   <div class="header">LEVELS</div>
   <div class="grid-levels">
-  @for (l of levels; track $index) {
-    <div class=" level-btn" [class.complete]="l.complete">
-      {{ l.level }}
-    </div>
-  }
+    @for (l of levels; track $index) {
+      <button
+        class="level-btn"
+        [class.complete]="l.complete"
+        [routerLink]="['/game']"
+      >
+        {{ l.level }}
+      </button>
+    }
   </div>
 </div>

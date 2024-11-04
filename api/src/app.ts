@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { MongoClient } from "mongodb";
+import { json } from "body-parser";
 
 export default class App {
   public express;
@@ -22,6 +23,7 @@ export default class App {
   }
 
   private mountMiddleares() {
+    this.express.use(json());
     this.express.use(cors());
   }
 

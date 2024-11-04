@@ -23,6 +23,9 @@
   & .name {
     font-weight: 600;
   }
+  /*& .square {*/
+    /*color: var(--primary-color);*/
+  /*}*/
 }
 
 .btns {

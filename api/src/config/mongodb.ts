@@ -3,7 +3,7 @@ import { MongoClient } from "mongodb";
 const host =process.env.MONDODB_HOST || ''
 const user = process.env.MONGODB_USER || ''
 const pass = process.env.MONGODB_PASS || ''
-const dbName = process.env.MONGODB_DB || ''
+const dbName = process.env.MONGODB_DBNAME || ''
 
 const mongodbUrl = `mongodb://${host}:27017/${dbName}`;
 const mongoClient = new MongoClient(mongodbUrl, {
