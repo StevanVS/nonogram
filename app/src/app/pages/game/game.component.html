@@ -1,6 +1,6 @@
 <div class="tile-counter">
   <i class="fa fa-square"></i>
-  {{ getFilledTilesCounter(gameTiles) }} / {{ filledTilesNumber }}
+  {{ getFilledTilesCounter(gameTiles()) }} / {{ filledTilesNumber }}
 </div>
 
 <div class="game" [style]="{ aspectRatio: width / height }">
@@ -10,7 +10,7 @@
       gridTemplateColumns: 'repeat(' + width + ', 1fr)',
     }"
   >
-    @for (gn of columnNumbers; track $index) {
+    @for (gn of columnNumbers(); track $index) {
       <ng-container
         *ngTemplateOutlet="groupNumber; context: { $implicit: gn }"
       ></ng-container>
@@ -23,7 +23,7 @@
       gridTemplateRows: 'repeat(' + height + ', 1fr)',
     }"
   >
-    @for (gn of rowNumbers; track $index) {
+    @for (gn of rowNumbers(); track $index) {
       <ng-container
         *ngTemplateOutlet="groupNumber; context: { $implicit: gn }"
       ></ng-container>
@@ -42,7 +42,7 @@
     (mousedown)="onMouseDown($event)"
     (mousemove)="onMouseMove($event)"
   >
-    @for (tile of gameTiles; track $index) {
+    @for (tile of gameTiles(); track $index) {
       <div
         class="tile"
         [class.filled]="tile === 1"
