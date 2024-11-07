@@ -1,28 +1,61 @@
+.game-page {
+  padding: 0.5rem;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.coloredImage {
+  width: 80vh;
+  outline: 10px solid var(--text-color);
+}
+
+.header {
+  height: 3rem;
+  margin: 0 1rem;
+  margin-bottom: 0.5rem;
+
+  display: grid;
+  /*grid-template-columns: 1fr 6fr 1fr;*/
+  align-items: center;
+}
+
 .tile-counter {
+  /*grid-column: 2;*/
   font-size: 1.5rem;
   text-align: center;
-  margin-bottom: 1rem;
+  justify-self: center;
   & > i.fa {
     color: var(--primary-color);
   }
 }
 
-.btn-history {
-  background: var(--text-color);
-  font-size: 1.5rem;
-  display: block;
-  margin: auto;
-  margin-top: 1.5rem;
-  width: 4ch;
-}
-
 .game {
+  flex-grow: 1;
   display: grid;
+  border-collapse: collapse;
   grid-template-columns: 20% auto;
   grid-template-rows: 20% auto;
   grid-template-areas:
     "space column-numbers"
     "row-numbers grid-tile";
+}
+
+.btn-history {
+  grid-area: space;
+  align-self: center;
+  justify-self: center;
+  aspect-ratio: 1;
+  background: var(--text-color);
+  font-size: 1.5rem;
+  display: block;
+  width: min-content;
+  & i {
+    transform: rotate(45deg);
+  }
 }
 
 .number {
@@ -56,13 +89,14 @@
   display: grid;
 
   & .group-numbers {
-    flex-direction: column-reverse;
+    flex-direction: column;
+    justify-content: end;
     padding-bottom: 4px;
     margin-bottom: 6px;
   }
 
   & .number {
-    font-size: min(1rem, 50cqw);
+    font-size: min(1rem, 60cqw);
   }
 }
 
@@ -71,12 +105,12 @@
   display: grid;
 
   & .group-numbers {
-    flex-direction: row-reverse;
+    justify-content: end;
     padding-right: 4px;
     margin-right: 6px;
   }
   & .number {
-    font-size: min(1rem, 50cqh);
+    font-size: min(1rem, 60cqh);
   }
 }
 
@@ -117,9 +151,24 @@
   display: grid;
   align-items: center;
   justify-content: center;
+
+  display: none;
 }
 
 .tile.cross::after {
   font-size: 90cqmin;
   content: "\f00d";
+  display: grid;
+}
+
+@media screen and (orientation: portrait) {
+  .coloredImage {
+    flex-grow: 0;
+    width: 80vw;
+  }
+
+  .game {
+    flex-grow: 0;
+    width: 100%;
+  }
 }

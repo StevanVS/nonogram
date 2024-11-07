@@ -1,17 +1,19 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
-import { Board } from '../interfaces/board.interface';
+import { HttpClient } from '@angular/common/http';
+import { Level } from '../interfaces/level.interface';
 import { Response } from '../interfaces/response.interface';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class BoardService {
+export class LevelService {
   private api_url = environment.api_url;
   private http = inject(HttpClient)
 
-  getList() {
-    return this.http.get<Response<Board[]>>(`${this.api_url}/boards`);
+  constructor() { }
+
+  getLevels() {
+    return this.http.get<Response<Level[]>>(`${this.api_url}/levels`);
   }
 }

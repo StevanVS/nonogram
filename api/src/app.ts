@@ -29,6 +29,8 @@ export default class App {
 
   private mountRoutes() {
     this.express.use("/boards", require("./routes/boards/routes"));
+    this.express.use("/game", require("./routes/game/routes"));
+    this.express.use("/levels", require("./routes/levels/routes"));
   }
 
   private async testDatabase() {

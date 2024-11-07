@@ -1,65 +1,72 @@
-<div class="tile-counter">
-  <i class="fa fa-square"></i>
-  {{ getFilledTilesCounter(gameTiles()) }} / {{ filledTilesNumber }}
-</div>
+<div class="game-page" (mouseup)="onMouseUp()">
+  @if (!isWin) {
+    <div class="header">
+      <div class="tile-counter">
+        <i class="fa fa-square"></i>
+        {{ getFilledTilesCounter(gameTiles()) }} / {{ filledTilesNumber }}
+      </div>
+    </div>
 
-<div class="game" [style]="{ aspectRatio: width / height }">
-  <div
-    class="column-numbers"
-    [style]="{
-      gridTemplateColumns: 'repeat(' + width + ', 1fr)',
-    }"
-  >
-    @for (gn of columnNumbers(); track $index) {
-      <ng-container
-        *ngTemplateOutlet="groupNumber; context: { $implicit: gn }"
-      ></ng-container>
-    }
-  </div>
+    <div class="game" [style.aspectRatio]="width / height">
+      <button
+        [hidden]="history.length === 0"
+        class="icon-btn btn-history"
+        (click)="onHistoryBack()"
+      >
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+      </button>
 
-  <div
-    class="row-numbers"
-    [style]="{
-      gridTemplateRows: 'repeat(' + height + ', 1fr)',
-    }"
-  >
-    @for (gn of rowNumbers(); track $index) {
-      <ng-container
-        *ngTemplateOutlet="groupNumber; context: { $implicit: gn }"
-      ></ng-container>
-    }
-  </div>
-
-  <div
-    #gridTile
-    class="grid-tile"
-    [style]="{
-      gridTemplateColumns: 'repeat(' + width + ', 1fr)',
-      gridTemplateRows: 'repeat(' + height + ', 1fr)',
-    }"
-    (contextmenu)="onContextMenu($event)"
-    (mouseup)="onMouseUp($event)"
-    (mousedown)="onMouseDown($event)"
-    (mousemove)="onMouseMove($event)"
-  >
-    @for (tile of gameTiles(); track $index) {
       <div
-        class="tile"
-        [class.filled]="tile === 1"
-        [class.cross]="tile === -1"
-        [attr.data-index]="$index"
-      ></div>
-    }
-  </div>
-</div>
+        class="column-numbers"
+        [style]="{
+          gridTemplateColumns: 'repeat(' + width + ', 1fr)',
+        }"
+      >
+        @for (gn of columnNumbers(); track $index) {
+          <ng-container
+            *ngTemplateOutlet="groupNumber; context: { $implicit: gn }"
+          ></ng-container>
+        }
+      </div>
 
-<button
-  [hidden]="history.length === 0"
-  class="icon-btn btn-history"
-  (click)="onHistoryBack()"
->
-  <i class="fa fa-arrow-left"></i>
-</button>
+      <div
+        class="row-numbers"
+        [style]="{
+          gridTemplateRows: 'repeat(' + height + ', 1fr)',
+        }"
+      >
+        @for (gn of rowNumbers(); track $index) {
+          <ng-container
+            *ngTemplateOutlet="groupNumber; context: { $implicit: gn }"
+          ></ng-container>
+        }
+      </div>
+
+      <div
+        class="grid-tile"
+        [style]="{
+          gridTemplateColumns: 'repeat(' + width + ', 1fr)',
+          gridTemplateRows: 'repeat(' + height + ', 1fr)',
+        }"
+        (contextmenu)="onContextMenu($event)"
+        (mousedown)="onMouseDown($event)"
+        (mousemove)="onMouseMove($event)"
+      >
+        @for (tile of gameTiles(); track $index) {
+          <div
+            class="tile"
+            [style]="getThickBorder($index)"
+            [class.filled]="tile === 1"
+            [class.cross]="tile === -1"
+            [attr.data-index]="$index"
+          ></div>
+        }
+      </div>
+    </div>
+  } @else {
+    <app-img-board class="coloredImage" [width]="width" [height]="height" [tiles]="coloredTiles" />
+  }
+</div>
 
 <ng-template #groupNumber let-groupNumber>
   <div

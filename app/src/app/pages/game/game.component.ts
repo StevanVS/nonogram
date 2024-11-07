@@ -1,14 +1,25 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, Signal, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { Tile } from '../../interfaces/tile.interface';
 import { FilledTilesNumber } from '../../interfaces/filledTilesNumber.interface';
+import { Router } from '@angular/router';
+import { GameService } from '../../services/game.service';
+import { GameHistory } from '../../interfaces/gameHistory.interface';
+import { ImgBoardComponent } from '../../components/img-board/img-board.component';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [ImgBoardComponent, NgTemplateOutlet],
   templateUrl: './game.component.html',
-  styleUrl: './game.component.css'
+  styleUrl: './game.component.css',
 })
 export class GameComponent {
   private isMouseDown = false;
@@ -17,53 +28,109 @@ export class GameComponent {
   private initialTileX = 0;
   private initialTileY = 0;
   private isDragAxisX: boolean | null = null;
-  private changedTileIndexes: number[] = []
+  private changedTileIndexes: number[] = [];
+  private autoCompletedIdxs: number[] = [];
 
+  private boardId: string = '';
 
-  gameTiles: WritableSignal<Tile[]> = signal([1, -1, 1, 1, 1, 1, 0, 1, -1]);
+  isWin: boolean = false;
 
-  history: { previous: Tile, indexes: number[] }[] = [];
+  gameTiles: WritableSignal<Tile[]> = signal([]);
 
-  // Estas tres variables viene de base
-  filledTilesNumber: number = 6;
+  private filledColumnNumbers: WritableSignal<number[][]> = signal([]);
+  private filledRowNumbers: WritableSignal<number[][]> = signal([]);
 
-  private filledColumnNumbers: number[][] = [
-    [2], [2], [2]
-  ]
+  history: GameHistory[] = [];
 
-  private filledRowNumbers: number[][] = [
-    [1, 1], [3], [1]
-  ]
+  filledTilesNumber: number = 0;
+  coloredTiles: string[] = [];
 
-  width: number = 3;
-  height: number = 3;
+  width: number = 0;
+  height: number = 0;
+  innerColumn: number = 0;
+  innerRow: number = 0;
 
   columnNumbers: Signal<FilledTilesNumber[][]> = computed(() => {
+    if (this.gameTiles().length === 0) return [];
+
     let ftn: FilledTilesNumber[][] = [];
-    this.filledColumnNumbers.forEach((cn, x) => {
+    this.filledColumnNumbers().forEach((cn, x) => {
       const columnGameTiles = this.getColumnTiles(this.gameTiles(), x);
-      const completedNumbers = this.getCompletedTilesNumbers(cn, columnGameTiles);
-      ftn.push(completedNumbers)
-    })
+      const completedNumbers = this.getCompletedTilesNumbers(
+        cn,
+        columnGameTiles
+      );
+      ftn.push(completedNumbers);
+    });
     return ftn;
-  })
+  });
 
   rowNumbers: Signal<FilledTilesNumber[][]> = computed(() => {
+    if (this.gameTiles().length === 0) return [];
+
     let ftn: FilledTilesNumber[][] = [];
-    this.filledRowNumbers.forEach((rn, y) => {
+    this.filledRowNumbers().forEach((rn, y) => {
       const rowGameTiles = this.getRowTiles(this.gameTiles(), y);
       const completedNumbers = this.getCompletedTilesNumbers(rn, rowGameTiles);
-      ftn.push(completedNumbers)
-    })
+      ftn.push(completedNumbers);
+    });
     return ftn;
-  })
+  });
 
-  onContextMenu(e: Event) { e.preventDefault() }
+  private router = inject(Router);
+  private gameService = inject(GameService);
 
-  onMouseUp(e: Event) {
+  constructor() {
+    this.boardId =
+      this.router.getCurrentNavigation()?.extras.state?.['boardId'];
+
+    if (this.boardId == null) {
+      this.router.navigate(['/']);
+      return;
+    }
+
+    this.gameService.getNewGame(this.boardId).subscribe((res) => {
+      this.width = res.datos.width;
+      this.height = res.datos.height;
+      this.innerColumn = res.datos.innerColumn;
+      this.innerRow = res.datos.innerRow;
+      this.filledColumnNumbers.set(res.datos.columnNumbers);
+      this.filledRowNumbers.set(res.datos.rowNumbers);
+      this.gameTiles.set(res.datos.gameTiles);
+      this.filledTilesNumber = res.datos.filledTilesNumber;
+      this.history = res.datos.history;
+    });
+  }
+
+  checkGameWin() {
+    if (this.getFilledTilesCounter(this.gameTiles()) !== this.filledTilesNumber)
+      return;
+
+    this.gameService.checkGameWin(this.boardId, this.gameTiles()).subscribe(res => {
+      if (res.ok) {
+        setTimeout(() => {
+          this.isWin = res.datos.isWin;
+          if (res.datos.isWin) {
+            this.coloredTiles = res.datos.coloredTiles;
+          } else {
+            alert('Solution Not Found')
+          }
+        }, 500);
+
+      }
+    })
+  }
+
+  onContextMenu(e: Event) {
+    e.preventDefault();
+  }
+
+  onMouseUp() {
+    if (!this.isMouseDown) return;
     this.history.push({
       previous: this.initialTile,
       indexes: [...this.changedTileIndexes],
+      autoCompletedIdxs: [...this.autoCompletedIdxs],
     });
 
     this.isMouseDown = false;
@@ -72,14 +139,15 @@ export class GameComponent {
     this.initialTileX = 0;
     this.initialTileY = 0;
     this.isDragAxisX = null;
-    this.changedTileIndexes = []
+    this.changedTileIndexes = [];
+    this.autoCompletedIdxs = [];
   }
 
   onMouseDown(e: MouseEvent) {
-    e.preventDefault()
+    e.preventDefault();
 
     if (e.target == null) return;
-    const targetTileEl = e.target as HTMLElement
+    const targetTileEl = e.target as HTMLElement;
 
     this.isMouseDown = true;
     this.currentTileIndex = this.getTileIndex(targetTileEl);
@@ -96,7 +164,7 @@ export class GameComponent {
     if (!this.isMouseDown) return;
 
     if (e.target == null) return;
-    const targetTileEl = e.target as HTMLElement
+    const targetTileEl = e.target as HTMLElement;
 
     const currentIndex = this.getTileIndex(targetTileEl);
     if (this.currentTileIndex === currentIndex) return;
@@ -127,64 +195,156 @@ export class GameComponent {
     const lastHistory = this.history.pop();
     if (lastHistory == null) return;
     lastHistory.indexes.forEach((i) => {
-      this.gameTiles.update(arr => this.updateArray(arr, i, lastHistory.previous))
-      //this.gameTiles[i] = lastHistory.previous
-    })
+      this.updateGameTiles(i, lastHistory.previous);
+    });
+    lastHistory.autoCompletedIdxs.forEach((i) => {
+      this.updateGameTiles(i, 0);
+    });
   }
 
   click(index: number, fill = true) {
-    if ((this.gameTiles()[index] == 1 && fill) || (this.gameTiles()[index] == -1 && !fill)) {
-      this.gameTiles.update(arr => this.updateArray(arr, index, 0))
+    const initTile: Tile = this.gameTiles()[index];
+
+    if ((initTile == 1 && fill) || (initTile == -1 && !fill)) {
+      this.updateGameTiles(index, 0);
       //this.gameTiles[index] = 0;
       this.changedTileIndexes.push(index);
-    }
-    else {
-      this.gameTiles.update(arr => this.updateArray(arr, index, fill ? 1 : -1))
+    } else {
+      this.updateGameTiles(index, fill ? 1 : -1);
       //this.gameTiles[index] = fill ? 1 : -1;
       this.changedTileIndexes.push(index);
     }
 
-    //if (fill) this.autoComplete(tileEl);
+    if (fill || initTile === 1) {
+      this.autoComplete(index);
+    }
+
+    this.checkGameWin()
   }
 
   drag(index: number, fill = true) {
-    if (this.initialTile == 1 && this.gameTiles()[index] == 1) {
-      this.gameTiles.update(arr => this.updateArray(arr, index, fill ? 0 : -1))
+    const initTile: Tile = this.gameTiles()[index];
+
+    if (this.initialTile == 1 && initTile == 1) {
+      this.updateGameTiles(index, fill ? 0 : -1);
       //this.gameTiles[index] = fill ? 0 : -1;
       this.changedTileIndexes.push(index);
-    } else if (this.initialTile == -1 && this.gameTiles()[index] == -1) {
-      this.gameTiles.update(arr => this.updateArray(arr, index, fill ? 1 : 0))
+    } else if (this.initialTile == -1 && initTile == -1) {
+      this.updateGameTiles(index, fill ? 1 : 0);
       //this.gameTiles[index] = fill ? 1 : 0;
       this.changedTileIndexes.push(index);
-    } else if (
-      this.initialTile == 0 &&
-      this.initialTile == this.gameTiles()[index]
-    ) {
-      this.gameTiles.update(arr => this.updateArray(arr, index, fill ? 1 : -1))
+    } else if (this.initialTile == 0 && this.initialTile == initTile) {
+      this.updateGameTiles(index, fill ? 1 : -1);
       //this.gameTiles[index] = fill ? 1 : -1;
       this.changedTileIndexes.push(index);
     }
 
-    //if (fill) this.autoComplete(tileEl);
+    if (fill || initTile === 1) {
+      this.autoComplete(index);
+    }
+
+    this.checkGameWin()
+  }
+
+  private autoComplete(tileIndex: number) {
+    let tileX = tileIndex % this.width;
+    let tileY = Math.floor(tileIndex / this.width);
+
+    // column
+    const columnFilledNumbers = this.filledColumnNumbers()[tileX];
+
+    const columnGameTiles = this.getColumnTiles(this.gameTiles(), tileX);
+    const columnGameNumbers = this.getFilledTilesNumbers(columnGameTiles);
+
+    const isColumnComplete =
+      columnFilledNumbers.length === columnGameNumbers.length &&
+      columnFilledNumbers.every((n, i) => n == columnGameNumbers[i]);
+
+    if (isColumnComplete) {
+      for (let y = 0; y < this.height; y++) {
+        const index = tileX + y * this.width;
+
+        if (this.gameTiles()[index] == 0) {
+          this.autoCompletedIdxs.push(index);
+          this.updateGameTiles(index, -1);
+        }
+      }
+    }
+
+    // row
+    const rowFilledNumbers = this.filledRowNumbers()[tileY];
+
+    const rowGameTiles = this.getRowTiles(this.gameTiles(), tileY);
+    const rowGameNumbers = this.getFilledTilesNumbers(rowGameTiles);
+
+    const isRowComplete =
+      rowFilledNumbers.length === rowGameNumbers.length &&
+      rowFilledNumbers.every((n, i) => n == rowGameNumbers[i]);
+
+    if (isRowComplete) {
+      for (let x = 0; x < this.width; x++) {
+        const index = x + tileY * this.width;
+
+        if (this.gameTiles()[index] == 0) {
+          this.autoCompletedIdxs.push(index);
+          this.updateGameTiles(index, -1);
+        }
+      }
+    }
   }
 
   getTileIndex(tileEl: HTMLElement) {
-    return Number(tileEl.getAttribute("data-index"));
+    return Number(tileEl.getAttribute('data-index'));
   }
 
-  private updateArray<T>(array: T[], index: number, newValue: T): T[] {
-    return [...array.slice(0, index), newValue, ...array.slice(index + 1)]
+  private updateGameTiles(index: number, value: Tile): void {
+    this.gameTiles.update((array) => {
+      const arr: Tile[] = JSON.parse(JSON.stringify(array));
+      arr[index] = value;
+      return arr;
+    });
   }
 
-  isGroupNumbersComplete(groupNumbers: { number: number, complete: boolean }[]) {
-    return groupNumbers.every(n => n.complete)
+  isGroupNumbersComplete(
+    groupNumbers: { number: number; complete: boolean }[]
+  ) {
+    return groupNumbers.every((n) => n.complete);
+  }
+
+  getThickBorder(index: number) {
+    const [x, y] = this.getXY(index)
+    const border = '2px solid'
+
+    let borderX = {}
+    if (this.innerColumn > 0 && this.innerColumn !== this.width) {
+      borderX = {
+        borderRight: x % this.innerColumn === this.innerColumn - 1 ? border : '',
+        borderLeft: x % this.innerColumn === 0 ? border : '',
+      }
+    }
+
+    let borderY = {}
+    if (this.innerRow > 0 && this.innerRow !== this.height) {
+      borderY = {
+        borderTop: y % this.innerRow === 0 ? border : '',
+        borderBottom: y % this.innerRow === this.innerRow - 1 ? border : ''
+      }
+    }
+
+    return {
+      ...borderX,
+      ...borderY,
+    }
   }
 
   getFilledTilesCounter(tiles: number[]) {
-    return tiles.reduce((prev, curr) => {
-      if (prev == -1 && curr == -1) return 0;
-      return curr == -1 ? prev : prev + curr;
-    });
+    return tiles.reduce((count, num) => (num === 1 ? count + 1 : count), 0);
+  }
+
+  getXY(index: number): [number, number] {
+    let x = index % this.width;
+    let y = Math.floor(index / this.width);
+    return [x, y]
   }
 
   private getRowTiles(allTiles: Tile[], y: number): Tile[] {
@@ -199,7 +359,7 @@ export class GameComponent {
     return tiles;
   }
 
-  private getFilledTilesNumbers(tiles: Tile[]): number[] {
+  private getFilledTilesNumbers(tiles: Tile[]) {
     const filledTilesNumbers = [];
 
     let counter = 0;
@@ -219,14 +379,19 @@ export class GameComponent {
     return filledTilesNumbers;
   }
 
-  private getCompletedTilesNumbers(filledTilesNumbers: number[], tiles: Tile[]): FilledTilesNumber[] {
+  private getCompletedTilesNumbers(
+    filledTilesNumbers: number[],
+    tiles: Tile[]
+  ): FilledTilesNumber[] {
     let numbers = filledTilesNumbers.map<FilledTilesNumber>((n) => ({
       number: n,
       complete: false,
     }));
 
     const checkCompleteNumbers = (inverse = false) => {
-      let checkedNumbers: FilledTilesNumber[] = JSON.parse(JSON.stringify(numbers));
+      let checkedNumbers: FilledTilesNumber[] = JSON.parse(
+        JSON.stringify(numbers)
+      );
       let checkGameTiles: Tile[] = JSON.parse(JSON.stringify(tiles));
 
       if (inverse) {

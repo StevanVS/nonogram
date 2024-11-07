@@ -6,6 +6,7 @@
         class="level-btn"
         [class.complete]="l.complete"
         [routerLink]="['/game']"
+        [state]="{ boardId: l.boardId }"
       >
         {{ l.level }}
       </button>

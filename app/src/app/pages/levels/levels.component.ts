@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Level } from '../../interfaces/level.interface';
+import { LevelService } from '../../services/level.service';
 
 @Component({
   selector: 'app-levels',
@@ -9,21 +11,13 @@ import { RouterLink } from '@angular/router';
   styleUrl: './levels.component.css'
 })
 export class LevelsComponent {
-  levels: any = [{
-    level: 1,
-    complete: true,
-  },{
-    level: 2,
-    complete: false,
-  },{
-    level: 3,
-    complete: false,
-  }, {
-    level:4,
-    complete: false,
-  }, {
-    level:5,
-    complete: false,
-  },
-  ]
+  levels: Level[] = []
+
+  levelService = inject(LevelService)
+
+  ngOnInit() {
+    this.levelService.getLevels().subscribe((res) => {
+      if (res.ok) this.levels = res.datos
+    })
+  }
 }

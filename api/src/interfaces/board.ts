@@ -7,13 +7,3 @@ export interface Board {
   coloredTiles: string[];
   level: number;
 }
-
-export const voidBoard = (): Board => ({
-  _id: '',
-  name: '',
-  width: 0,
-  height: 0,
-  filledTiles: [],
-  coloredTiles: [],
-  level: 0,
-});
