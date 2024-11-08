@@ -1,15 +1,16 @@
+<app-navbar routeBack="/levels"/>
 <div class="game-page" (mouseup)="onMouseUp()">
-  @if (!isWin) {
-    <div class="header">
+  @if (!gameWin.isWin) {
+    <div class="game-header">
       <div class="tile-counter">
         <i class="fa fa-square"></i>
-        {{ getFilledTilesCounter(gameTiles()) }} / {{ filledTilesNumber }}
+        {{ getFilledTilesCounter(gameTiles()) }} / {{ game.filledTilesNumber }}
       </div>
     </div>
 
-    <div class="game" [style.aspectRatio]="width / height">
+    <div class="game" [style.aspectRatio]="game.width / game.height">
       <button
-        [hidden]="history.length === 0"
+        [hidden]="game.history.length === 0"
         class="icon-btn btn-history"
         (click)="onHistoryBack()"
       >
@@ -19,7 +20,7 @@
       <div
         class="column-numbers"
         [style]="{
-          gridTemplateColumns: 'repeat(' + width + ', 1fr)',
+          gridTemplateColumns: 'repeat(' + game.width + ', 1fr)',
         }"
       >
         @for (gn of columnNumbers(); track $index) {
@@ -32,7 +33,7 @@
       <div
         class="row-numbers"
         [style]="{
-          gridTemplateRows: 'repeat(' + height + ', 1fr)',
+          gridTemplateRows: 'repeat(' + game.height + ', 1fr)',
         }"
       >
         @for (gn of rowNumbers(); track $index) {
@@ -45,8 +46,8 @@
       <div
         class="grid-tile"
         [style]="{
-          gridTemplateColumns: 'repeat(' + width + ', 1fr)',
-          gridTemplateRows: 'repeat(' + height + ', 1fr)',
+          gridTemplateColumns: 'repeat(' + game.width + ', 1fr)',
+          gridTemplateRows: 'repeat(' + game.height + ', 1fr)',
         }"
         (contextmenu)="onContextMenu($event)"
         (mousedown)="onMouseDown($event)"
@@ -64,7 +65,22 @@
       </div>
     </div>
   } @else {
-    <app-img-board class="coloredImage" [width]="width" [height]="height" [tiles]="coloredTiles" />
+    <app-img-board
+      class="coloredImage"
+      [width]="game.width"
+      [height]="game.height"
+      [tiles]="gameWin.coloredTiles"
+    />
+    <div class="win-btns">
+      <button
+        class="primary"
+        [hidden]="gameWin.nextBoardId === ''"
+        (click)="onNextLevel()"
+      >
+        Next Level
+      </button>
+      <button class="secondary" [routerLink]="['/levels']">All Levels</button>
+    </div>
   }
 </div>
 

@@ -21,7 +21,9 @@ export const getNewGame: RequestHandler = async (req, res) => {
       width: board.width,
       height: board.height,
       innerColumn: board.innerColumn || 0,
-      innerRow: board.innerRow || 0, 
+      innerRow: board.innerRow || 0,
+      boardId: board._id,
+      level: board.level || 0,
     }
 
     ok(res, game);
@@ -46,7 +48,18 @@ export const checkGameWin: RequestHandler = async (req, res) => {
       return gameTile == board.filledTiles[i];
     })
 
-    ok(res, { isWin, coloredTiles: isWin ? board.coloredTiles : [] });
+    const nextBoardId = await db.collection('boards').findOne(
+      { level: board.level + 1 },
+      { projection: { _id: 1 } },
+    )
+
+    const gameWin = {
+      isWin,
+      coloredTiles: isWin ? board.coloredTiles : [],
+      nextBoardId: isWin ? nextBoardId?._id : ''
+    }
+  
+    ok(res, gameWin);
   } catch (error) {
     serverError(res, error);
   }

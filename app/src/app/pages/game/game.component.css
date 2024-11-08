@@ -9,12 +9,22 @@
 }
 
 .coloredImage {
-  width: 80vh;
+  width: 60vh;
   outline: 10px solid var(--text-color);
 }
 
-.header {
-  height: 3rem;
+.win-btns {
+  width: 15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  & button {
+    font-weight: bold;
+  }
+}
+
+.game-header {
   margin: 0 1rem;
   margin-bottom: 0.5rem;
 
@@ -51,7 +61,6 @@
   aspect-ratio: 1;
   background: var(--text-color);
   font-size: 1.5rem;
-  display: block;
   width: min-content;
   & i {
     transform: rotate(45deg);
@@ -164,7 +173,7 @@
 @media screen and (orientation: portrait) {
   .coloredImage {
     flex-grow: 0;
-    width: 80vw;
+    width: 60vw;
   }
 
   .game {

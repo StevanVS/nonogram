@@ -52,14 +52,17 @@ button:active {
 
 button.icon-btn {
   line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
 }
 
 button.primary {
   background-color: var(--primary-color);
   color: var(--background-color);
+}
+
+button.secondary {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
 }
 
 .page-center {

@@ -9,19 +9,22 @@ import {
 } from '@angular/core';
 import { Tile } from '../../interfaces/tile.interface';
 import { FilledTilesNumber } from '../../interfaces/filledTilesNumber.interface';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { GameService } from '../../services/game.service';
-import { GameHistory } from '../../interfaces/gameHistory.interface';
 import { ImgBoardComponent } from '../../components/img-board/img-board.component';
+import { Game, voidGame } from '../../interfaces/game.interface';
+import { CheckGameWin, voidCheckGameWin } from '../../interfaces/check-game-win.interface';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [ImgBoardComponent, NgTemplateOutlet],
+  imports: [NavbarComponent, ImgBoardComponent, NgTemplateOutlet, RouterLink],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css',
 })
 export class GameComponent {
+  private loadingWin = false;
   private isMouseDown = false;
   private currentTileIndex = 0;
   private initialTile: Tile = 0;
@@ -31,24 +34,14 @@ export class GameComponent {
   private changedTileIndexes: number[] = [];
   private autoCompletedIdxs: number[] = [];
 
-  private boardId: string = '';
+  game: Game = voidGame()
 
-  isWin: boolean = false;
+  gameWin: CheckGameWin = voidCheckGameWin()
 
   gameTiles: WritableSignal<Tile[]> = signal([]);
 
   private filledColumnNumbers: WritableSignal<number[][]> = signal([]);
   private filledRowNumbers: WritableSignal<number[][]> = signal([]);
-
-  history: GameHistory[] = [];
-
-  filledTilesNumber: number = 0;
-  coloredTiles: string[] = [];
-
-  width: number = 0;
-  height: number = 0;
-  innerColumn: number = 0;
-  innerRow: number = 0;
 
   columnNumbers: Signal<FilledTilesNumber[][]> = computed(() => {
     if (this.gameTiles().length === 0) return [];
@@ -81,44 +74,55 @@ export class GameComponent {
   private gameService = inject(GameService);
 
   constructor() {
-    this.boardId =
+    this.game.boardId =
       this.router.getCurrentNavigation()?.extras.state?.['boardId'];
 
-    if (this.boardId == null) {
+    if (this.game.boardId == null) {
       this.router.navigate(['/']);
       return;
     }
 
-    this.gameService.getNewGame(this.boardId).subscribe((res) => {
-      this.width = res.datos.width;
-      this.height = res.datos.height;
-      this.innerColumn = res.datos.innerColumn;
-      this.innerRow = res.datos.innerRow;
-      this.filledColumnNumbers.set(res.datos.columnNumbers);
-      this.filledRowNumbers.set(res.datos.rowNumbers);
-      this.gameTiles.set(res.datos.gameTiles);
-      this.filledTilesNumber = res.datos.filledTilesNumber;
-      this.history = res.datos.history;
+    this.gameService.getNewGame(this.game.boardId).subscribe({
+      next: (res) => {
+        Object.assign(this.game, res.datos)
+        console.log(this.game)
+
+        this.filledColumnNumbers.set(res.datos.columnNumbers);
+        this.filledRowNumbers.set(res.datos.rowNumbers);
+        this.gameTiles.set(res.datos.gameTiles);
+      },
+      error: (err) => {
+        console.log(err)
+        this.router.navigate(['/']);
+        return;
+      }
     });
   }
 
   checkGameWin() {
-    if (this.getFilledTilesCounter(this.gameTiles()) !== this.filledTilesNumber)
+    if (this.getFilledTilesCounter(this.gameTiles()) !== this.game.filledTilesNumber)
       return;
 
-    this.gameService.checkGameWin(this.boardId, this.gameTiles()).subscribe(res => {
+    this.loadingWin = true;
+    this.gameService.checkGameWin(this.game.boardId, this.gameTiles()).subscribe(res => {
       if (res.ok) {
         setTimeout(() => {
-          this.isWin = res.datos.isWin;
-          if (res.datos.isWin) {
-            this.coloredTiles = res.datos.coloredTiles;
-          } else {
+          this.loadingWin = false
+
+          Object.assign(this.gameWin, res.datos)
+
+          if (!res.datos.isWin) {
             alert('Solution Not Found')
           }
         }, 500);
-
       }
     })
+  }
+
+  onNextLevel() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/game'], { state: { boardId: this.gameWin.nextBoardId } });
+    });
   }
 
   onContextMenu(e: Event) {
@@ -127,7 +131,7 @@ export class GameComponent {
 
   onMouseUp() {
     if (!this.isMouseDown) return;
-    this.history.push({
+    this.game.history.push({
       previous: this.initialTile,
       indexes: [...this.changedTileIndexes],
       autoCompletedIdxs: [...this.autoCompletedIdxs],
@@ -146,14 +150,16 @@ export class GameComponent {
   onMouseDown(e: MouseEvent) {
     e.preventDefault();
 
+    if (this.loadingWin) return;
+
     if (e.target == null) return;
     const targetTileEl = e.target as HTMLElement;
 
     this.isMouseDown = true;
     this.currentTileIndex = this.getTileIndex(targetTileEl);
     this.initialTile = this.gameTiles()[this.currentTileIndex];
-    this.initialTileX = this.currentTileIndex % this.width;
-    this.initialTileY = Math.floor(this.currentTileIndex / this.width);
+    this.initialTileX = this.currentTileIndex % this.game.width;
+    this.initialTileY = Math.floor(this.currentTileIndex / this.game.width);
 
     const index = this.getTileIndex(targetTileEl);
     if (e.button === 0) this.click(index);
@@ -161,6 +167,8 @@ export class GameComponent {
   }
 
   onMouseMove(e: MouseEvent) {
+    if (this.loadingWin) return;
+
     if (!this.isMouseDown) return;
 
     if (e.target == null) return;
@@ -170,8 +178,8 @@ export class GameComponent {
     if (this.currentTileIndex === currentIndex) return;
 
     // lock axis
-    let x = currentIndex % this.width;
-    let y = Math.floor(currentIndex / this.width);
+    let x = currentIndex % this.game.width;
+    let y = Math.floor(currentIndex / this.game.width);
 
     if (x != this.initialTileX && this.isDragAxisX == null)
       this.isDragAxisX = true;
@@ -180,9 +188,9 @@ export class GameComponent {
 
     let index: number;
     if (this.isDragAxisX) {
-      index = this.initialTileY * this.width + x;
+      index = this.initialTileY * this.game.width + x;
     } else {
-      index = y * this.width + this.initialTileX;
+      index = y * this.game.width + this.initialTileX;
     }
 
     if (e.buttons === 1) this.drag(index, true);
@@ -192,7 +200,8 @@ export class GameComponent {
   }
 
   onHistoryBack() {
-    const lastHistory = this.history.pop();
+    if (this.loadingWin) return;
+    const lastHistory = this.game.history.pop();
     if (lastHistory == null) return;
     lastHistory.indexes.forEach((i) => {
       this.updateGameTiles(i, lastHistory.previous);
@@ -247,8 +256,8 @@ export class GameComponent {
   }
 
   private autoComplete(tileIndex: number) {
-    let tileX = tileIndex % this.width;
-    let tileY = Math.floor(tileIndex / this.width);
+    let tileX = tileIndex % this.game.width;
+    let tileY = Math.floor(tileIndex / this.game.width);
 
     // column
     const columnFilledNumbers = this.filledColumnNumbers()[tileX];
@@ -261,8 +270,8 @@ export class GameComponent {
       columnFilledNumbers.every((n, i) => n == columnGameNumbers[i]);
 
     if (isColumnComplete) {
-      for (let y = 0; y < this.height; y++) {
-        const index = tileX + y * this.width;
+      for (let y = 0; y < this.game.height; y++) {
+        const index = tileX + y * this.game.width;
 
         if (this.gameTiles()[index] == 0) {
           this.autoCompletedIdxs.push(index);
@@ -282,8 +291,8 @@ export class GameComponent {
       rowFilledNumbers.every((n, i) => n == rowGameNumbers[i]);
 
     if (isRowComplete) {
-      for (let x = 0; x < this.width; x++) {
-        const index = x + tileY * this.width;
+      for (let x = 0; x < this.game.width; x++) {
+        const index = x + tileY * this.game.width;
 
         if (this.gameTiles()[index] == 0) {
           this.autoCompletedIdxs.push(index);
@@ -316,18 +325,18 @@ export class GameComponent {
     const border = '2px solid'
 
     let borderX = {}
-    if (this.innerColumn > 0 && this.innerColumn !== this.width) {
+    if (this.game.innerColumn > 0 && this.game.innerColumn !== this.game.width) {
       borderX = {
-        borderRight: x % this.innerColumn === this.innerColumn - 1 ? border : '',
-        borderLeft: x % this.innerColumn === 0 ? border : '',
+        borderRight: x % this.game.innerColumn === this.game.innerColumn - 1 ? border : '',
+        borderLeft: x % this.game.innerColumn === 0 ? border : '',
       }
     }
 
     let borderY = {}
-    if (this.innerRow > 0 && this.innerRow !== this.height) {
+    if (this.game.innerRow > 0 && this.game.innerRow !== this.game.height) {
       borderY = {
-        borderTop: y % this.innerRow === 0 ? border : '',
-        borderBottom: y % this.innerRow === this.innerRow - 1 ? border : ''
+        borderTop: y % this.game.innerRow === 0 ? border : '',
+        borderBottom: y % this.game.innerRow === this.game.innerRow - 1 ? border : ''
       }
     }
 
@@ -342,19 +351,19 @@ export class GameComponent {
   }
 
   getXY(index: number): [number, number] {
-    let x = index % this.width;
-    let y = Math.floor(index / this.width);
+    let x = index % this.game.width;
+    let y = Math.floor(index / this.game.width);
     return [x, y]
   }
 
   private getRowTiles(allTiles: Tile[], y: number): Tile[] {
-    return allTiles.slice(this.width * y, this.width * y + this.width);
+    return allTiles.slice(this.game.width * y, this.game.width * y + this.game.width);
   }
 
   private getColumnTiles(allTiles: Tile[], x: number): Tile[] {
     const tiles: Tile[] = [];
-    for (let y = 0; y < this.height; y++) {
-      tiles.push(allTiles[this.width * y + x]);
+    for (let y = 0; y < this.game.height; y++) {
+      tiles.push(allTiles[this.game.width * y + x]);
     }
     return tiles;
   }

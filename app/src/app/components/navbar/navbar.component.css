@@ -1,0 +1,14 @@
+.navbar {
+  position: absolute;
+  width: 100%;
+  color: var(--text-color);
+  padding: .8rem 1rem;
+  font-size: 1.5rem;
+
+  & a {
+    display: block;
+    width: 2rem;
+    color: inherit;
+    text-align: center;
+  }
+}
