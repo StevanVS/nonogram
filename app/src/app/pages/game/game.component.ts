@@ -15,6 +15,7 @@ import { ImgBoardComponent } from '../../components/img-board/img-board.componen
 import { Game, voidGame } from '../../interfaces/game.interface';
 import { CheckGameWin, voidCheckGameWin } from '../../interfaces/check-game-win.interface';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { LocalStorageService } from '../../services/local-storage.service';
 
 @Component({
   selector: 'app-game',
@@ -72,6 +73,7 @@ export class GameComponent {
 
   private router = inject(Router);
   private gameService = inject(GameService);
+  private localStorageService = inject(LocalStorageService);
 
   constructor() {
     this.game.boardId =
@@ -111,7 +113,8 @@ export class GameComponent {
 
           Object.assign(this.gameWin, res.datos)
 
-          if (!res.datos.isWin) {
+          if (res.datos.isWin) {
+          } else {
             alert('Solution Not Found')
           }
         }, 500);

@@ -1,5 +1,35 @@
+.page {
+  padding: 1rem;
+}
+
+.header {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  & .title {
+    flex-grow: 1;
+  }
+}
+
+.title {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.delete-btn {
+  color: var(--text-color);
+  background: darkred;
+}
+
+.preview-imgs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 50ch;
+  gap: 1rem;
+  margin-top: 1rem;
+}
 .new-btn {
-  margin-bottom: 1.5rem;
+  margin-top: 1rem;
 }
 
 .list-board-details {

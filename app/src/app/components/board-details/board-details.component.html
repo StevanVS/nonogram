@@ -1,4 +1,4 @@
-<div class="board-details">
+<div class="board-details" (click)="onclick(board)">
   <div class="images">
     <img class="image" [src]="getImageSrc(board.coloredTiles)"/>
     <img class="image" [src]="getImageSrc(board.filledTiles)"/>

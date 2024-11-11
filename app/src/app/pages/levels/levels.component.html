@@ -9,7 +9,11 @@
         [routerLink]="['/game']"
         [state]="{ boardId: l.boardId }"
       >
+      @if (l.complete) {
+        <img src="assets/img/check.png" alt="complete" />
+      } @else {
         {{ l.level }}
+      }
       </button>
     }
   </div>

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Board, voidBoard } from '../../interfaces/board.interface';
 
 @Component({
@@ -10,9 +10,10 @@ import { Board, voidBoard } from '../../interfaces/board.interface';
 })
 export class BoardDetailsComponent {
   @Input({ required: true }) board: Board = voidBoard();
+  @Output() onClick = new EventEmitter<Board>();
 
   ngOnInit() {
-    console.log('init', this.board);
+    //console.log('init', this.board);
   }
 
   getImageSrc(tiles: string[] | number[]): string {
@@ -33,7 +34,11 @@ export class BoardDetailsComponent {
     });
 
     const dataURL = canvas.toDataURL("image/png");
-    
+
     return dataURL;
+  }
+
+  onclick(board: Board) {
+    this.onClick.emit(board);
   }
 }

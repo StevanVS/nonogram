@@ -18,7 +18,11 @@ export class LevelsComponent {
 
   ngOnInit() {
     this.levelService.getLevels().subscribe((res) => {
-      if (res.ok) this.levels = res.datos
+      if (res.ok) {
+        this.levels = res.datos
+
+      }
+
     })
   }
 }

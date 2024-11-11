@@ -1,5 +1,6 @@
 .input-img-field {
-  border: 1px solid var(--font-color);
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
   border-radius: var(--border-radius);
   display: block;
   height: 5rem;
