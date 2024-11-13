@@ -51,7 +51,8 @@
       </div>
       <div style="margin-top: 0.5rem">
         <span style="font-weight: bold"> Size: </span>
-        {{ board.width }} X {{ board.height }}
+        {{ boardForm.get("width")?.value }} X
+        {{ boardForm.get("height")?.value }}
       </div>
 
       <form

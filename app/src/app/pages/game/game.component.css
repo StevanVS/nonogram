@@ -9,8 +9,23 @@
 }
 
 .coloredImage {
+  position: relative;
   width: 60vh;
-  outline: 10px solid var(--text-color);
+  border: 10px solid var(--text-color);
+  border-radius: var(--border-radius);
+}
+
+.board-name {
+  color: var(--background-color);
+  background: var(--text-color);
+  font-weight: bold;
+  text-align: center;
+  max-width: 50vh;
+
+  padding: 0.5rem 1rem;
+  padding-top: 0;
+  border-end-end-radius: var(--border-radius);
+  border-end-start-radius: var(--border-radius);
 }
 
 .win-btns {
@@ -43,131 +58,8 @@
   }
 }
 
-.game {
+.game-board {
   flex-grow: 1;
-  display: grid;
-  border-collapse: collapse;
-  grid-template-columns: 20% auto;
-  grid-template-rows: 20% auto;
-  grid-template-areas:
-    "space column-numbers"
-    "row-numbers grid-tile";
-}
-
-.btn-history {
-  grid-area: space;
-  align-self: center;
-  justify-self: center;
-  aspect-ratio: 1;
-  background: var(--text-color);
-  font-size: 1.5rem;
-  width: min-content;
-  & i {
-    transform: rotate(45deg);
-  }
-}
-
-.number {
-  line-height: 1;
-}
-
-.group-numbers {
-  container-type: size;
-  margin: 2px;
-
-  align-items: center;
-  gap: 5px;
-
-  display: flex;
-  background-color: var(--secondary-color);
-  border: 2px solid color-mix(in srgb, var(--secondary-color) 70%, black);
-  border-radius: var(--border-radius);
-}
-
-.group-numbers.complete {
-  background-color: transparent;
-  opacity: 0.6;
-}
-
-.group-numbers:not(.complete) > .number.complete {
-  opacity: 0.6;
-}
-
-.column-numbers {
-  grid-area: column-numbers;
-  display: grid;
-
-  & .group-numbers {
-    flex-direction: column;
-    justify-content: end;
-    padding-bottom: 4px;
-    margin-bottom: 6px;
-  }
-
-  & .number {
-    font-size: min(1rem, 60cqw);
-  }
-}
-
-.row-numbers {
-  grid-area: row-numbers;
-  display: grid;
-
-  & .group-numbers {
-    justify-content: end;
-    padding-right: 4px;
-    margin-right: 6px;
-  }
-  & .number {
-    font-size: min(1rem, 60cqh);
-  }
-}
-
-.grid-tile {
-  width: 100%;
-  height: 100%;
-  outline: 3px solid var(--text-color);
-
-  display: grid;
-  grid-area: grid-tile;
-}
-
-.tile {
-  position: relative;
-  /* aspect-ratio: 1; */
-  container-type: size;
-  border: 1px solid var(--text-color);
-}
-
-.tile.filled {
-  transition: all 0.1s linear;
-  background-color: var(--primary-color);
-}
-
-.tile::after {
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  line-height: 1;
-
-  content: "";
-  color: var(--primary-color);
-
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  display: grid;
-  align-items: center;
-  justify-content: center;
-
-  display: none;
-}
-
-.tile.cross::after {
-  font-size: 90cqmin;
-  content: "\f00d";
-  display: grid;
 }
 
 @media screen and (orientation: portrait) {
@@ -176,7 +68,11 @@
     width: 60vw;
   }
 
-  .game {
+  .board-name {
+    max-width: 50vw;
+  }
+
+  .game-board {
     flex-grow: 0;
     width: 100%;
   }

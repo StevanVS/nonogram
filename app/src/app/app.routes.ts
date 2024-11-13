@@ -7,7 +7,7 @@ import { EditLevelsComponent } from './pages/edit-levels/edit-levels.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'levels', component: LevelsComponent },
-  { path: 'game', component: GameComponent },
+  { path: 'game/:level', component: GameComponent },
   { path: 'edit-levels', component: EditLevelsComponent },
 
   { path: '**', component: HomeComponent },

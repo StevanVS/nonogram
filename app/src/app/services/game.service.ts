@@ -19,6 +19,10 @@ export class GameService {
     return this.http.get<Response<Game>>(`${this.api_url}/game/newgame/${boardId}`);
   }
 
+  getNewGameByLevel(level: number) {
+    return this.http.get<Response<Game>>(`${this.api_url}/game/newgamebylevel/${level}`);
+  }
+
   checkGameWin(boardId: string, gameTiles: Tile[]) {
     return this.http.post<Response<CheckGameWin>>(`${this.api_url}/game/checkgamewin/${boardId}`, { gameTiles });
   }

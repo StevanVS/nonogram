@@ -1,13 +1,11 @@
 export interface CheckGameWin {
   isWin: boolean;
-  coloredTiles: string[];
-  nextBoardId: string;
+  coloredTiles?: string[];
+  name?: string;
 }
 
 export function voidCheckGameWin(): CheckGameWin {
   return {
     isWin: false,
-    coloredTiles: [],
-    nextBoardId: ''
   }
 }

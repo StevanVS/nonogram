@@ -9,18 +9,19 @@ import {
 } from '@angular/core';
 import { Tile } from '../../interfaces/tile.interface';
 import { FilledTilesNumber } from '../../interfaces/filledTilesNumber.interface';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GameService } from '../../services/game.service';
 import { ImgBoardComponent } from '../../components/img-board/img-board.component';
 import { Game, voidGame } from '../../interfaces/game.interface';
 import { CheckGameWin, voidCheckGameWin } from '../../interfaces/check-game-win.interface';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { GameBoardComponent } from '../../components/game-board/game-board.component';
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [NavbarComponent, ImgBoardComponent, NgTemplateOutlet, RouterLink],
+  imports: [NavbarComponent, ImgBoardComponent, GameBoardComponent, RouterLink],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css',
 })
@@ -72,19 +73,21 @@ export class GameComponent {
   });
 
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute)
   private gameService = inject(GameService);
   private localStorageService = inject(LocalStorageService);
 
   constructor() {
-    this.game.boardId =
-      this.router.getCurrentNavigation()?.extras.state?.['boardId'];
+    let level = this.activatedRoute.snapshot.params['level'];
+    level = parseInt(level)
+    console.log(level)
 
-    if (this.game.boardId == null) {
-      this.router.navigate(['/']);
+    if (isNaN(level) || level < 0) {
+      this.router.navigate(['/levels'], { state: { err: 'Incorrect level' } });
       return;
     }
 
-    this.gameService.getNewGame(this.game.boardId).subscribe({
+    this.gameService.getNewGameByLevel(level).subscribe({
       next: (res) => {
         Object.assign(this.game, res.datos)
         console.log(this.game)
@@ -95,7 +98,7 @@ export class GameComponent {
       },
       error: (err) => {
         console.log(err)
-        this.router.navigate(['/']);
+        this.router.navigate(['/levels'], { state: { err: err } });
         return;
       }
     });
@@ -105,27 +108,16 @@ export class GameComponent {
     if (this.getFilledTilesCounter(this.gameTiles()) !== this.game.filledTilesNumber)
       return;
 
-    this.loadingWin = true;
-    this.gameService.checkGameWin(this.game.boardId, this.gameTiles()).subscribe(res => {
-      if (res.ok) {
-        setTimeout(() => {
-          this.loadingWin = false
-
+    this.gameService.checkGameWin(this.game.boardId, this.gameTiles())
+      .subscribe(res => {
+        if (res.ok) {
           Object.assign(this.gameWin, res.datos)
 
-          if (res.datos.isWin) {
-          } else {
+          if (!res.datos.isWin) {
             alert('Solution Not Found')
           }
-        }, 500);
-      }
-    })
-  }
-
-  onNextLevel() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/game'], { state: { boardId: this.gameWin.nextBoardId } });
-    });
+        }
+      })
   }
 
   onContextMenu(e: Event) {
@@ -315,38 +307,6 @@ export class GameComponent {
       arr[index] = value;
       return arr;
     });
-  }
-
-  isGroupNumbersComplete(
-    groupNumbers: { number: number; complete: boolean }[]
-  ) {
-    return groupNumbers.every((n) => n.complete);
-  }
-
-  getThickBorder(index: number) {
-    const [x, y] = this.getXY(index)
-    const border = '2px solid'
-
-    let borderX = {}
-    if (this.game.innerColumn > 0 && this.game.innerColumn !== this.game.width) {
-      borderX = {
-        borderRight: x % this.game.innerColumn === this.game.innerColumn - 1 ? border : '',
-        borderLeft: x % this.game.innerColumn === 0 ? border : '',
-      }
-    }
-
-    let borderY = {}
-    if (this.game.innerRow > 0 && this.game.innerRow !== this.game.height) {
-      borderY = {
-        borderTop: y % this.game.innerRow === 0 ? border : '',
-        borderBottom: y % this.game.innerRow === this.game.innerRow - 1 ? border : ''
-      }
-    }
-
-    return {
-      ...borderX,
-      ...borderY,
-    }
   }
 
   getFilledTilesCounter(tiles: number[]) {

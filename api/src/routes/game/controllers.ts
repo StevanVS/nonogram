@@ -15,15 +15,41 @@ export const getNewGame: RequestHandler = async (req, res) => {
     const game = {
       gameTiles: Array.from({ length: board.width * board.height }).fill(0),
       history: [],
-      filledTilesNumber: board.filledTiles.reduce((count: number, num: number) => num === 1 ? count + 1 : count, 0),
-      columnNumbers: getColumnNumbers(board),
-      rowNumbers: getRowNumbers(board),
       width: board.width,
       height: board.height,
-      innerColumn: board.innerColumn || 0,
-      innerRow: board.innerRow || 0,
+      innerColumn: board.innerColumn,
+      innerRow: board.innerRow,
       boardId: board._id,
-      level: board.level || 0,
+      level: board.level,
+    }
+
+    ok(res, game);
+  } catch (error) {
+    serverError(res, error);
+  }
+};
+
+export const getNewGameByLevel: RequestHandler = async (req, res) => {
+  try {
+    const query = { level: parseInt(req.params.level) };
+    const board = await db.collection("boards").findOne(query);
+    if (!board) {
+      notFound(res, "Board Not Found");
+      return;
+    }
+
+    const game = {
+      gameTiles: Array.from({ length: board.width * board.height }).fill(0),
+      history: [],
+      width: board.width,
+      height: board.height,
+      innerColumn: board.innerColumn,
+      innerRow: board.innerRow,
+      filledTilesNumber: board.filledTilesNumber,
+      columnNumbers: board.columnNumbers,
+      rowNumbers: board.rowNumbers,
+      boardId: board._id,
+      level: board.level,
     }
 
     ok(res, game);
@@ -48,61 +74,14 @@ export const checkGameWin: RequestHandler = async (req, res) => {
       return gameTile == board.filledTiles[i];
     })
 
-    const nextBoardId = await db.collection('boards').findOne(
-      { level: board.level + 1 },
-      { projection: { _id: 1 } },
-    )
-
     const gameWin = {
       isWin,
       coloredTiles: isWin ? board.coloredTiles : [],
-      nextBoardId: isWin ? nextBoardId?._id : ''
+      name: board.name,
     }
-  
+
     ok(res, gameWin);
   } catch (error) {
     serverError(res, error);
   }
 };
-
-function getColumnNumbers(board: any): number[][] {
-  const ftl: number[][] = [];
-  for (let x = 0; x < board.width; x++) {
-    const tiles: number[] = [];
-    for (let y = 0; y < board.height; y++) {
-      tiles.push(board.filledTiles[board.width * y + x]);
-    }
-    ftl.push(getFilledTilesNumbers(tiles));
-  }
-  return ftl;
-}
-
-function getRowNumbers(board: any): number[][] {
-  const ftl: number[][] = [];
-  for (let y = 0; y < board.height; y++) {
-    const tiles = board.filledTiles.slice(board.width * y, board.width * y + board.width);
-    ftl.push(getFilledTilesNumbers(tiles));
-  }
-  return ftl;
-}
-
-function getFilledTilesNumbers(tiles: number[]) {
-  const filledTilesNumbers = [];
-
-  let counter = 0;
-
-  tiles.forEach((tile, i, arr) => {
-    if (tile == 1) {
-      counter++;
-    }
-    if ((tile == 0 || tile == -1 || i + 1 === arr.length) && counter > 0) {
-      filledTilesNumbers.push(counter);
-      counter = 0;
-    }
-  });
-
-  if (filledTilesNumbers.length == 0) filledTilesNumbers.push(0);
-
-  return filledTilesNumbers;
-}
-

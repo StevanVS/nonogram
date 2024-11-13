@@ -1,4 +1,4 @@
-<app-navbar routeBack="/levels"/>
+<app-navbar routeBack="/levels" />
 <div class="game-page" (mouseup)="onMouseUp()">
   @if (!gameWin.isWin) {
     <div class="game-header">
@@ -7,92 +7,28 @@
         {{ getFilledTilesCounter(gameTiles()) }} / {{ game.filledTilesNumber }}
       </div>
     </div>
-
-    <div class="game" [style.aspectRatio]="game.width / game.height">
-      <button
-        [hidden]="game.history.length === 0"
-        class="icon-btn btn-history"
-        (click)="onHistoryBack()"
-      >
-        <i class="fa-solid fa-arrow-rotate-left"></i>
-      </button>
-
-      <div
-        class="column-numbers"
-        [style]="{
-          gridTemplateColumns: 'repeat(' + game.width + ', 1fr)',
-        }"
-      >
-        @for (gn of columnNumbers(); track $index) {
-          <ng-container
-            *ngTemplateOutlet="groupNumber; context: { $implicit: gn }"
-          ></ng-container>
-        }
-      </div>
-
-      <div
-        class="row-numbers"
-        [style]="{
-          gridTemplateRows: 'repeat(' + game.height + ', 1fr)',
-        }"
-      >
-        @for (gn of rowNumbers(); track $index) {
-          <ng-container
-            *ngTemplateOutlet="groupNumber; context: { $implicit: gn }"
-          ></ng-container>
-        }
-      </div>
-
-      <div
-        class="grid-tile"
-        [style]="{
-          gridTemplateColumns: 'repeat(' + game.width + ', 1fr)',
-          gridTemplateRows: 'repeat(' + game.height + ', 1fr)',
-        }"
-        (contextmenu)="onContextMenu($event)"
-        (mousedown)="onMouseDown($event)"
-        (mousemove)="onMouseMove($event)"
-      >
-        @for (tile of gameTiles(); track $index) {
-          <div
-            class="tile"
-            [style]="getThickBorder($index)"
-            [class.filled]="tile === 1"
-            [class.cross]="tile === -1"
-            [attr.data-index]="$index"
-          ></div>
-        }
-      </div>
-    </div>
+    <app-game-board
+      class="game-board"
+      [game]="game"
+      [gameTiles]="gameTiles()"
+      [columnNumbers]="columnNumbers()"
+      [rowNumbers]="rowNumbers()"
+      (onHistoryBack)="onHistoryBack()"
+      (onMouseDown)="onMouseDown($event)"
+      (onMouseMove)="onMouseMove($event)"
+    />
   } @else {
     <app-img-board
       class="coloredImage"
       [width]="game.width"
       [height]="game.height"
-      [tiles]="gameWin.coloredTiles"
+      [tiles]="gameWin.coloredTiles || []"
     />
+    <div class="board-name">
+      {{ gameWin.name }}
+    </div>
     <div class="win-btns">
-      <button
-        class="primary"
-        [hidden]="gameWin.nextBoardId === ''"
-        (click)="onNextLevel()"
-      >
-        Next Level
-      </button>
-      <button class="secondary" [routerLink]="['/levels']">All Levels</button>
+      <button class="primary" [routerLink]="['/levels']">Continue</button>
     </div>
   }
 </div>
-
-<ng-template #groupNumber let-groupNumber>
-  <div
-    class="group-numbers"
-    [class.complete]="isGroupNumbersComplete(groupNumber)"
-  >
-    @for (n of groupNumber; track $index) {
-      <div class="number" [class.complete]="n.complete">
-        {{ n.number }}
-      </div>
-    }
-  </div>
-</ng-template>

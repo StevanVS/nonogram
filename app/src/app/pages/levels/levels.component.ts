@@ -20,9 +20,7 @@ export class LevelsComponent {
     this.levelService.getLevels().subscribe((res) => {
       if (res.ok) {
         this.levels = res.datos
-
       }
-
     })
   }
 }
