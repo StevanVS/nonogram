@@ -8,14 +8,15 @@ export class LocalStorageService {
   constructor() { }
 
   // set value in local storage
-  setItem(key: string, value: any) {
-    localStorage.setItem(key, value);
+  setItem<T>(key: string, value: T) {
+    localStorage.setItem(key, JSON.stringify(value));
   }
 
   // get value from local storage
-  getItem(key: string):any  {
-    if (localStorage.getItem(key) == null) return null;
-    return JSON.parse(localStorage.getItem(key) || '{}');
+  getItem<T>(key: string): T | null {
+    const item = localStorage.getItem(key);
+    if (!item) return null;
+    return JSON.parse(item);
   }
 
   // remove value from local storage

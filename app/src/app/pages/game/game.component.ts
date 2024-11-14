@@ -1,4 +1,3 @@
-import { NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   computed,
@@ -80,7 +79,6 @@ export class GameComponent {
   constructor() {
     let level = this.activatedRoute.snapshot.params['level'];
     level = parseInt(level)
-    console.log(level)
 
     if (isNaN(level) || level < 0) {
       this.router.navigate(['/levels'], { state: { err: 'Incorrect level' } });
@@ -90,7 +88,6 @@ export class GameComponent {
     this.gameService.getNewGameByLevel(level).subscribe({
       next: (res) => {
         Object.assign(this.game, res.datos)
-        console.log(this.game)
 
         this.filledColumnNumbers.set(res.datos.columnNumbers);
         this.filledRowNumbers.set(res.datos.rowNumbers);
@@ -113,7 +110,17 @@ export class GameComponent {
         if (res.ok) {
           Object.assign(this.gameWin, res.datos)
 
-          if (!res.datos.isWin) {
+          if (res.datos.isWin) {
+            let completedLevels = this.localStorageService
+              .getItem<string[]>('completedLevels')
+
+            if (!completedLevels) completedLevels = [];
+
+            completedLevels.push(this.game.boardId);
+
+            this.localStorageService
+              .setItem<string[]>('completedLevels', completedLevels)
+          } else {
             alert('Solution Not Found')
           }
         }

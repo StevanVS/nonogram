@@ -7,12 +7,17 @@
         class="level-btn"
         [class.complete]="l.complete"
         [routerLink]="['/game', l.level]"
+        [style.backgroundImage]="
+          'url(' + getImageSrc(l.coloredTiles, l.width, l.height) + ')'
+        "
+        [style]="{
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+        }"
       >
-      @if (l.complete) {
-        <img src="assets/img/check.png" alt="complete" />
-      } @else {
-        {{ l.level }}
-      }
+        @if (!l.complete) {
+          {{ l.level }}
+        }
       </button>
     }
   </div>

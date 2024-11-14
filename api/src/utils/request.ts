@@ -4,6 +4,10 @@ export function ok(res:Response, result?: any) {
   res.status(200).send({ ok: true, datos: result });
 }
 
+export function invalidCredentials(res: Response, message?: string) {
+  res.status(401).json({ ok: false, error: message || "Invalid Credentials" });
+}
+
 export function notFound(res: Response, message?: string) {
   res.status(404).json({ ok: false, error: message || "No encontrado" });
 }

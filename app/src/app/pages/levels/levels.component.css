@@ -22,14 +22,21 @@
 
   color: var(--text-color);
   background-color: var(--secondary-color);
-  border: .2rem solid var(--text-color);
+  border: 0.2rem solid var(--text-color);
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  image-rendering: pixelated;
 }
 
 .level-btn.complete {
-  color: var(--background-color);
-  background-color: var(--primary-color);
+  background: var(--text-color);
+}
+
+.img-board {
+  width: 100%;
+  border-radius: var(--border-radius);
+  overflow: hidden;
 }

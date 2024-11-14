@@ -13,7 +13,7 @@ export class LevelService {
 
   constructor() { }
 
-  getLevels() {
-    return this.http.get<Response<Level[]>>(`${this.api_url}/levels`);
+  getLevels(completedLevels: string[]) {
+    return this.http.post<Response<Level[]>>(`${this.api_url}/levels`, { completedLevels });
   }
 }

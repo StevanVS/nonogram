@@ -14,7 +14,7 @@ export default class App {
 
   async init(port: number | string) {
     await this.testDatabase();
-    this.mountMiddleares();
+    this.mountMiddlewares();
     this.mountRoutes();
 
     this.express.listen(port, () => {
@@ -22,7 +22,7 @@ export default class App {
     });
   }
 
-  private mountMiddleares() {
+  private mountMiddlewares() {
     this.express.use(json());
     this.express.use(cors());
   }
@@ -31,6 +31,8 @@ export default class App {
     this.express.use("/boards", require("./routes/boards/routes"));
     this.express.use("/game", require("./routes/game/routes"));
     this.express.use("/levels", require("./routes/levels/routes"));
+    //this.express.use("/users", require("./routes/users/routes"));
+    //this.express.use("/auth", require("./routes/auth/routes"));
   }
 
   private async testDatabase() {
