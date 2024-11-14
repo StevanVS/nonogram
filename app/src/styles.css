@@ -14,6 +14,7 @@
   --background-color: #132727;
   --primary-color: #ffebcd;
   --secondary-color: #1a5656;
+  --danger-color: darkred;
 
   --border-radius: 0.4rem;
 
@@ -62,6 +63,11 @@ button.primary {
 
 button.secondary {
   background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+button.danger {
+  background-color: var(--danger-color);
   color: var(--text-color);
 }
 

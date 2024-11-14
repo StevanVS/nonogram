@@ -11,7 +11,6 @@ export interface Game {
   height: number;
   innerColumn: number;
   innerRow: number;
-  boardId: string;
   level: number;
 }
 
@@ -26,7 +25,6 @@ export function voidGame(): Game {
     height: 0,
     innerColumn: 0,
     innerRow: 0,
-    boardId: '',
     level: 0,
   }
 }

@@ -105,7 +105,7 @@ export class GameComponent {
     if (this.getFilledTilesCounter(this.gameTiles()) !== this.game.filledTilesNumber)
       return;
 
-    this.gameService.checkGameWin(this.game.boardId, this.gameTiles())
+    this.gameService.checkGameWin(this.game.level, this.gameTiles())
       .subscribe(res => {
         if (res.ok) {
           Object.assign(this.gameWin, res.datos)
@@ -116,7 +116,7 @@ export class GameComponent {
 
             if (!completedLevels) completedLevels = [];
 
-            completedLevels.push(this.game.boardId);
+            completedLevels.push(res.datos.boardId);
 
             this.localStorageService
               .setItem<string[]>('completedLevels', completedLevels)
