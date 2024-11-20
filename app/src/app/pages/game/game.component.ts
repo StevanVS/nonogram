@@ -92,6 +92,8 @@ export class GameComponent {
         this.filledColumnNumbers.set(res.datos.columnNumbers);
         this.filledRowNumbers.set(res.datos.rowNumbers);
         this.gameTiles.set(res.datos.gameTiles);
+
+        this.useProgress()
       },
       error: (err) => {
         console.log(err)
@@ -99,6 +101,47 @@ export class GameComponent {
         return;
       }
     });
+  }
+
+  private useProgress() {
+    const games = this.localStorageService.getItem<any[]>('games')
+    if (games == null) return;
+    const progress = games.find(g => g.level === this.game.level)
+    if (progress === null) return;
+
+    Object.assign(this.game, progress)
+    this.gameTiles.set(this.game.gameTiles)
+  }
+
+  private clearProgress() {
+    const games = this.localStorageService.getItem<any[]>('games')
+    if (games == null) return;
+
+    const newGames = games.filter(g => g.level !== this.game.level)
+
+    this.localStorageService.setItem('games', newGames)
+  }
+
+  private saveProgress() {
+    if (this.gameWin.isWin) return;
+    let games = this.localStorageService.getItem<any[]>('games')
+    if (games == null) { games = [] }
+
+    const getCurrentGame = () => ({
+      level: this.game.level,
+      history: this.game.history,
+      gameTiles: this.gameTiles(),
+    })
+
+    const progress = games.find(g => g.level === this.game.level)
+    const index = games.findIndex(g => g.level === this.game.level)
+    if (progress == null) {
+      games.push(getCurrentGame())
+    } else {
+      games[index] = getCurrentGame();
+    }
+
+    this.localStorageService.setItem('games', games)
   }
 
   checkGameWin() {
@@ -116,10 +159,14 @@ export class GameComponent {
 
             if (!completedLevels) completedLevels = [];
 
-            completedLevels.push(res.datos.boardId);
+            if (!completedLevels.includes(res.datos.boardId)) {
+              completedLevels.push(res.datos.boardId);
+            }
 
             this.localStorageService
-              .setItem<string[]>('completedLevels', completedLevels)
+              .setItem<string[]>('completedLevels', completedLevels);
+
+            this.clearProgress()
           } else {
             alert('Solution Not Found')
           }
@@ -138,6 +185,8 @@ export class GameComponent {
       indexes: [...this.changedTileIndexes],
       autoCompletedIdxs: [...this.autoCompletedIdxs],
     });
+
+    this.saveProgress()
 
     this.isMouseDown = false;
     this.currentTileIndex = 0;
@@ -211,6 +260,8 @@ export class GameComponent {
     lastHistory.autoCompletedIdxs.forEach((i) => {
       this.updateGameTiles(i, 0);
     });
+
+    this.saveProgress();
   }
 
   click(index: number, fill = true) {
