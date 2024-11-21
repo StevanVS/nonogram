@@ -127,11 +127,17 @@ export class GameComponent {
     let games = this.localStorageService.getItem<any[]>('games')
     if (games == null) { games = [] }
 
-    const getCurrentGame = () => ({
-      level: this.game.level,
-      history: this.game.history,
-      gameTiles: this.gameTiles(),
-    })
+    const getCurrentGame = () => {
+      const gameTilesCount = this.getFilledTilesCounter(this.gameTiles());
+      const progressRatio = parseFloat((gameTilesCount / this.game.filledTilesNumber).toFixed(2));
+
+      return {
+        level: this.game.level,
+        history: this.game.history,
+        gameTiles: this.gameTiles(),
+        progressPorcentage: progressRatio * 100,
+      }
+    }
 
     const progress = games.find(g => g.level === this.game.level)
     const index = games.findIndex(g => g.level === this.game.level)
