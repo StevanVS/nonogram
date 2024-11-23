@@ -24,6 +24,10 @@ if [ $? != 0 ]; then
     "sleep 5; docker exec -ti nonogram-mongodb mongosh nonogram \
       -u stevan -p root --authenticationDatabase admin" C-m
 
+  WINDOW="git"
+  tmux new-window -t $SESSION -n $WINDOW
+  tmux send-keys -t $SESSION:$WINDOW "lg" C-m
+
   tmux select-window -t $SESSION:1
 fi
 
