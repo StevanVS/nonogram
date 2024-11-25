@@ -18,6 +18,10 @@
         @if (!l.complete) {
           {{ l.level }}
         }
+        <app-circular-progress
+          class="circular-progress"
+          [progress]="l.progressPorcentage"
+        />
       </button>
     }
   </div>

@@ -10,7 +10,10 @@ if [ $? != 0 ]; then
 
   tmux send-keys -t $SESSION:$WINDOW "nvim" C-m
 
-  WINDOW="terms"
+  WINDOW="terminal"
+  tmux new-window -t $SESSION -n $WINDOW
+
+  WINDOW="servers"
   tmux new-window -t $SESSION -n $WINDOW
   tmux send-keys -t $SESSION:$WINDOW "cd api; npm run dev" C-m
 
@@ -21,8 +24,12 @@ if [ $? != 0 ]; then
   tmux new-window -t $SESSION -n $WINDOW
   tmux send-keys -t $SESSION:$WINDOW "docker compose up -d mongodb" C-m
   tmux send-keys -t $SESSION:$WINDOW \
-    "sleep 5; docker exec -ti nonogram-mongodb mongosh nonogram \
-      -u stevan -p root --authenticationDatabase admin" C-m
+    "docker exec -ti nonogram-mongodb mongosh nonogram \
+      -u stevan -p root --authenticationDatabase admin" 
+
+  WINDOW="docker"
+  tmux new-window -t $SESSION -n $WINDOW
+  tmux send-keys -t $SESSION:$WINDOW "ld" C-m
 
   WINDOW="git"
   tmux new-window -t $SESSION -n $WINDOW

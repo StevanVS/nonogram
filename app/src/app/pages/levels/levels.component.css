@@ -10,8 +10,14 @@
   justify-content: center;
   gap: 1rem;
 }
+.circular-progress {
+  position: absolute;
+  top: 0;
+  padding: 0.3rem;
+}
 
 .level-btn {
+  position: relative;
   aspect-ratio: 1;
   width: 6rem;
   padding: 0;
