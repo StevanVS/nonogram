@@ -1,18 +1,26 @@
 import { Response } from "express";
 
-export function ok(res:Response, result?: any) {
+export function ok(res: Response, result?: any) {
   res.status(200).send({ ok: true, datos: result });
 }
 
-export function invalidCredentials(res: Response, message?: string) {
+export function badRequest(res: Response, message?: any) {
+  res.status(400).json({ ok: false, error: message || "Bad Request" });
+}
+
+export function invalidCredentials(res: Response, message?: any) {
   res.status(401).json({ ok: false, error: message || "Invalid Credentials" });
 }
 
-export function notFound(res: Response, message?: string) {
-  res.status(404).json({ ok: false, error: message || "No encontrado" });
+export function unauthorized(res: Response, message?: any) {
+  res.status(401).json({ ok: false, error: message || "Unauthorized" });
+}
+
+export function notFound(res: Response, message?: any) {
+  res.status(404).json({ ok: false, error: message || "Not Found" });
 }
 
 export function serverError(res: Response, error?: any) {
   console.error(error);
-  res.status(500).json({ ok: false, error: error.message || "Error de Servidor" });
+  res.status(500).json({ ok: false, error: error || "Server Error" });
 }

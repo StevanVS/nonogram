@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import db from "../../config/mongodb";
-import { ObjectId } from "mongodb";
 import { notFound, ok, serverError } from "../../utils/request";
+import { Board } from "../../interfaces/board";
 
 export const getNewGameByLevel: RequestHandler = async (req, res) => {
   try {
@@ -23,7 +23,7 @@ export const getNewGameByLevel: RequestHandler = async (req, res) => {
       columnNumbers: board.columnNumbers,
       rowNumbers: board.rowNumbers,
       level: board.level,
-    }
+    };
 
     ok(res, game);
   } catch (error) {
@@ -33,27 +33,32 @@ export const getNewGameByLevel: RequestHandler = async (req, res) => {
 
 export const checkGameWin: RequestHandler = async (req, res) => {
   try {
-    const board = await db.collection("boards").findOne(
-      { level: Number(req.params.level) }
-    );
+    const board = await db
+      .collection<Board>("boards")
+      .findOne({ level: Number(req.params.level) });
+
     if (!board) {
       notFound(res, "Board Not Found");
       return;
     }
 
+    let mistakes = 0;
     const gameTiles: number[] = req.body.gameTiles;
 
     const isWin = gameTiles.every((gt, i) => {
       let gameTile = gt <= 0 ? 0 : 1;
-      return gameTile == board.filledTiles[i];
-    })
+      const isCorrect = gameTile === board.filledTiles[i];
+      if (!isCorrect) mistakes++;
+      return isCorrect;
+    });
 
     const gameWin = {
       isWin,
       boardId: board._id,
       coloredTiles: isWin ? board.coloredTiles : [],
       name: board.name,
-    }
+      mistakes: mistakes,
+    };
 
     ok(res, gameWin);
   } catch (error) {

@@ -1,7 +1,22 @@
 import express from "express";
-import { login } from "./controllers";
+import { login, logout, register } from "./controllers";
+import { body } from "express-validator";
+import { validate } from "../../utils/middlewares";
 const router = express.Router();
+
+router.post(
+  "/register",
+  body("name", "Name can't be empty").notEmpty(),
+  body("email", "Incorrect email").isEmail(),
+  body("password", "Password must be greater than 5 digits")
+    .isString()
+    .isLength({ min: 5 }),
+  validate,
+  register,
+);
 
 router.post("/login", login);
 
-module.exports = router
+router.post("/logout", logout);
+
+module.exports = router;

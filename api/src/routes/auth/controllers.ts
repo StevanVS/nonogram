@@ -1,31 +1,94 @@
 import { RequestHandler } from "express";
 import db from "../../config/mongodb";
-import { invalidCredentials, serverError } from "../../utils/request";
-import { UserDocument } from "../../interfaces/user";
+import {
+  badRequest,
+  invalidCredentials,
+  ok,
+  serverError,
+} from "../../utils/request";
+import { User } from "../../interfaces/user";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../../config";
 
-export const login: RequestHandler = async (req, res) => {
-  const { email, password } = req.body;
+export const register: RequestHandler = async (req, res) => {
+  const { name, email, password } = req.body;
+
+  const emailExists = await db.collection<User>("users").findOne({ email });
+  if (emailExists) {
+    return badRequest(res, "Email alredy exists");
+  }
+
   try {
-    const user = await db.collection("users").findOne(
-      { email }
-    ) as UserDocument
+    const salt = 10;
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    if (!user) {
-      invalidCredentials(res)
+    const result = await db.collection<User>("users").insertOne({
+      name,
+      email,
+      password: hashedPassword,
+      role: "user",
+    });
+
+    const user = await db
+      .collection<User>("users")
+      .findOne({ _id: result.insertedId });
+
+    if (user == null) {
+      serverError(res, "User could not be created");
       return;
     }
 
-    // TODO: aplicar bcrypt 
-    const passwordMatch = user.password == password
-    if (!passwordMatch) {
-      invalidCredentials(res)
-      return;
-    }
+    const token = jwt.sign(
+      { id: user._id.toHexString(), role: user.role },
+      JWT_SECRET,
+    );
 
-    res.header('x-auth', JSON.stringify(user)).send(user);
+    ok(
+      res.cookie("access_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+      }),
+      "Successfully Register",
+    );
   } catch (error) {
     serverError(res, error);
   }
 };
 
+export const login: RequestHandler = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await db.collection<User>("users").findOne({ email });
 
+    if (!user) {
+      invalidCredentials(res);
+      return;
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      invalidCredentials(res);
+      return;
+    }
+
+    const token = jwt.sign(
+      { id: user._id.toHexString(), role: user.role },
+      JWT_SECRET,
+    );
+
+    ok(
+      res.cookie("access_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+      }),
+      "Successfully Log In",
+    );
+  } catch (error) {
+    serverError(res, error);
+  }
+};
+
+export const logout: RequestHandler = async (req, res) => {
+  ok(res.clearCookie("access_token"), "Successfully Log Out");
+};

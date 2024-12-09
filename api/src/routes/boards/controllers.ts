@@ -2,13 +2,19 @@ import { RequestHandler } from "express";
 import db from "../../config/mongodb";
 import { ObjectId } from "mongodb";
 import { notFound, ok, serverError } from "../../utils/request";
-import { getColumnNumbers, getRowNumbers } from "../../utils/boards";
+import {
+  getColumnNumbers,
+  getFilledTilesNumber,
+  getRowNumbers,
+} from "../../utils/boards";
+import { Board } from "../../interfaces/board";
 
 export const getBoards: RequestHandler = async (req, res) => {
   try {
-    const result = await db.collection("boards").find(
-      {}, { sort: { level: 1 } }
-    ).toArray();
+    const result = await db
+      .collection<Board>("boards")
+      .find({}, { sort: { level: 1 } })
+      .toArray();
     ok(res, result);
   } catch (error) {
     serverError(res, error);
@@ -18,7 +24,7 @@ export const getBoards: RequestHandler = async (req, res) => {
 export const getBoard: RequestHandler = async (req, res) => {
   try {
     const query = { _id: new ObjectId(req.params.id) };
-    const result = await db.collection("boards").findOne(query);
+    const result = await db.collection<Board>("boards").findOne(query);
     if (!result) {
       notFound(res, "Board no encontrado");
       return;
@@ -31,19 +37,20 @@ export const getBoard: RequestHandler = async (req, res) => {
 
 export const newBoard: RequestHandler = async (req, res) => {
   try {
-    const board = {
-      ...req.body,
-      filledTilesNumber: req.body.filledTiles
-        .reduce((count: number, num: number) => num === 1 ? count + 1 : count, 0),
-      columnNumbers: getColumnNumbers(req.body),
-      rowNumbers: getRowNumbers(req.body),
-    }
+    let board: Board = { ...req.body };
 
-    const result = await db.collection("boards").insertOne(board);
+    board = {
+      ...board,
+      filledTilesNumber: getFilledTilesNumber(board),
+      columnNumbers: getColumnNumbers(board),
+      rowNumbers: getRowNumbers(board),
+    };
 
-    const newBoard = await db.collection("boards").findOne(
-      { _id: result.insertedId }
-    );
+    const result = await db.collection<Board>("boards").insertOne(board);
+
+    const newBoard = await db
+      .collection<Board>("boards")
+      .findOne({ _id: result.insertedId });
 
     ok(res, newBoard);
   } catch (error) {
@@ -54,13 +61,21 @@ export const newBoard: RequestHandler = async (req, res) => {
 export const updateBoard: RequestHandler = async (req, res) => {
   try {
     const query = { _id: new ObjectId(req.params.id) };
-    const { _id, ...board } = req.body;
 
-    const result = await db.collection("boards").updateOne(query, {
-      $set: board,
-    });
+    let board = req.body;
 
-    if (!result.modifiedCount) {
+    board = {
+      ...board,
+      filledTilesNumber: getFilledTilesNumber(board),
+      columnNumbers: getColumnNumbers(board),
+      rowNumbers: getRowNumbers(board),
+    };
+
+    const result = await db
+      .collection<Board>("boards")
+      .findOneAndUpdate(query, { $set: board }, { returnDocument: "after" });
+
+    if (!result) {
       notFound(res, "Board no encontrado");
       return;
     }

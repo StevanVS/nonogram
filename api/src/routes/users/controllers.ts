@@ -1,16 +1,14 @@
 import { RequestHandler } from "express";
 import db from "../../config/mongodb";
-import { notFound, ok, serverError } from "../../utils/request";
-import { UserDocument } from "../../interfaces/user";
+import { ok, serverError } from "../../utils/request";
+import { User } from "../../interfaces/user";
 
 export const getUsers: RequestHandler = async (req, res) => {
   try {
-    const users = await db.collection("users").find(
-    ).toArray() as UserDocument[]
+    const users = await db.collection<User>("users").find().toArray();
 
-    ok(res, { users, authUser: req.body.authUser });
+    ok(res, { users });
   } catch (error) {
     serverError(res, error);
   }
 };
-

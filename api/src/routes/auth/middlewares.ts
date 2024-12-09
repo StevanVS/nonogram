@@ -1,15 +1,22 @@
 import { RequestHandler } from "express";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../../config";
+import { unauthorized } from "../../utils/request";
 
-export const isAuth: RequestHandler = (req, res, next)  => {
-  const token = req.header('x-auth')
+export const isAuth: RequestHandler = (req, res, next) => {
+  const token = req.cookies.access_token;
+
   if (!token) {
-    res.send('no hay token')
-    return
+    return unauthorized(res);
   }
 
-  // TODO: use JWT decode
-  const user = JSON.parse(token)
+  try {
+    const user = jwt.verify(token, JWT_SECRET) as { id: string; role: string };
 
-  req.body.authUser = user
-  next()
-}
+    req.userId = user.id;
+    req.userRole = user.role;
+    next();
+  } catch (error) {
+    unauthorized(res, error);
+  }
+};
