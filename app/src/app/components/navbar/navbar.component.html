@@ -1,7 +1,19 @@
-<header class="navbar">
-  @if (routeBack != "/") {
-    <a [href]="routeBack"><i class="fa-solid fa-chevron-left"></i></a>
-  } @else {
-    <a href="/"><i class="fa fa-house"></i></a>
+<header class="header">
+  @if (left) {
+    <nav class="left">
+      @for (i of left; track $index) {
+        <a [href]="i.path"><i class="{{ 'fa ' + i.icon }}"></i></a>
+      }
+    </nav>
+  }
+
+  <div class="middle"></div>
+
+  @if (right) {
+    <nav class="right">
+      @for (i of right; track $index) {
+        <a [href]="i.path"><i class="{{ 'fa ' + i.icon }}"></i></a>
+      }
+    </nav>
   }
 </header>

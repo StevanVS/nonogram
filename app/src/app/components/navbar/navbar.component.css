@@ -1,9 +1,11 @@
-.navbar {
+.header {
   position: absolute;
   width: 100%;
   color: var(--text-color);
-  padding: .8rem 1rem;
+  padding: 0.8rem 1rem;
   font-size: 1.5rem;
+
+  display: flex;
 
   & a {
     display: block;
@@ -11,4 +13,14 @@
     color: inherit;
     text-align: center;
   }
+}
+
+.middle {
+  flex-grow: 1;
+}
+
+.left,
+.right {
+  display: flex;
+  gap: 0.2rem;
 }

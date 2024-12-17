@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { Level } from '../interfaces/level.interface';
-import { Response } from '../interfaces/response.interface';
+import { ServerResponse } from '../interfaces/server-response.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +14,6 @@ export class LevelService {
   constructor() { }
 
   getLevels(completedLevels: string[]) {
-    return this.http.post<Response<Level[]>>(`${this.api_url}/levels`, { completedLevels });
+    return this.http.post<ServerResponse<Level[]>>(`${this.api_url}/levels`, { completedLevels });
   }
 }

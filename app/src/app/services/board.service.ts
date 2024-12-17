@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Board } from '../interfaces/board.interface';
-import { Response } from '../interfaces/response.interface';
+import { ServerResponse } from '../interfaces/server-response.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -12,20 +12,20 @@ export class BoardService {
   private http = inject(HttpClient)
 
   getList() {
-    return this.http.get<Response<Board[]>>(`${this.api_url}/boards`);
+    return this.http.get<ServerResponse<Board[]>>(`${this.api_url}/boards`);
   }
 
   createBoard(board: Board) {
-    return this.http.post<Response<Board>>(`${this.api_url}/boards`, board)
+    return this.http.post<ServerResponse<Board>>(`${this.api_url}/boards`, board)
   }
 
   updateBoard(board: Board) {
-    return this.http.put<Response<Board>>(
+    return this.http.put<ServerResponse<Board>>(
       `${this.api_url}/boards/${board._id}`, board
     )
   }
 
   deleteBoard(boardId: string) {
-    return this.http.delete<Response<any>>(`${this.api_url}/boards/${boardId}`)
+    return this.http.delete<ServerResponse<any>>(`${this.api_url}/boards/${boardId}`)
   }
 }

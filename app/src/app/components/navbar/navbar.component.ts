@@ -5,8 +5,9 @@ import { Component, Input } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
-  @Input() routeBack: string = '/'
+  @Input() left: { path: string; icon: string }[] | null = [];
+  @Input() right: { path: string; icon: string }[] | null = [];
 }

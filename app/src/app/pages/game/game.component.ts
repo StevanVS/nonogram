@@ -12,10 +12,15 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GameService } from '../../services/game.service';
 import { ImgBoardComponent } from '../../components/img-board/img-board.component';
 import { Game, voidGame } from '../../interfaces/game.interface';
-import { CheckGameWin, voidCheckGameWin } from '../../interfaces/check-game-win.interface';
+import {
+  CheckGameWin,
+  voidCheckGameWin,
+} from '../../interfaces/check-game-win.interface';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { GameBoardComponent } from '../../components/game-board/game-board.component';
+import { catchError, lastValueFrom, of } from 'rxjs';
+import { ServerResponse } from '../../interfaces/server-response.interface';
 
 @Component({
   selector: 'app-game',
@@ -35,9 +40,9 @@ export class GameComponent {
   private changedTileIndexes: number[] = [];
   private autoCompletedIdxs: number[] = [];
 
-  game: Game = voidGame()
+  game: Game = voidGame();
 
-  gameWin: CheckGameWin = voidCheckGameWin()
+  gameWin: CheckGameWin = voidCheckGameWin();
 
   gameTiles: WritableSignal<Tile[]> = signal([]);
 
@@ -52,7 +57,7 @@ export class GameComponent {
       const columnGameTiles = this.getColumnTiles(this.gameTiles(), x);
       const completedNumbers = this.getCompletedTilesNumbers(
         cn,
-        columnGameTiles
+        columnGameTiles,
       );
       ftn.push(completedNumbers);
     });
@@ -72,112 +77,137 @@ export class GameComponent {
   });
 
   private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute)
+  private activatedRoute = inject(ActivatedRoute);
   private gameService = inject(GameService);
   private localStorageService = inject(LocalStorageService);
 
   constructor() {
     let level = this.activatedRoute.snapshot.params['level'];
-    level = parseInt(level)
+    level = parseInt(level);
 
     if (isNaN(level) || level < 0) {
       this.router.navigate(['/levels'], { state: { err: 'Incorrect level' } });
       return;
     }
 
-    this.gameService.getNewGameByLevel(level).subscribe({
-      next: (res) => {
-        Object.assign(this.game, res.datos)
+    this.getGame(level);
+  }
 
-        this.filledColumnNumbers.set(res.datos.columnNumbers);
-        this.filledRowNumbers.set(res.datos.rowNumbers);
-        this.gameTiles.set(res.datos.gameTiles);
+  private async getGame(level: number) {
+    try {
+      const result = await this.gameService.getNewGameByLevel(level);
 
-        this.useProgress()
-      },
-      error: (err) => {
-        console.log(err)
-        this.router.navigate(['/levels'], { state: { err: err } });
+      if (!result.ok) {
+        console.log('not ok', result.error);
+        //this.router.navigate(['/'], { state: { error: result.error } });
         return;
       }
-    });
+
+      Object.assign(this.game, result.datos);
+
+      this.filledColumnNumbers.set(result.datos.columnNumbers);
+      this.filledRowNumbers.set(result.datos.rowNumbers);
+      this.gameTiles.set(result.datos.gameTiles);
+
+      this.useProgress();
+    } catch (error: any) {
+      console.log(error);
+    }
   }
 
   private useProgress() {
-    const games = this.localStorageService.getItem<any[]>('games')
+    const games = this.localStorageService.getItem<any[]>('games');
     if (games == null) return;
-    const progress = games.find(g => g.level === this.game.level)
+    const progress = games.find((g) => g.level === this.game.level);
     if (progress === null) return;
 
-    Object.assign(this.game, progress)
-    this.gameTiles.set(this.game.gameTiles)
+    Object.assign(this.game, progress);
+    this.gameTiles.set(this.game.gameTiles);
   }
 
   private clearProgress() {
-    const games = this.localStorageService.getItem<any[]>('games')
+    const games = this.localStorageService.getItem<any[]>('games');
     if (games == null) return;
 
-    const newGames = games.filter(g => g.level !== this.game.level)
+    const newGames = games.filter((g) => g.level !== this.game.level);
 
-    this.localStorageService.setItem('games', newGames)
+    this.localStorageService.setItem('games', newGames);
   }
 
   private saveProgress() {
     if (this.gameWin.isWin) return;
-    let games = this.localStorageService.getItem<any[]>('games')
-    if (games == null) { games = [] }
+    let games = this.localStorageService.getItem<any[]>('games');
+    if (games == null) {
+      games = [];
+    }
 
     const getCurrentGame = () => {
       const gameTilesCount = this.getFilledTilesCounter(this.gameTiles());
-      const progressRatio = parseFloat((gameTilesCount / this.game.filledTilesNumber).toFixed(2));
+      const progressRatio = parseFloat(
+        (gameTilesCount / this.game.filledTilesNumber).toFixed(2),
+      );
 
       return {
         level: this.game.level,
         history: this.game.history,
         gameTiles: this.gameTiles(),
         progressPorcentage: progressRatio * 100,
-      }
-    }
+      };
+    };
 
-    const progress = games.find(g => g.level === this.game.level)
-    const index = games.findIndex(g => g.level === this.game.level)
+    const progress = games.find((g) => g.level === this.game.level);
+    const index = games.findIndex((g) => g.level === this.game.level);
     if (progress == null) {
-      games.push(getCurrentGame())
+      games.push(getCurrentGame());
     } else {
       games[index] = getCurrentGame();
     }
 
-    this.localStorageService.setItem('games', games)
+    this.localStorageService.setItem('games', games);
   }
 
-  checkGameWin() {
-    if (this.getFilledTilesCounter(this.gameTiles()) !== this.game.filledTilesNumber)
+  async checkGameWin() {
+    if (
+      this.getFilledTilesCounter(this.gameTiles()) !==
+      this.game.filledTilesNumber
+    )
       return;
 
-    this.gameService.checkGameWin(this.game.level, this.gameTiles())
-      .subscribe(res => {
-        if (res.ok) {
-          Object.assign(this.gameWin, res.datos)
+    try {
+      const result = await this.gameService.checkGameWin(
+        this.game.level,
+        this.gameTiles(),
+      );
 
-          if (res.datos.isWin) {
-            let completedLevels = this.localStorageService
-              .getItem<string[]>('completedLevels')
+      if (!result.ok) {
+        console.log('not ok', result.error);
+        //this.router.navigate(['/'], { state: { error: result.error } });
+        return;
+      }
 
-            if (!completedLevels) completedLevels = [];
+      Object.assign(this.gameWin, result.datos);
 
-            if (!completedLevels.includes(res.datos.boardId)) {
-              completedLevels.push(res.datos.boardId);
-            }
+      if (!result.datos.isWin) {
+        alert('Solution Not Found');
+        return;
+      }
 
-            this.localStorageService
-              .setItem<string[]>('completedLevels', completedLevels);
+      let completedLevels =
+        this.localStorageService.getItem<string[]>('completedLevels') || [];
 
-            this.clearProgress()
-          } else {
-            alert('Solution Not Found')
-          }
-        }
-      })
+      if (!completedLevels.includes(result.datos.boardId)) {
+        completedLevels.push(result.datos.boardId);
+      }
+
+      this.localStorageService.setItem<string[]>(
+        'completedLevels',
+        completedLevels,
+      );
+
+      this.clearProgress();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   onContextMenu(e: Event) {
@@ -192,7 +222,7 @@ export class GameComponent {
       autoCompletedIdxs: [...this.autoCompletedIdxs],
     });
 
-    this.saveProgress()
+    this.saveProgress();
 
     this.isMouseDown = false;
     this.currentTileIndex = 0;
@@ -287,7 +317,7 @@ export class GameComponent {
       this.autoComplete(index);
     }
 
-    this.checkGameWin()
+    this.checkGameWin();
   }
 
   drag(index: number, fill = true) {
@@ -311,7 +341,7 @@ export class GameComponent {
       this.autoComplete(index);
     }
 
-    this.checkGameWin()
+    this.checkGameWin();
   }
 
   private autoComplete(tileIndex: number) {
@@ -380,11 +410,14 @@ export class GameComponent {
   getXY(index: number): [number, number] {
     let x = index % this.game.width;
     let y = Math.floor(index / this.game.width);
-    return [x, y]
+    return [x, y];
   }
 
   private getRowTiles(allTiles: Tile[], y: number): Tile[] {
-    return allTiles.slice(this.game.width * y, this.game.width * y + this.game.width);
+    return allTiles.slice(
+      this.game.width * y,
+      this.game.width * y + this.game.width,
+    );
   }
 
   private getColumnTiles(allTiles: Tile[], x: number): Tile[] {
@@ -417,7 +450,7 @@ export class GameComponent {
 
   private getCompletedTilesNumbers(
     filledTilesNumbers: number[],
-    tiles: Tile[]
+    tiles: Tile[],
   ): FilledTilesNumber[] {
     let numbers = filledTilesNumbers.map<FilledTilesNumber>((n) => ({
       number: n,
@@ -426,7 +459,7 @@ export class GameComponent {
 
     const checkCompleteNumbers = (inverse = false) => {
       let checkedNumbers: FilledTilesNumber[] = JSON.parse(
-        JSON.stringify(numbers)
+        JSON.stringify(numbers),
       );
       let checkGameTiles: Tile[] = JSON.parse(JSON.stringify(tiles));
 

@@ -1,4 +1,4 @@
-<app-navbar routeBack="/levels" />
+<app-navbar [left]="[{ path: '/levels', icon: 'fa-chevron-left' }]" />
 <div class="game-page" (mouseup)="onMouseUp()">
   @if (!gameWin.isWin) {
     <div class="game-header">
