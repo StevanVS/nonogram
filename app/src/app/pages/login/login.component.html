@@ -1,11 +1,17 @@
 <!--[formGroup]="boardForm"-->
-<form style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
-  <div class="form-field block">
-    <label for="name"> Name </label>
-    <input id="name" type="text" formControlName="name" />
-  </div>
+<app-navbar [relative]="true" [left]="[{ path: '/', icon: 'fa-home' }]" />
+
+<h2 class="title">Login</h2>
+
+<form (submit)="onSubmit()" class="login-form" [formGroup]="loginForm">
   <div class="form-field block">
     <label for="email"> Email </label>
-    <input id="email" type="number" formControlName="email" />
+    <input id="email" type="text" formControlName="email" />
   </div>
+  <div class="form-field block">
+    <label for="password"> Password </label>
+    <input id="password" type="password" formControlName="password" />
+  </div>
+
+  <button class="form-btn" type="submit">Login</button>
 </form>

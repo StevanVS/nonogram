@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { MongoClient } from "mongodb";
 import { json } from "body-parser";
-import cookieParser from 'cookie-parser'
+import cookieParser from "cookie-parser";
 
 export default class App {
   public express;
@@ -25,8 +25,14 @@ export default class App {
 
   private mountMiddlewares() {
     this.express.use(json());
-    this.express.use(cors());
-    this.express.use(cookieParser())
+    this.express.use(
+      cors({
+        origin: ["http://localhost:4200"],
+        credentials: true,
+        allowedHeaders: ["Authorization", "Content-Type"],
+      }),
+    );
+    this.express.use(cookieParser());
   }
 
   private mountRoutes() {

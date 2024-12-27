@@ -44,6 +44,8 @@ export const register: RequestHandler = async (req, res) => {
       JWT_SECRET,
     );
 
+    console.log("Register email:", user.email);
+
     ok(
       res.cookie("access_token", token, {
         httpOnly: true,
@@ -62,13 +64,13 @@ export const login: RequestHandler = async (req, res) => {
     const user = await db.collection<User>("users").findOne({ email });
 
     if (!user) {
-      invalidCredentials(res);
+      invalidCredentials(res, "User Not Found");
       return;
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      invalidCredentials(res);
+      invalidCredentials(res, 'Password');
       return;
     }
 
@@ -76,6 +78,8 @@ export const login: RequestHandler = async (req, res) => {
       { id: user._id.toHexString(), role: user.role },
       JWT_SECRET,
     );
+
+    console.log("Login email:", user.email);
 
     ok(
       res.cookie("access_token", token, {

@@ -1,4 +1,7 @@
-<header class="header">
+<header
+  class="header"
+  [style]="{ position: relative ? 'relative' : 'absolute' }"
+>
   @if (left) {
     <nav class="left">
       @for (i of left; track $index) {

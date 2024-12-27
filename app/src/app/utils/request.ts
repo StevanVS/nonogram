@@ -9,10 +9,14 @@ export function sendRequest<T>(
   body?: any,
 ): Promise<ServerResponse<T>> {
   return firstValueFrom(
-    http.request<ServerResponse<T>>(method, url, { body: body }).pipe(
-      catchError((error: Response) => {
-        throw `Network Error: ${error.statusText} (${error.status})`;
-      }),
-    ),
+    http
+      .request<
+        ServerResponse<T>
+      >(method, url, { body: body, withCredentials: true })
+      .pipe(
+        catchError((error: Response) => {
+          throw `Network Error: ${error.statusText} (${error.status})`;
+        }),
+      ),
   );
 }

@@ -10,4 +10,5 @@ import { Component, Input } from '@angular/core';
 export class NavbarComponent {
   @Input() left: { path: string; icon: string }[] | null = [];
   @Input() right: { path: string; icon: string }[] | null = [];
+  @Input() relative: boolean = false;
 }
