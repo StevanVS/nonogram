@@ -71,6 +71,8 @@ export const updateBoard: RequestHandler = async (req, res) => {
       rowNumbers: getRowNumbers(board),
     };
 
+    delete board._id
+
     const result = await db
       .collection<Board>("boards")
       .findOneAndUpdate(query, { $set: board }, { returnDocument: "after" });

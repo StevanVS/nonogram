@@ -15,7 +15,7 @@ export function sendRequest<T>(
       >(method, url, { body: body, withCredentials: true })
       .pipe(
         catchError((error: Response) => {
-          throw `Network Error: ${error.statusText} (${error.status})`;
+          throw error;
         }),
       ),
   );

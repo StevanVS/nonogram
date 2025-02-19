@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post(
   "/register",
-  body("name", "Name can't be empty").notEmpty(),
+  body("username", "Name can't be empty").notEmpty(),
   body("email", "Incorrect email").isEmail(),
   body("password", "Password must be greater than 5 digits")
     .isString()

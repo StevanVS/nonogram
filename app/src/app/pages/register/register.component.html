@@ -1,0 +1,26 @@
+<app-navbar [relative]="true" [left]="[{ path: '/', icon: 'fa-home' }]" />
+
+<h2 class="title">Register</h2>
+
+<form (submit)="onSubmit()" class="login-form" [formGroup]="form">
+  <div class="form-field block">
+    <label for="username"> Username </label>
+    <input id="username" type="text" formControlName="username" />
+  </div>
+
+  <div class="form-field block">
+    <label for="email"> Email </label>
+    <input id="email" type="text" formControlName="email" />
+  </div>
+
+  <!-- <div [hidden]="!form.get('email')?.errors?.['email']">email:</div> -->
+
+  <div class="form-field block">
+    <label for="password"> Password </label>
+    <input id="password" type="password" formControlName="password" />
+  </div>
+
+  <button class="form-btn" type="submit" [disabled]="!form.valid">
+    Register
+  </button>
+</form>

@@ -4,7 +4,7 @@ import { notFound, ok, serverError } from "../../utils/request";
 
 export const getLevels: RequestHandler = async (req, res) => {
   const completedLevels: string[] = req.body.completedLevels || [];
-  console.log(req.cookies);
+  // console.log(req.cookies);
   try {
     const boards = await db
       .collection("boards")

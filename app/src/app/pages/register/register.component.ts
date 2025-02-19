@@ -1,28 +1,29 @@
 import { Component, inject } from '@angular/core';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
   imports: [NavbarComponent, ReactiveFormsModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.css',
 })
-export class LoginComponent {
-  loginForm: FormGroup;
+export class RegisterComponent {
+  form: FormGroup;
 
   formBuilder = inject(FormBuilder);
   authService = inject(AuthService);
 
   constructor() {
-    this.loginForm = this.formBuilder.group({
+    this.form = this.formBuilder.group({
+      username: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: [
         '',
@@ -36,16 +37,17 @@ export class LoginComponent {
   }
 
   async onSubmit() {
-    if (!this.loginForm.valid) {
-      console.log('loginForm not valid');
+    if (!this.form.valid) {
+      console.log('form invalid');
       return;
     }
-    const { email, password } = this.loginForm.value;
+    const { username, email, password } = this.form.value;
+
     try {
-      const response = await this.authService.login(email, password);
-      console.log('res', response);
+      const res = await this.authService.register(username, email, password);
+      console.log({ res });
     } catch (error) {
-      console.log('err', error);
+      console.log({ error });
     }
   }
 }

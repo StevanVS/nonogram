@@ -12,7 +12,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../../config";
 
 export const register: RequestHandler = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   const emailExists = await db.collection<User>("users").findOne({ email });
   if (emailExists) {
@@ -24,7 +24,7 @@ export const register: RequestHandler = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const result = await db.collection<User>("users").insertOne({
-      name,
+      username,
       email,
       password: hashedPassword,
       role: "user",
