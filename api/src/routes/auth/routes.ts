@@ -1,5 +1,5 @@
 import express from "express";
-import { login, logout, register } from "./controllers";
+import { login, logout, register, userInfo } from "./controllers";
 import { body } from "express-validator";
 import { validate } from "../../utils/middlewares";
 const router = express.Router();
@@ -12,11 +12,13 @@ router.post(
     .isString()
     .isLength({ min: 5 }),
   validate,
-  register,
+  register
 );
 
 router.post("/login", login);
 
 router.post("/logout", logout);
+
+router.get("/userinfo", userInfo);
 
 module.exports = router;

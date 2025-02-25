@@ -20,6 +20,13 @@
     <input id="password" type="password" formControlName="password" />
   </div>
 
+  <div style="text-align: end">
+    Have an account?
+    <a style="color: var(--accent-color); text-decoration: none" href="/login"
+      >Login</a
+    >
+  </div>
+
   <button class="form-btn" type="submit" [disabled]="!form.valid">
     Register
   </button>

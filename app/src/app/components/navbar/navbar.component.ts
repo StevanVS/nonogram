@@ -1,5 +1,12 @@
 import { Component, Input } from '@angular/core';
 
+type navbarIcon = {
+  path: string;
+  icon: string;
+  labelRight?: string;
+  labelLeft?: string;
+};
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -8,7 +15,7 @@ import { Component, Input } from '@angular/core';
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
-  @Input() left: { path: string; icon: string }[] | null = [];
-  @Input() right: { path: string; icon: string }[] | null = [];
+  @Input() left: navbarIcon[] | null = [];
+  @Input() right: navbarIcon[] | null = [];
   @Input() relative: boolean = false;
 }

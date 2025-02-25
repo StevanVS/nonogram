@@ -14,6 +14,7 @@
   --background-color: #132727;
   --primary-color: #ffebcd;
   --secondary-color: #1a5656;
+  --accent-color: #47dcdc;
   --danger-color: darkred;
 
   --border-radius: 0.4rem;
@@ -66,6 +67,11 @@ button.secondary {
   color: var(--text-color);
 }
 
+button.accent {
+  background-color: var(--accent-color);
+  color: var(--background-color);
+}
+
 button.danger {
   background-color: var(--danger-color);
   color: var(--text-color);
@@ -73,15 +79,7 @@ button.danger {
 
 button:disabled {
   cursor: default;
-  filter: none;
-}
-
-button:disabled.primary {
-  background: color-mix(in srgb, var(--primary-color) 50%, black);
-}
-
-button:disabled.secondary {
-  background: color-mix(in srgb, var(--secondary-color) 50%, black);
+  filter: brightness(0.8);
 }
 
 .page-center {

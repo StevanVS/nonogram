@@ -7,6 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ export class LoginComponent {
 
   formBuilder = inject(FormBuilder);
   authService = inject(AuthService);
+  router = inject(Router);
 
   constructor() {
     this.loginForm = this.formBuilder.group({
@@ -35,17 +37,21 @@ export class LoginComponent {
     });
   }
 
-  async onSubmit() {
+  onSubmit() {
     if (!this.loginForm.valid) {
       console.log('loginForm not valid');
       return;
     }
     const { email, password } = this.loginForm.value;
-    try {
-      const response = await this.authService.login(email, password);
-      console.log('res', response);
-    } catch (error) {
-      console.log('err', error);
-    }
+
+    this.authService.login(email, password).subscribe({
+      next: (res) => {
+        console.log({ res });
+        this.router.navigateByUrl('/');
+      },
+      error: (err) => {
+        console.log({ err });
+      },
+    });
   }
 }

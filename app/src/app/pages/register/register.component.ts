@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -20,6 +21,7 @@ export class RegisterComponent {
 
   formBuilder = inject(FormBuilder);
   authService = inject(AuthService);
+  router = inject(Router);
 
   constructor() {
     this.form = this.formBuilder.group({
@@ -36,18 +38,22 @@ export class RegisterComponent {
     });
   }
 
-  async onSubmit() {
+  onSubmit() {
     if (!this.form.valid) {
       console.log('form invalid');
       return;
     }
+
     const { username, email, password } = this.form.value;
 
-    try {
-      const res = await this.authService.register(username, email, password);
-      console.log({ res });
-    } catch (error) {
-      console.log({ error });
-    }
+    this.authService.signup(username, email, password).subscribe({
+      next: (res) => {
+        console.log({ res });
+        this.router.navigateByUrl('/');
+      },
+      error: (err) => {
+        console.log({ err });
+      },
+    });
   }
 }

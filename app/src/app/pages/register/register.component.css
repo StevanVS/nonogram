@@ -16,7 +16,3 @@
   display: block;
   margin: 2rem auto;
 }
-
-.form-btn:disabled {
-  filter: brightness(0.7);
-}

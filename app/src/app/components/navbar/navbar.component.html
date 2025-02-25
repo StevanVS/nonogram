@@ -3,20 +3,28 @@
   [style]="{ position: relative ? 'relative' : 'absolute' }"
 >
   @if (left) {
-    <nav class="left">
-      @for (i of left; track $index) {
-        <a [href]="i.path"><i class="{{ 'fa ' + i.icon }}"></i></a>
-      }
-    </nav>
+  <nav class="left">
+    @for (i of left; track $index) {
+    <a [href]="i.path">
+      <span class="label">{{ i.labelLeft }}</span>
+      <i class="{{ 'fa ' + i.icon }}"></i>
+      <span class="label">{{ i.labelRight }}</span>
+    </a>
+    }
+  </nav>
   }
 
   <div class="middle"></div>
 
   @if (right) {
-    <nav class="right">
-      @for (i of right; track $index) {
-        <a [href]="i.path"><i class="{{ 'fa ' + i.icon }}"></i></a>
-      }
-    </nav>
+  <nav class="right">
+    @for (i of right; track $index) {
+    <a [href]="i.path">
+      <span class="label">{{ i.labelLeft }}</span>
+      <i class="{{ 'fa ' + i.icon }}"></i>
+      <span class="label">{{ i.labelRight }}</span>
+    </a>
+    }
+  </nav>
   }
 </header>

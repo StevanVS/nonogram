@@ -1,4 +1,24 @@
-<app-navbar [right]="[{ path: '/login', icon: 'fa-user' }]" />
+@if (authService.authState$ | async) {
+<app-navbar
+  [right]="[
+    {
+      path: '/profile',
+      icon: 'fa-user',
+      labelLeft: (authService.user$ | async)?.username
+    }
+  ]"
+/>
+} @else {
+<app-navbar
+  [right]="[
+    {
+      path: '/login',
+      icon: 'fa-right-to-bracket'
+    }
+  ]"
+/>
+}
+
 <div class="page-center">
   <div class="logo">
     <div class="name">NONOGRAM</div>

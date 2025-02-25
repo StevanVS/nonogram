@@ -12,6 +12,15 @@
     <label for="password"> Password </label>
     <input id="password" type="password" formControlName="password" />
   </div>
-
-  <button class="form-btn" type="submit">Login</button>
+  <div style="text-align: end">
+    Don't have an account?
+    <a
+      style="color: var(--accent-color); text-decoration: none"
+      href="/register"
+      >Register</a
+    >
+  </div>
+  <button class="form-btn" type="submit" [disabled]="!loginForm.valid">
+    Login
+  </button>
 </form>
