@@ -21,4 +21,4 @@ router.post("/logout", logout);
 
 router.get("/userinfo", userInfo);
 
-module.exports = router;
+export default router

@@ -8,4 +8,5 @@ router.post('/', newBoard)
 router.put('/:id', updateBoard)
 router.delete('/:id', deleteBoard)
 
-module.exports = router
+export default router
+

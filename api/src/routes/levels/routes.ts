@@ -4,5 +4,4 @@ const router = express.Router();
 
 router.post("/", getLevels);
 
-module.exports = router
-
+export default router;
