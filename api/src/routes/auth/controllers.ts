@@ -42,7 +42,8 @@ export const register: RequestHandler = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id.toHexString(), role: user.role },
-      JWT_SECRET
+      JWT_SECRET,
+      { expiresIn: "1h" }
     );
 
     console.log("Register email:", user.email);
@@ -80,7 +81,8 @@ export const login: RequestHandler = async (req, res) => {
         id: user._id.toHexString(),
         role: user.role,
       },
-      JWT_SECRET
+      JWT_SECRET,
+      { expiresIn: "1h" }
     );
 
     console.log("Login email:", user.email);
