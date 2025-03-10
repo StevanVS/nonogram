@@ -15,12 +15,12 @@ export class AuthService {
   readonly user$ = new BehaviorSubject<User | null>(null);
   readonly authState$ = new BehaviorSubject<boolean>(false);
 
-  private handleUserAuthAndInfo = pipe(
+  private handleAfterAuth = pipe(
     tap((res: ServerResponse<any>) => {
       this.authState$.next(res.ok);
     }),
     mergeMap((res) => {
-      if (res.ok) return this.getUserInfo();
+      if (res.ok) return this.getCurrentUser();
       else return of(null);
     }),
     tap((user) => {
@@ -30,6 +30,7 @@ export class AuthService {
 
   constructor() {
     this.restoreAuthState();
+   
   }
 
   login(email: string, password: string) {
@@ -38,7 +39,7 @@ export class AuthService {
         email,
         password,
       })
-      .pipe(this.handleUserAuthAndInfo);
+      .pipe(this.handleAfterAuth);
   }
 
   signup(username: string, email: string, password: string) {
@@ -48,7 +49,7 @@ export class AuthService {
         email,
         password,
       })
-      .pipe(this.handleUserAuthAndInfo);
+      .pipe(this.handleAfterAuth);
   }
 
   logout() {
@@ -62,9 +63,13 @@ export class AuthService {
       );
   }
 
-  getUserInfo() {
+  checkToken() {
+    return this.http.get<ServerResponse<any>>(`${this.apiUrl}/auth/checktoken`);
+  }
+
+  getCurrentUser() {
     return this.http
-      .get<ServerResponse<User>>(`${this.apiUrl}/auth/userinfo`)
+      .get<ServerResponse<User>>(`${this.apiUrl}/users/currentuser`)
       .pipe(
         map((res) => {
           return res.ok ? res.datos : null;
@@ -73,16 +78,22 @@ export class AuthService {
   }
 
   restoreAuthState() {
-    this.getUserInfo().subscribe({
-      next: (user) => {
-        this.user$.next(user);
-        this.authState$.next(user ? true : false);
-      },
-      error: () => {
-        console.log('error');
-        this.user$.next(null);
-        this.authState$.next(false);
-      },
-    });
+    this.checkToken()
+      .pipe(
+        mergeMap((res) => {
+          return res.ok ? this.getCurrentUser() : of(null);
+        })
+      )
+      .subscribe({
+        next: (user) => {
+          this.user$.next(user);
+          this.authState$.next(user ? true : false);
+        },
+        error: () => {
+          console.log('Error restoring auth state');
+          this.user$.next(null);
+          this.authState$.next(false);
+        },
+      });
   }
 }

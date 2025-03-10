@@ -1,5 +1,5 @@
 import express from "express";
-import { login, logout, register, userInfo } from "./controllers";
+import { checkToken, login, logout, register } from "./controllers";
 import { body } from "express-validator";
 import { validate } from "../../utils/middlewares";
 const router = express.Router();
@@ -19,6 +19,6 @@ router.post("/login", login);
 
 router.post("/logout", logout);
 
-router.get("/userinfo", userInfo);
+router.get("/checktoken", checkToken);
 
-export default router
+export default router;

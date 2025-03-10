@@ -33,6 +33,7 @@ export default class App {
       })
     );
     this.express.use(cookieParser());
+    this.express.disable("x-powered-by");
   }
 
   private mountRoutes() {

@@ -8,10 +8,10 @@ import users from "./users/routes";
 
 const routes = express.Router();
 
-routes.use(auth);
-routes.use(board);
-routes.use(game);
-routes.use(levels);
-routes.use(users);
+routes.use("/auth", auth);
+routes.use("/board", board);
+routes.use("/game", game);
+routes.use("/levels", levels);
+routes.use("/users", users);
 
 export default routes;

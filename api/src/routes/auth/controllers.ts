@@ -10,7 +10,7 @@ import { User } from "../../interfaces/user";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../../config";
-import { ObjectId } from "mongodb";
+import { generateToken } from "./middlewares";
 
 export const register: RequestHandler = async (req, res) => {
   const { username, email, password } = req.body;
@@ -40,11 +40,10 @@ export const register: RequestHandler = async (req, res) => {
       return;
     }
 
-    const token = jwt.sign(
-      { id: user._id.toHexString(), role: user.role },
-      JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    const token = generateToken({
+      id: user._id.toHexString(),
+      role: user.role,
+    });
 
     console.log("Register email:", user.email);
 
@@ -76,14 +75,10 @@ export const login: RequestHandler = async (req, res) => {
       return;
     }
 
-    const token = jwt.sign(
-      {
-        id: user._id.toHexString(),
-        role: user.role,
-      },
-      JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    const token = generateToken({
+      id: user._id.toHexString(),
+      role: user.role,
+    });
 
     console.log("Login email:", user.email);
 
@@ -103,36 +98,18 @@ export const logout: RequestHandler = async (req, res) => {
   ok(res.clearCookie("access_token"), "Successfully Log Out");
 };
 
-export const userInfo: RequestHandler = async (req, res) => {
+export const checkToken: RequestHandler = async (req, res) => {
   const token = req.cookies.access_token;
 
   if (!token) {
-    res.send({ ok: false });
+    res.send({ ok: false, message: "Token not found" });
     return;
   }
 
   try {
-    const userToken = jwt.verify(token, JWT_SECRET) as {
-      id: string;
-      role: string;
-    };
-
-    const id = userToken.id;
-
-    const user = await db
-      .collection<User>("users")
-      .findOne({ _id: new ObjectId(id) });
-
-    if (!user) {
-      serverError(res, "User could not be created");
-      return;
-    }
-
-    ok(res, {
-      username: user.username,
-      email: user.email,
-    });
+    jwt.verify(token, JWT_SECRET);
+    ok(res);
   } catch (error) {
-    serverError(res, error);
+    res.clearCookie("access_token").send({ ok: false });
   }
 };

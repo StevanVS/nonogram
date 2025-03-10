@@ -1,8 +1,8 @@
 import express from "express";
-import { getUsers } from "./controllers";
+import { currentUser } from "./controllers";
 import { isAuth } from "../auth/middlewares";
 const router = express.Router();
 
-router.get("/", isAuth, getUsers);
+router.get("/currentuser", isAuth, currentUser);
 
 export default router;
