@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [NavbarComponent],
+  imports: [],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })

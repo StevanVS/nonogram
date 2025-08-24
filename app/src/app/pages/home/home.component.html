@@ -1,36 +1,26 @@
-@if (authService.authState$ | async) {
-<app-navbar
-  [right]="[
-    {
-      path: '/profile',
-      icon: 'fa-user',
-      labelLeft: (authService.user$ | async)?.username
-    }
-  ]"
-/>
-} @else {
-<app-navbar
-  [right]="[
-    {
-      path: '/login',
-      icon: 'fa-right-to-bracket'
-    }
-  ]"
-/>
-}
-
-<div class="page-center">
-  <div class="logo">
-    <div class="name">NONOGRAM</div>
-    <i class="square fa fa-square"></i>
-  </div>
-  <div class="btns">
-    <button class="home-btn primary" [routerLink]="['/levels']">Play</button>
-    <button class="home-btn secondary" [routerLink]="['/edit-levels']">
-      Edit Levels
-    </button>
-    <button class="home-btn secondary" [routerLink]="['/settings']">
-      Settings
-    </button>
-  </div>
+<div class="pb-20">
+  <h1 class="text-secondary mb-4 text-center text-5xl font-black sm:text-6xl">
+    NONOGRAM
+  </h1>
+  <div class="bg-tertiary m-auto size-20 rounded-md"></div>
+</div>
+<div class="flex flex-col items-center gap-3">
+  <button
+    class="hover:bg-tertiary hover:text-primary-dark bg-accent text-primary-dark w-60 cursor-pointer rounded-md px-4 py-2 text-xl font-extrabold"
+    routerLink="/levels"
+  >
+    PLAY
+  </button>
+  <button
+    class="bg-primary-light text-secondary hover:bg-tertiary hover:text-primary-dark w-60 cursor-pointer rounded-md px-4 py-2 text-xl font-extrabold"
+    routerLink="/board-editor"
+  >
+    BOARD EDITOR
+  </button>
+  <button
+    class="bg-primary-light text-secondary hover:bg-tertiary hover:text-primary-dark w-60 cursor-pointer rounded-md px-4 py-2 text-xl font-extrabold"
+    routerLink="/settings"
+  >
+    SETTINGS
+  </button>
 </div>

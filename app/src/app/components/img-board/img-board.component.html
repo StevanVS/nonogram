@@ -1,1 +1,4 @@
-<img class="image" [style.aspectRatio]="width / height" [src]="getImageSrc()" />
+<div
+  class="aspect-square bg-no-repeat bg-cover [image-rendering:pixelated] rounded-md"
+  [style.backgroundImage]="`url(${getImageSrc()})`"
+></div>

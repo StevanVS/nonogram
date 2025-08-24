@@ -1,109 +1,92 @@
-import { Component, EventEmitter, Output, output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  input,
+  Input,
+  model,
+  output,
+  Output,
+} from '@angular/core';
 import { Board, voidBoard } from '../../interfaces/board.interface';
+import { ImgBoardComponent } from '../img-board/img-board.component';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-image-reader',
   standalone: true,
-  imports: [],
+  imports: [ImgBoardComponent, NgClass],
   templateUrl: './image-reader.component.html',
   styleUrl: './image-reader.component.css',
 })
 export class ImageReaderComponent {
-  @Output() onImageRead: EventEmitter<Board> = new EventEmitter();
+  tileType = input.required<'coloredTiles' | 'filledTiles'>();
+  // onImageRead = output<Board>();
 
-  board: Board = voidBoard();
+  board = model.required<Board>();
+
+  isDrag: boolean = false;
 
   async onInputFiles(event: Event | DragEvent) {
     event.preventDefault();
 
-    let files: File[];
-    if (event instanceof DragEvent && event.dataTransfer?.items) {
-      files =
-        Array.from(event.dataTransfer.items)
-          .map((i) => i.getAsFile())
-          .filter((f) => f != null) || [];
-    } else if (event instanceof DragEvent && event.dataTransfer?.files) {
-      files = Array.from(event.dataTransfer.files) || [];
+    let file: File | null = null;
+
+    if (event instanceof DragEvent) {
+      file =
+        event.dataTransfer?.items?.[0]?.getAsFile() ??
+        event.dataTransfer?.files?.[0] ??
+        null;
     } else {
-      files = Array.from((event.target as HTMLInputElement).files || []);
+      file = (event.target as HTMLInputElement)?.files?.[0] ?? null;
     }
 
-    const filteredFiles = [...files].filter(
-      (f) => f.name.match('_fill.') || f.name.match('_color.')
-    );
-
-    const result = await this.#processFiles(filteredFiles);
-    if (result[0] === true) {
-      // resolve();
-      this.onImageRead.emit(this.board);
-    } else if (result[0] === false) {
-      // reject(result[1]);
+    if (!file) {
+      alert('No se seleccionó ningún archivo');
+      return;
     }
+
+    console.log('Archivo recibido:', file);
+
+    // Procesar imagen
+    const imgSrc = await this.#readAsDataURL(file);
+    const img = await this.#loadImage(imgSrc);
+
+    const ctx = document.createElement('canvas').getContext('2d');
+    if (!ctx) {
+      alert('Error al procesar la imagen');
+      return;
+    }
+    ctx.drawImage(img, 0, 0);
+    const pixels = ctx.getImageData(0, 0, img.width, img.height).data;
+
+    this.board().width = img.width;
+    this.board().height = img.height;
+
+    if (this.tileType() === 'filledTiles') {
+      this.board().filledTiles = [];
+    } else {
+      this.board().coloredTiles = [];
+    }
+
+    for (let i = 0; i < pixels.length; i += 4) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+
+      const hex = this.#rgbToHex(r, g, b);
+
+      if (this.tileType() === 'filledTiles') {
+        if (hex == '#000000') this.board().filledTiles.push(1);
+        else this.board().filledTiles.push(0);
+      } else {
+        this.board().coloredTiles.push(hex);
+      }
+    }
+
+    // this.onImageRead.emit(this.board);
   }
 
-  async #processFiles(files: File[]): Promise<any> {
-    let result: any = [null];
-
-    for await (const file of files) {
-      const fileName = file.name;
-
-      const imgSrc = await this.#readAsDataURL(file);
-      const img = await this.#loadImage(imgSrc);
-
-      const ctx = document.createElement('canvas').getContext('2d');
-      if (!ctx) return [null];
-      ctx.drawImage(img, 0, 0);
-
-      const pixels = ctx.getImageData(0, 0, img.width, img.height).data;
-
-      if (this.board.width == 0 || this.board.height == 0) {
-        this.board.width = img.width;
-        this.board.height = img.height;
-      } else if (this.board.width != img.width || this.board.height != img.height) {
-        result = [
-          false,
-          `El ancho o alto de las imagenes no cuadran.
-            - Tamaño de la primera imagen: ${this.board.width} x ${this.board.height}.
-            - Tamaño de la segunda imagen: ${img.width} x ${img.height}.`,
-        ];
-      }
-
-      this.board.name = fileName.split('_')[0]
-
-      if (fileName.match('_fill.')) {
-        this.board.filledTiles = [];
-      } else if (fileName.match('_color.')) {
-        this.board.coloredTiles = [];
-      }
-
-      for (let i = 0; i < pixels.length; i += 4) {
-        const r = pixels[i];
-        const g = pixels[i + 1];
-        const b = pixels[i + 2];
-
-        const hex = this.rgbToHex(r, g, b);
-
-        if (fileName.match('_fill.')) {
-          if (hex == '#000000') this.board.filledTiles?.push(1);
-          else this.board.filledTiles?.push(0);
-        } else if (fileName.match('_color.')) {
-          this.board.coloredTiles?.push(hex);
-        }
-      }
-      if (
-        this.board.filledTiles?.length || 0 > 0 &&
-        this.board.coloredTiles?.length || 0 > 0 &&
-        this.board.width || 0 > 0 &&
-        this.board.height || 0 > 0
-      ) {
-        result = [true];
-      }
-    }
-
-    return result;
-  }
-
-  rgbToHex(r: number, g: number, b: number) {
+  #rgbToHex(r: number, g: number, b: number) {
     const twoDigits = (string: string) =>
       string.length === 1 ? '0' + string : string;
 
@@ -136,5 +119,12 @@ export class ImageReaderComponent {
       img.onload = () => resolve(img);
       img.src = src.toString();
     });
+  }
+
+  dragEnter() {
+    this.isDrag = true;
+  }
+  dragLeave() {
+    this.isDrag = false;
   }
 }

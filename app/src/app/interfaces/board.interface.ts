@@ -1,5 +1,5 @@
 export interface Board {
-  _id?: string;
+  id?: string;
   name: string;
   width: number;
   height: number;
@@ -11,9 +11,12 @@ export interface Board {
   columnNumbers: number[][];
   rowNumbers: number[][];
   level: number;
+  order: number;
+  subGrid: number;
 }
 
 export const voidBoard = (): Board => ({
+  id: undefined,
   name: '',
   width: 0,
   height: 0,
@@ -25,4 +28,6 @@ export const voidBoard = (): Board => ({
   columnNumbers: [],
   rowNumbers: [],
   level: 0,
+  order: 0,
+  subGrid: 0
 });

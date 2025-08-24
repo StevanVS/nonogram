@@ -1,0 +1,130 @@
+<h1 class="text-secondary mb-4 text-center text-5xl font-black sm:text-6xl">
+  BOARD EDITOR
+</h1>
+
+<button
+  (click)="onCreate()"
+  class="hover:bg-tertiary hover:text-primary-dark bg-accent text-primary-dark mb-4 w-30 cursor-pointer rounded-md px-4 py-2 text-xl font-extrabold"
+>
+  NEW
+</button>
+
+<dialog
+  #formDialog
+  class="bg-primary-dark text-secondary m-auto w-full rounded-md px-4 py-6 font-bold backdrop:bg-black/75 sm:w-100 md:w-150"
+>
+  <!-- <div
+  class="w-full md:w-100 m-auto bg-primary-dark p-4 rounded-md backdrop:bg-black/75 text-secondary font-bold"
+> -->
+  <div class="mb-2 flex justify-between">
+    <h2 class="text-3xl">
+      {{ board.id == null ? "NEW BOARD" : "EDIT BOARD" }}
+    </h2>
+    <button
+      (click)="formDialog.close()"
+      class="fill-secondary hover:fill-tertiary size-8 cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+        <path
+          d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z"
+        />
+      </svg>
+    </button>
+  </div>
+  <form
+    (submit)="onSubmit()"
+    [formGroup]="boardForm"
+    class="grid grid-cols-2 gap-4"
+  >
+    <div class="col-span-2">
+      <label class="block" for="name">NAME</label>
+      <input
+        class="input-text"
+        id="name"
+        formControlName="name"
+        type="text"
+        placeholder="Board Name"
+      />
+    </div>
+
+    <app-image-reader tileType="coloredTiles" [(board)]="coloredBoard" />
+    <app-image-reader tileType="filledTiles" [(board)]="filledBoard" />
+
+    <div>
+      <label class="block" for="order">ORDER</label>
+      <input
+        class="input-text"
+        id="order"
+        appDigitsOnly
+        formControlName="order"
+        type="text"
+        placeholder="0"
+      />
+    </div>
+
+    <div>
+      <label class="block" for="subGrid">SUB-GRID</label>
+      <input
+        class="input-text"
+        id="subGrid"
+        appDigitsOnly
+        formControlName="subGrid"
+        type="text"
+        placeholder="0"
+      />
+    </div>
+
+    <button type="submit" class="btn btn-accent col-span-2">
+      {{ board.id == null ? "CREATE" : "UPDATE" }}
+    </button>
+  </form>
+  <!-- </div> -->
+</dialog>
+
+<div
+  class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+>
+  @for (b of boardList; track $index) {
+    <div
+      class="bg-primary text-secondary flex flex-col gap-2 rounded-md p-4 text-xl font-black"
+    >
+      <div class="flex items-center justify-between">
+        <div>{{ b.level }}. {{ b.name }}</div>
+        <div class="flex gap-4">
+          <button
+            (click)="onEdit(b)"
+            class="fill-secondary hover:fill-tertiary size-6 cursor-pointer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+              <path
+                d="M416.9 85.2L372 130.1L509.9 268L554.8 223.1C568.4 209.6 576 191.2 576 172C576 152.8 568.4 134.4 554.8 120.9L519.1 85.2C505.6 71.6 487.2 64 468 64C448.8 64 430.4 71.6 416.9 85.2zM338.1 164L122.9 379.1C112.2 389.8 104.4 403.2 100.3 417.8L64.9 545.6C62.6 553.9 64.9 562.9 71.1 569C77.3 575.1 86.2 577.5 94.5 575.2L222.3 539.7C236.9 535.6 250.2 527.9 261 517.1L476 301.9L338.1 164z"
+              />
+            </svg>
+          </button>
+          <button
+            (click)="onDelete(b)"
+            class="fill-secondary hover:fill-tertiary size-6 cursor-pointer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+              <path
+                d="M232.7 69.9L224 96L128 96C110.3 96 96 110.3 96 128C96 145.7 110.3 160 128 160L512 160C529.7 160 544 145.7 544 128C544 110.3 529.7 96 512 96L416 96L407.3 69.9C402.9 56.8 390.7 48 376.9 48L263.1 48C249.3 48 237.1 56.8 232.7 69.9zM512 208L128 208L149.1 531.1C150.7 556.4 171.7 576 197 576L443 576C468.3 576 489.3 556.4 490.9 531.1L512 208z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <app-img-board
+          [tiles]="b.coloredTiles"
+          [width]="b.width"
+          [height]="b.height"
+        />
+        <app-img-board
+          [tiles]="b.filledTiles"
+          [width]="b.width"
+          [height]="b.height"
+        />
+      </div>
+    </div>
+  }
+</div>

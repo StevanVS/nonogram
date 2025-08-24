@@ -77,12 +77,12 @@ export class EditLevelsComponent {
   }
 
   onDeleteBoard() {
-    if (this.board._id == null) return;
-    this.boardService.deleteBoard(this.board._id).subscribe({
+    if (this.board.id == null) return;
+    this.boardService.deleteBoard(this.board.id).subscribe({
       next: (res) => {
         if (res.ok) {
           this.boardList = this.boardList.filter(
-            (b) => b._id !== this.board._id
+            (b) => b.id !== this.board.id
           );
           this.list = true;
           this.edit = false;
@@ -99,7 +99,7 @@ export class EditLevelsComponent {
 
     Object.assign(this.board, this.boardForm.value);
 
-    if (this.board._id == null) {
+    if (this.board.id == null) {
       console.log(this.board);
       this.boardService.createBoard(this.board).subscribe({
         next: (res) => {
@@ -121,7 +121,7 @@ export class EditLevelsComponent {
           if (res.ok) {
             console.log('updated with exito');
             const index = this.boardList.findIndex(
-              (b) => b._id === this.board._id
+              (b) => b.id === this.board.id
             );
             this.boardList[index] = res.datos;
 

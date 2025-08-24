@@ -1,13 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: Archivo, Verdana, Geneva, Tahoma, sans-serif;
+
+  --color-primary-dark: hsl(175 50% 10%);
+  --color-primary: hsl(175 50% 15%);
+  --color-primary-light: hsl(175 50% 20%);
+
+  --color-secondary-dark: hsl(175 50% 80%);
+  --color-secondary: hsl(175 50% 90%);
+  --color-secondary-light: hsl(175 50% 95%);
+
+  --color-tertiary: hsl(235 80% 80%);
+  --color-accent: hsl(115 80% 80%);
+}
+
+@layer theme {
+  body.light {
+    --color-primary-dark: hsl(175 50% 85%);
+    --color-primary: hsl(175 50% 90%);
+    --color-primary-light: hsl(175 50% 95%);
+
+    --color-secondary-dark: hsl(175 50% 10%);
+    --color-secondary: hsl(175 50% 15%);
+    --color-secondary-light: hsl(175 50% 20%);
+
+    --color-tertiary: hsl(235 80% 20%);
+    --color-accent: hsl(115 80% 20%);
+  }
+}
+
+@font-face {
+  font-family: "Archivo";
+  src: url("assets/fonts/Archivo-VariableFont_wdth,wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  font-variation-settings: "wdth" 100;
+}
+
 *,
 ::before,
 ::after {
-  padding: 0;
-  margin: 0;
+  /* padding: 0;
+  margin: 0; */
   box-sizing: border-box;
 }
 
+/* .title {
+  @apply text-center text-5xl sm:text-6xl font-black text-secondary mb-4;
+}
+
+.btn {
+  @apply text-xl font-extrabold cursor-pointer 
+    bg-primary-light text-secondary hover:bg-tertiary hover:text-primary-dark 
+    py-2 px-4 rounded-md;
+}
+
+.btn-accent {
+  @apply bg-accent text-primary-dark;
+}
+
+.input-text {
+  @apply bg-primary text-secondary-light text-xl w-full rounded-md py-2 px-4 leading-tight 
+    focus:outline-none focus:bg-primary-light hover:bg-primary-light placeholder:text-secondary-dark placeholder:font-normal;
+} */
+
 :root {
-  --font-family: Verdana, Geneva, Tahoma, sans-serif;
   --font-size: 16px;
 
   --text-color: #fafaff;
@@ -22,17 +81,7 @@
   font-size: var(--font-size);
 }
 
-html {
-  height: 100vh;
-}
-
-body {
-  height: 100%;
-  color: var(--text-color);
-  background-color: var(--background-color);
-  font-family: var(--font-family);
-}
-
+/* 
 button {
   font-size: var(--font-size);
   font-family: var(--font-family);
@@ -107,9 +156,6 @@ button:disabled {
     border: none;
     border-radius: var(--border-radius);
   }
-  /*& input:focus {*/
-  /*  outline: 2px solid var(--primary-color);*/
-  /*}*/
 }
 .form-field.block {
   & label {
@@ -132,4 +178,4 @@ button:disabled {
     align-items: center;
     justify-content: end;
   }
-}
+} */

@@ -1,43 +1,281 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component } from '@angular/core';
 import { Level } from '../../interfaces/level.interface';
-import { LevelService } from '../../services/level.service';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { LocalStorageService } from '../../services/local-storage.service';
-import { getImageSrc } from '../../utils/getImageSrc';
-import { CircularProgressComponent } from '../../components/circular-progress/circular-progress.component';
+import { RouterLink } from '@angular/router';
+import { ImgBoardComponent } from '../../components/img-board/img-board.component';
 
 @Component({
   selector: 'app-levels',
   standalone: true,
-  imports: [NavbarComponent, RouterLink, CircularProgressComponent],
+  imports: [RouterLink, ImgBoardComponent, ImgBoardComponent],
   templateUrl: './levels.component.html',
   styleUrl: './levels.component.css',
 })
 export class LevelsComponent {
-  levels: Level[] = [];
+  levels: Level[] = [
+    {
+      coloredTiles: [
+        '#94daff',
+        '#94daff',
+        '#057c02',
+        '#94daff',
+        '#94daff',
+        '#94daff',
+        '#be67ff',
+        '#057c02',
+        '#057c02',
+        '#94daff',
+        '#94daff',
+        '#057c02',
+        '#057c02',
+        '#fff400',
+        '#94daff',
+        '#057c02',
+        '#ff0000',
+        '#057c02',
+        '#057c02',
+        '#057c02',
+        '#94daff',
+        '#94daff',
+        '#5a3a0a',
+        '#94daff',
+        '#94daff',
+      ],
+      width: 5,
+      height: 5,
+      level: 1,
+      complete: false,
+      progressPorcentage: 0,
+    },
+    {
+      coloredTiles: [
+        '#2cd3ad',
+        '#f27070',
+        '#2cd3ad',
+        '#f21414',
+        '#2cd3ad',
+        '#f27070',
+        '#ffffff',
+        '#f21414',
+        '#f21414',
+        '#f21414',
+        '#f21414',
+        '#f21414',
+        '#f21414',
+        '#f21414',
+        '#f21414',
+        '#2cd3ad',
+        '#f21414',
+        '#f21414',
+        '#ab0e0e',
+        '#2cd3ad',
+        '#2cd3ad',
+        '#2cd3ad',
+        '#ab0e0e',
+        '#2cd3ad',
+        '#2cd3ad',
+      ],
+      width: 5,
+      height: 5,
+      level: 2,
+      complete: false,
+      progressPorcentage: 45,
+    },
+    {
+      coloredTiles: [
+        '#01bbd4',
+        '#01bbd4',
+        '#785448',
+        '#785448',
+        '#785448',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#785448',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#785448',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#785448',
+        '#fdc006',
+        '#fedaaa',
+        '#000000',
+        '#fedaaa',
+        '#c48542',
+        '#785448',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#785448',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#c48542',
+        '#785448',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#785448',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#c48542',
+        '#785448',
+        '#01bbd4',
+        '#785448',
+        '#785448',
+        '#785448',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#c48542',
+        '#785448',
+        '#c48542',
+        '#785448',
+        '#785448',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#785448',
+        '#fedaaa',
+        '#c48542',
+        '#c48542',
+        '#785448',
+        '#785448',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#fedaaa',
+        '#785448',
+        '#c48542',
+        '#785448',
+        '#01bbd4',
+        '#785448',
+        '#c48542',
+        '#785448',
+        '#c48542',
+        '#785448',
+        '#c48542',
+        '#c48542',
+        '#785448',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+        '#785448',
+        '#fdc006',
+        '#785448',
+        '#fdc006',
+        '#785448',
+        '#785448',
+        '#01bbd4',
+        '#01bbd4',
+        '#01bbd4',
+      ],
+      width: 10,
+      height: 10,
+      level: 3,
+      complete: true,
+      progressPorcentage: 0,
+    },
+    {
+      coloredTiles: [
+        '#94daff',
+        '#94daff',
+        '#057c02',
+        '#94daff',
+        '#94daff',
+        '#94daff',
+        '#be67ff',
+        '#057c02',
+        '#057c02',
+        '#94daff',
+        '#94daff',
+        '#057c02',
+        '#057c02',
+        '#fff400',
+        '#94daff',
+        '#057c02',
+        '#ff0000',
+        '#057c02',
+        '#057c02',
+        '#057c02',
+        '#94daff',
+        '#94daff',
+        '#5a3a0a',
+        '#94daff',
+        '#94daff',
+      ],
+      width: 5,
+      height: 5,
+      level: 4,
+      complete: false,
+      progressPorcentage: 80,
+    },
+    {
+      coloredTiles: [
+        '#94daff',
+        '#94daff',
+        '#057c02',
+        '#94daff',
+        '#94daff',
+        '#94daff',
+        '#be67ff',
+        '#057c02',
+        '#057c02',
+        '#94daff',
+        '#94daff',
+        '#057c02',
+        '#057c02',
+        '#fff400',
+        '#94daff',
+        '#057c02',
+        '#ff0000',
+        '#057c02',
+        '#057c02',
+        '#057c02',
+        '#94daff',
+        '#94daff',
+        '#5a3a0a',
+        '#94daff',
+        '#94daff',
+      ],
+      width: 5,
+      height: 5,
+      level: 5,
+      complete: true,
+      progressPorcentage: 0,
+    },
+  ];
 
-  levelService = inject(LevelService);
-  localStorageService = inject(LocalStorageService);
+  // levelService = inject(LevelService);
+  // localStorageService = inject(LocalStorageService);
 
-  ngOnInit() {
-    const completedLevels =
-      this.localStorageService.getItem<string[]>('completedLevels');
-    const games = this.localStorageService.getItem<any[]>('games');
+  // ngOnInit() {
+  //   const completedLevels =
+  //     this.localStorageService.getItem<string[]>('completedLevels');
+  //   const games = this.localStorageService.getItem<any[]>('games');
 
-    this.levelService.getLevels(completedLevels || []).subscribe((res) => {
-      if (res.ok) {
-        this.levels = res.datos;
-        games?.forEach((g) => {
-          const level = this.levels.find((l) => l.level === g.level);
-          if (level == null) return;
-          level.progressPorcentage = g.progressPorcentage;
-        });
-      }
-    });
-  }
-
-  getImageSrc(tiles: string[], width: number, height: number) {
-    return getImageSrc(tiles, width, height);
-  }
+  //   this.levelService.getLevels(completedLevels || []).subscribe((res) => {
+  //     if (res.ok) {
+  //       this.levels = res.datos;
+  //       games?.forEach((g) => {
+  //         const level = this.levels.find((l) => l.level === g.level);
+  //         if (level == null) return;
+  //         level.progressPorcentage = g.progressPorcentage;
+  //       });
+  //     }
+  //   });
+  // }
 }

@@ -21,7 +21,7 @@ export class BoardService {
 
   updateBoard(board: Board) {
     return this.http.put<ServerResponse<Board>>(
-      `${this.api_url}/boards/${board._id}`, board
+      `${this.api_url}/boards/${board.id}`, board
     )
   }
 

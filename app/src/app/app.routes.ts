@@ -6,12 +6,14 @@ import { EditLevelsComponent } from './pages/edit-levels/edit-levels.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { BoardEditorComponent } from './pages/board-editor/board-editor.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'levels', component: LevelsComponent },
   { path: 'game/:level', component: GameComponent },
   { path: 'edit-levels', component: EditLevelsComponent },
+  { path: 'board-editor', component: BoardEditorComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
