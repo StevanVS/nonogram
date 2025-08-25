@@ -9,16 +9,14 @@
     {{ tileType() === "coloredTiles" ? "COLOR" : "FILLED" }}
   </div>
 
-  @if (board().coloredTiles.length > 0 || board().filledTiles.length > 0) {
-    <!-- <app-img-board
-      [tiles]="
-        tileType() === 'coloredTiles'
-          ? board().coloredTiles
-          : board().filledTiles
-      "
-      [width]="board().width"
-      [height]="board().height"
-    /> -->
+  @if (imgBoard) {
+    <app-img-board
+      [imgBoard]="{
+        tiles: imgBoard.tiles,
+        width: imgBoard.width,
+        height: imgBoard.height,
+      }"
+    />
   } @else {
     <div
       class="bg-secondary-dark hover:bg-tertiary flex aspect-square w-full cursor-pointer items-center justify-center rounded-md"
@@ -46,6 +44,8 @@
   />
 </label>
 
-@if (board().width > 0 && board().height > 0) {
-  <div class="mt-1 text-center">{{ board().width }} X {{ board().height }}</div>
+@if (imgBoard) {
+  <div class="mt-1 text-center">
+    {{ imgBoard.width }} X {{ imgBoard.height }}
+  </div>
 }

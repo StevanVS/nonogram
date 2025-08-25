@@ -37,9 +37,9 @@
     class="grid grid-cols-2 gap-4"
   >
     <div class="col-span-2">
-      <label class="block" for="name">NAME</label>
+      <label for="name">NAME</label>
       <input
-        class="input-text"
+        class="bg-primary text-secondary-light focus:bg-primary-light hover:bg-primary-light placeholder:text-secondary-dark w-full rounded-md px-4 py-2 text-xl leading-tight placeholder:font-normal focus:outline-none"
         id="name"
         formControlName="name"
         type="text"
@@ -51,9 +51,9 @@
     <app-image-reader tileType="filledTiles" [(board)]="filledBoard" />
 
     <div>
-      <label class="block" for="order">ORDER</label>
+      <label for="order">ORDER</label>
       <input
-        class="input-text"
+        class="bg-primary text-secondary-light focus:bg-primary-light hover:bg-primary-light placeholder:text-secondary-dark w-full rounded-md px-4 py-2 text-xl leading-tight placeholder:font-normal focus:outline-none"
         id="order"
         appDigitsOnly
         formControlName="order"
@@ -63,9 +63,9 @@
     </div>
 
     <div>
-      <label class="block" for="subGrid">SUB-GRID</label>
+      <label for="subGrid">SUB-GRID</label>
       <input
-        class="input-text"
+        class="bg-primary text-secondary-light focus:bg-primary-light hover:bg-primary-light placeholder:text-secondary-dark w-full rounded-md px-4 py-2 text-xl leading-tight placeholder:font-normal focus:outline-none"
         id="subGrid"
         appDigitsOnly
         formControlName="subGrid"
@@ -74,7 +74,10 @@
       />
     </div>
 
-    <button type="submit" class="btn btn-accent col-span-2">
+    <button
+      type="submit"
+      class="hover:bg-tertiary hover:text-primary-dark bg-accent text-primary-dark col-span-2 mt-4 cursor-pointer rounded-md px-4 py-2 text-xl font-extrabold"
+    >
       {{ board.id == null ? "CREATE" : "UPDATE" }}
     </button>
   </form>
@@ -86,10 +89,10 @@
 >
   @for (b of boardList; track $index) {
     <div
-      class="bg-primary text-secondary flex flex-col gap-2 rounded-md p-4 text-xl font-black"
+      class="bg-primary text-secondary grid grid-cols-2 gap-2 rounded-md p-4 text-xl"
     >
-      <div class="flex items-center justify-between">
-        <div>{{ b.level }}. {{ b.name }}</div>
+      <div class="col-span-2 flex items-center justify-between">
+        <div class="font-black">{{ b.level }}. {{ b.name }}</div>
         <div class="flex gap-4">
           <button
             (click)="onEdit(b)"
@@ -103,7 +106,7 @@
           </button>
           <button
             (click)="onDelete(b)"
-            class="fill-secondary hover:fill-tertiary size-6 cursor-pointer"
+            class="fill-secondary hover:fill-danger size-6 cursor-pointer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
               <path
@@ -113,17 +116,27 @@
           </button>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-4">
-        <app-img-board
-          [tiles]="b.coloredTiles"
-          [width]="b.width"
-          [height]="b.height"
-        />
-        <app-img-board
-          [tiles]="b.filledTiles"
-          [width]="b.width"
-          [height]="b.height"
-        />
+      <app-img-board
+        [imgBoard]="{
+          tiles: b.coloredTiles,
+          width: b.width,
+          height: b.height,
+        }"
+      />
+      <app-img-board
+        [imgBoard]="{
+          tiles: b.filledTiles,
+          width: b.width,
+          height: b.height,
+        }"
+      />
+      <div>
+        <span class="font-bold">Size: </span>
+        {{ b.width }} X {{ b.height }}
+      </div>
+      <div>
+        <span class="font-bold">Sub-Grid: </span>
+        {{ b.subGrid }}
       </div>
     </div>
   }

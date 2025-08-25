@@ -25,7 +25,7 @@ import { ServerResponse } from '../../interfaces/server-response.interface';
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [NavbarComponent, ImgBoardComponent, GameBoardComponent, RouterLink],
+  imports: [ImgBoardComponent, GameBoardComponent, RouterLink],
   templateUrl: './game.component.html',
   styleUrl: './game.component.css',
 })

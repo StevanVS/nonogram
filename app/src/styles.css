@@ -13,6 +13,8 @@
 
   --color-tertiary: hsl(235 80% 80%);
   --color-accent: hsl(115 80% 80%);
+
+  --color-danger: hsl(0, 50%, 50%);
 }
 
 @layer theme {
@@ -62,8 +64,7 @@
 }
 
 .input-text {
-  @apply bg-primary text-secondary-light text-xl w-full rounded-md py-2 px-4 leading-tight 
-    focus:outline-none focus:bg-primary-light hover:bg-primary-light placeholder:text-secondary-dark placeholder:font-normal;
+  @apply bg-primary text-secondary-light text-xl w-full rounded-md py-2 px-4 leading-tight focus:outline-none focus:bg-primary-light hover:bg-primary-light placeholder:text-secondary-dark placeholder:font-normal;
 } */
 
 :root {
@@ -74,7 +75,7 @@
   --primary-color: #ffebcd;
   --secondary-color: #1a5656;
   --accent-color: #47dcdc;
-  --danger-color: darkred;
+  --danger-color: hsl(0, 100%, 27%);
 
   --border-radius: 0.4rem;
 

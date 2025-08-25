@@ -32,9 +32,11 @@
         }
       } @else {
         <app-img-board
-          [tiles]="l.coloredTiles"
-          [width]="l.width"
-          [height]="l.height"
+          [imgBoard]="{
+            tiles: l.coloredTiles,
+            width: l.width,
+            height: l.height,
+          }"
         />
       }
     </a>
