@@ -1,25 +1,21 @@
 import express, { json } from "express";
 import cors from "cors";
-import { MongoClient } from "mongodb";
 import cookieParser from "cookie-parser";
-import routes from "./routes/routes";
+import boardRoutes from "./modules/boards/board.routes";
 
 export default class App {
   public express;
-  public mongoClient: MongoClient;
 
-  constructor(mongoClient: MongoClient) {
+  constructor() {
     this.express = express();
-    this.mongoClient = mongoClient;
   }
 
   async init(port: number | string) {
-    await this.testDatabase();
     this.mountMiddlewares();
     this.mountRoutes();
 
     this.express.listen(port, () => {
-      console.log(`Servidor corriendo en el puerto ${port}`);
+      console.log(`Server listening in port ${port}`);
     });
   }
 
@@ -37,15 +33,11 @@ export default class App {
   }
 
   private mountRoutes() {
-    this.express.use(routes);
-  }
-
-  private async testDatabase() {
-    try {
-      await this.mongoClient.connect();
-      console.log("Conexión a la base de datos exitosa.");
-    } catch (e) {
-      console.error(e);
-    }
+    this.express.use("/boards", boardRoutes);
+    // this.express.use("/auth", auth);
+    // this.express.use("/boards", board);
+    // this.express.use("/game", game);
+    // this.express.use("/levels", levels);
+    // this.express.use("/users", users);
   }
 }

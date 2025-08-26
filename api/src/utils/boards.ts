@@ -1,6 +1,5 @@
-import { Board } from "../interfaces/board";
 
-export function getColumnNumbers(board: Board): number[][] {
+export function getColumnNumbers(board: any): number[][] {
   const ftl: number[][] = [];
   for (let x = 0; x < board.width; x++) {
     const tiles: number[] = [];
@@ -12,7 +11,7 @@ export function getColumnNumbers(board: Board): number[][] {
   return ftl;
 }
 
-export function getRowNumbers(board: Board): number[][] {
+export function getRowNumbers(board: any): number[][] {
   const ftl: number[][] = [];
   for (let y = 0; y < board.height; y++) {
     const tiles = board.filledTiles.slice(
@@ -25,7 +24,7 @@ export function getRowNumbers(board: Board): number[][] {
   return ftl;
 }
 
-export function getFilledTilesNumber(board: Board): number {
+export function getFilledTilesNumber(board: any): number {
   return board.filledTiles.reduce(
     (count: number, num: number) => (num === 1 ? count + 1 : count),
     0,

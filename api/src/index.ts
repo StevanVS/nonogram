@@ -1,6 +1,10 @@
 import App from "./app";
-import { mongoClient } from "./config/mongodb";
+import { connectDB } from "./config/database";
 
 const port = process.env.API_PORT || 3050;
 
-new App(mongoClient).init(port);
+const server = new App();
+
+connectDB().then(() => {
+  server.init(port);
+});

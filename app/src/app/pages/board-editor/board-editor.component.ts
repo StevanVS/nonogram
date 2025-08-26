@@ -64,9 +64,13 @@ export class BoardEditorComponent {
   }
 
   ngOnInit() {
+    this.getBoardList();
+  }
+
+  getBoardList() {
     this.boardService.getList().subscribe((values) => {
       if (values.ok) {
-        this.boardList = values.datos;
+        this.boardList = values.datos.map((b) => ({ id: b._id, ...b }));
         console.log(this.boardList);
       }
     });
@@ -110,7 +114,8 @@ export class BoardEditorComponent {
     this.boardService.deleteBoard(board.id).subscribe({
       next: (res) => {
         if (res.ok) {
-          this.boardList = this.boardList.filter((b) => b.id !== this.board.id);
+          // this.boardList = this.boardList.filter((b) => b.id !== this.board.id);
+          this.getBoardList();
         }
       },
       error: (err) => {
@@ -138,7 +143,10 @@ export class BoardEditorComponent {
         next: (res) => {
           if (res.ok) {
             console.log('creado con exito');
-            this.boardList.push(res.datos);
+            this.getBoardList();
+            // const board: Board = { id: res.datos._id, ...res.datos };
+            // this.boardList.push(board);
+            
             this.closeFormDialog();
           }
         },
@@ -152,10 +160,14 @@ export class BoardEditorComponent {
         next: (res) => {
           if (res.ok) {
             console.log('updated with exito');
-            const index = this.boardList.findIndex(
-              (b) => b.id === this.board.id,
-            );
-            this.boardList[index] = res.datos;
+            this.getBoardList();
+
+            // const index = this.boardList.findIndex(
+            //   (b) => b.id === this.board.id,
+            // );
+
+            // const board: Board = { id: res.datos._id, ...res.datos };
+            // this.boardList[index] = board;
 
             this.closeFormDialog();
           }
