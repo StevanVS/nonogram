@@ -46,7 +46,7 @@ export class ImgBoardInputComponent implements ControlValueAccessor {
       return;
     }
 
-    console.log('Archivo recibido:', file);
+    // console.log('Archivo recibido:', file);
 
     // Procesar imagen
     const imgSrc = await this.#readAsDataURL(file);
@@ -77,7 +77,6 @@ export class ImgBoardInputComponent implements ControlValueAccessor {
       }
     }
 
-    // this.onImageRead.emit(this.board);
     this.setImage({
       tiles: tiles,
       width: img.width,

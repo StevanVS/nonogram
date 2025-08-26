@@ -9,7 +9,7 @@ import users from "./users/routes";
 const routes = express.Router();
 
 routes.use("/auth", auth);
-routes.use("/board", board);
+routes.use("/boards", board);
 routes.use("/game", game);
 routes.use("/levels", levels);
 routes.use("/users", users);

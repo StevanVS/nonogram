@@ -8,4 +8,6 @@ export interface Board {
   filledTilesNumber: number;
   columnNumbers: number[][];
   rowNumbers: number[][];
+  order: number;
+  subGrid: number;
 }

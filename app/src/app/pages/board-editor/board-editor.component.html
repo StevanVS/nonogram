@@ -13,9 +13,6 @@
   #formDialog
   class="bg-primary-dark text-secondary m-auto w-full rounded-md px-4 py-6 font-bold backdrop:bg-black/75 sm:w-100 md:w-150"
 >
-  <!-- <div
-  class="w-full md:w-100 m-auto bg-primary-dark p-4 rounded-md backdrop:bg-black/75 text-secondary font-bold"
-> -->
   <div class="mb-2 flex justify-between">
     <h2 class="text-3xl">
       {{ board.id == null ? "NEW BOARD" : "EDIT BOARD" }}
@@ -47,8 +44,12 @@
       />
     </div>
 
-    <app-image-reader tileType="coloredTiles" [(board)]="coloredBoard" />
-    <app-image-reader tileType="filledTiles" [(board)]="filledBoard" />
+    <app-img-board-input
+      tileType="coloredTiles"
+      formControlName="coloredBoard"
+    />
+
+    <app-img-board-input tileType="filledTiles" formControlName="filledBoard" />
 
     <div>
       <label for="order">ORDER</label>
@@ -57,7 +58,7 @@
         id="order"
         appDigitsOnly
         formControlName="order"
-        type="text"
+        type="number"
         placeholder="0"
       />
     </div>
@@ -69,7 +70,7 @@
         id="subGrid"
         appDigitsOnly
         formControlName="subGrid"
-        type="text"
+        type="number"
         placeholder="0"
       />
     </div>
@@ -81,9 +82,11 @@
       {{ board.id == null ? "CREATE" : "UPDATE" }}
     </button>
   </form>
-  <!-- </div> -->
 </dialog>
 
+@if (boardList.length === 0) {
+  <div class="text-secondary-dark mt-4 text-center">There are no boards</div>
+}
 <div
   class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
 >
@@ -92,7 +95,7 @@
       class="bg-primary text-secondary grid grid-cols-2 gap-2 rounded-md p-4 text-xl"
     >
       <div class="col-span-2 flex items-center justify-between">
-        <div class="font-black">{{ b.level }}. {{ b.name }}</div>
+        <div class="font-black">{{ b.order }}. {{ b.name }}</div>
         <div class="flex gap-4">
           <button
             (click)="onEdit(b)"

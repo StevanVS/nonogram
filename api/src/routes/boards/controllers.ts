@@ -13,8 +13,9 @@ export const getBoards: RequestHandler = async (req, res) => {
   try {
     const result = await db
       .collection<Board>("boards")
-      .find({}, { sort: { level: 1 } })
+      .find({}, { sort: { order: 1 } })
       .toArray();
+    
     ok(res, result);
   } catch (error) {
     serverError(res, error);

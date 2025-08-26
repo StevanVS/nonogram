@@ -1,6 +1,5 @@
 import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { Board, voidBoard } from '../../interfaces/board.interface';
-import { getImageSrc } from '../../utils/getImageSrc';
 import { ImgBoardComponent } from '../../components/img-board/img-board.component';
 import {
   FormBuilder,
@@ -8,16 +7,18 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { ImageReaderComponent } from '../../components/image-reader/image-reader.component';
 import { OnlyDigitsDirective } from '../../directives/only-digits.directive';
+import { ImgBoardInputComponent } from '../../components/img-board-input/img-board-input.component';
+import { BoardService } from '../../services/board.service';
+import { CustomValidators } from '../../directives/custom-validators.directive';
 
 @Component({
   selector: 'app-board-editor',
   imports: [
     ImgBoardComponent,
     ReactiveFormsModule,
-    ImageReaderComponent,
     OnlyDigitsDirective,
+    ImgBoardInputComponent,
   ],
   templateUrl: './board-editor.component.html',
   styleUrl: './board-editor.component.css',
@@ -26,247 +27,143 @@ export class BoardEditorComponent {
   @ViewChild('formDialog') formDialog!: ElementRef<HTMLDialogElement>;
 
   board: Board = voidBoard();
-  coloredBoard: Board = voidBoard();
-  filledBoard: Board = voidBoard();
 
-  boardList: Board[] = [
-    {
-      id: '1',
-      filledTiles: [
-        0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0,
-        0,
-      ],
-      coloredTiles: [
-        '#2cd3ad',
-        '#f27070',
-        '#2cd3ad',
-        '#f21414',
-        '#2cd3ad',
-        '#f27070',
-        '#ffffff',
-        '#f21414',
-        '#f21414',
-        '#f21414',
-        '#f21414',
-        '#f21414',
-        '#f21414',
-        '#f21414',
-        '#f21414',
-        '#2cd3ad',
-        '#f21414',
-        '#f21414',
-        '#ab0e0e',
-        '#2cd3ad',
-        '#2cd3ad',
-        '#2cd3ad',
-        '#ab0e0e',
-        '#2cd3ad',
-        '#2cd3ad',
-      ],
-      width: 5,
-      height: 5,
-      name: 'Heart',
-      innerColumn: 0,
-      innerRow: 0,
-      filledTilesNumber: 0,
-      columnNumbers: [],
-      rowNumbers: [],
-      level: 1,
-      order: 1,
-      subGrid: 0,
-    },
-    {
-      id: '2',
-      name: 'Bird',
-      width: 10,
-      height: 10,
-      filledTiles: [
-        0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1,
-        0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0,
-        1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0,
-        0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1,
-        1, 0, 0, 0,
-      ],
-      coloredTiles: [
-        '#01bbd4',
-        '#01bbd4',
-        '#785448',
-        '#785448',
-        '#785448',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#785448',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#785448',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#785448',
-        '#fdc006',
-        '#fedaaa',
-        '#000000',
-        '#fedaaa',
-        '#c48542',
-        '#785448',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#785448',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#c48542',
-        '#785448',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#785448',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#c48542',
-        '#785448',
-        '#01bbd4',
-        '#785448',
-        '#785448',
-        '#785448',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#c48542',
-        '#785448',
-        '#c48542',
-        '#785448',
-        '#785448',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#785448',
-        '#fedaaa',
-        '#c48542',
-        '#c48542',
-        '#785448',
-        '#785448',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#fedaaa',
-        '#785448',
-        '#c48542',
-        '#785448',
-        '#01bbd4',
-        '#785448',
-        '#c48542',
-        '#785448',
-        '#c48542',
-        '#785448',
-        '#c48542',
-        '#c48542',
-        '#785448',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-        '#785448',
-        '#fdc006',
-        '#785448',
-        '#fdc006',
-        '#785448',
-        '#785448',
-        '#01bbd4',
-        '#01bbd4',
-        '#01bbd4',
-      ],
-      innerColumn: 0,
-      innerRow: 0,
-      filledTilesNumber: 0,
-      columnNumbers: [],
-      rowNumbers: [],
-      level: 2,
-      order: 2,
-      subGrid: 0,
-    },
-  ];
+  boardList: Board[] = [];
 
-  private formBuilder: FormBuilder = inject(FormBuilder);
+  private formBuilder = inject(FormBuilder);
+  private boardService = inject(BoardService);
 
   boardForm: FormGroup;
 
   constructor() {
     this.boardForm = this.formBuilder.group(
       {
-        id: [this.board.id],
-        name: [this.board.name, [Validators.required]],
+        name: [
+          this.board.name,
+          [
+            Validators.required,
+            Validators.minLength(3),
+            Validators.maxLength(20),
+          ],
+        ],
+        coloredBoard: [null, [Validators.required]],
+        filledBoard: [null, [Validators.required]],
         order: [
           this.board.order,
-          [Validators.required, Validators.pattern(/^\d+$/)],
+          [Validators.required, Validators.pattern(/^\d+$/), Validators.min(0)],
         ],
-        subGrid: [this.board.subGrid, [Validators.pattern(/^\d+$/)]],
-        colored: this.formBuilder.group({
-          tiles: [this.board.coloredTiles, [Validators.required]],
-          width: [0, [Validators.required]],
-          height: [0, [Validators.required]],
-        }),
-        filled: this.formBuilder.group({
-          tiles: [this.board.filledTiles, [Validators.required]],
-          width: [0, [Validators.required]],
-          height: [0, [Validators.required]],
-        }),
+        subGrid: [
+          this.board.subGrid,
+          [Validators.pattern(/^\d+$/), Validators.min(0)],
+        ],
       },
       {
-        // sameDimensionsValidator
-      }
+        validators: [CustomValidators.sameDimensions],
+      },
     );
   }
 
-  showDialogForm() {
+  ngOnInit() {
+    this.boardService.getList().subscribe((values) => {
+      if (values.ok) {
+        this.boardList = values.datos;
+        console.log(this.boardList);
+      }
+    });
+  }
+
+  showFormDialog() {
     this.formDialog.nativeElement.showModal();
+  }
+
+  closeFormDialog() {
+    this.formDialog.nativeElement.close();
   }
 
   onCreate() {
     this.board = voidBoard();
-    this.coloredBoard = voidBoard();
-    this.filledBoard = voidBoard();
     this.boardForm.reset();
-    this.showDialogForm();
+    this.boardForm.patchValue(voidBoard());
+    this.showFormDialog();
   }
 
   onEdit(board: Board) {
     this.board = board;
-    this.coloredBoard = board;
-    this.filledBoard = board;
     this.boardForm.patchValue(board);
-    this.showDialogForm();
+    this.boardForm.patchValue({
+      coloredBoard: {
+        tiles: board.coloredTiles,
+        width: board.width,
+        height: board.height,
+      },
+      filledBoard: {
+        tiles: board.filledTiles,
+        width: board.width,
+        height: board.height,
+      },
+    });
+    this.showFormDialog();
   }
 
-  onDelete(board: Board) {}
+  onDelete(board: Board) {
+    if (board.id == null) return;
+    this.boardService.deleteBoard(board.id).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          this.boardList = this.boardList.filter((b) => b.id !== this.board.id);
+        }
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
 
   onSubmit() {
-    console.log('name', this.boardForm.value);
-    if (!this.boardForm.valid) {
+    if (this.boardForm.invalid) {
       alert('form not valid');
       return;
     }
 
-    if (this.filledBoard.width != this.coloredBoard.width)
-      if (this.board.id == null) {
-        //create
-      } else {
-        //update
-      }
-  }
+    Object.assign(this.board, this.boardForm.value);
+    this.board.width = this.boardForm.get('coloredBoard')?.value.width;
+    this.board.height = this.boardForm.get('coloredBoard')?.value.height;
+    this.board.coloredTiles = this.boardForm.get('coloredBoard')?.value.tiles;
+    this.board.filledTiles = this.boardForm.get('filledBoard')?.value.tiles;
 
-  onColoredBoardChange() {}
+    console.log(this.board);
+    if (this.board.id == null) {
+      //create
+      this.boardService.createBoard(this.board).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            console.log('creado con exito');
+            this.boardList.push(res.datos);
+            this.closeFormDialog();
+          }
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+    } else {
+      //update
+      this.boardService.updateBoard(this.board).subscribe({
+        next: (res) => {
+          if (res.ok) {
+            console.log('updated with exito');
+            const index = this.boardList.findIndex(
+              (b) => b.id === this.board.id,
+            );
+            this.boardList[index] = res.datos;
+
+            this.closeFormDialog();
+          }
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+    }
+  }
 }

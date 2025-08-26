@@ -1,5 +1,5 @@
 export interface Board {
-  id?: string;
+  id: string | null;
   name: string;
   width: number;
   height: number;
@@ -16,7 +16,7 @@ export interface Board {
 }
 
 export const voidBoard = (): Board => ({
-  id: undefined,
+  id: null,
   name: '',
   width: 0,
   height: 0,
