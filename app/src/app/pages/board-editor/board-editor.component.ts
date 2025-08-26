@@ -1,4 +1,8 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { Board, voidBoard } from '../../interfaces/board.interface';
 import { ImgBoardComponent } from '../../components/img-board/img-board.component';
 import {
@@ -11,6 +15,7 @@ import { OnlyDigitsDirective } from '../../directives/only-digits.directive';
 import { ImgBoardInputComponent } from '../../components/img-board-input/img-board-input.component';
 import { BoardService } from '../../services/board.service';
 import { CustomValidators } from '../../directives/custom-validators.directive';
+import { ModalComponent } from '../../components/modal/modal.component';
 
 @Component({
   selector: 'app-board-editor',
@@ -19,12 +24,14 @@ import { CustomValidators } from '../../directives/custom-validators.directive';
     ReactiveFormsModule,
     OnlyDigitsDirective,
     ImgBoardInputComponent,
+    ModalComponent,
   ],
   templateUrl: './board-editor.component.html',
   styleUrl: './board-editor.component.css',
 })
 export class BoardEditorComponent {
-  @ViewChild('formDialog') formDialog!: ElementRef<HTMLDialogElement>;
+  formModal = viewChild.required<ModalComponent>('formModal');
+  deleteModal = viewChild.required<ModalComponent>('deleteModal');
 
   board: Board = voidBoard();
 
@@ -76,19 +83,11 @@ export class BoardEditorComponent {
     });
   }
 
-  showFormDialog() {
-    this.formDialog.nativeElement.showModal();
-  }
-
-  closeFormDialog() {
-    this.formDialog.nativeElement.close();
-  }
-
   onCreate() {
     this.board = voidBoard();
     this.boardForm.reset();
     this.boardForm.patchValue(voidBoard());
-    this.showFormDialog();
+    this.formModal().showModal();
   }
 
   onEdit(board: Board) {
@@ -106,16 +105,22 @@ export class BoardEditorComponent {
         height: board.height,
       },
     });
-    this.showFormDialog();
+    this.formModal().showModal();
   }
 
   onDelete(board: Board) {
-    if (board.id == null) return;
-    this.boardService.deleteBoard(board.id).subscribe({
+    this.board = board;
+    this.deleteModal().showModal();
+  }
+
+  delete() {
+    if (this.board.id == null) return;
+    this.boardService.deleteBoard(this.board.id).subscribe({
       next: (res) => {
         if (res.ok) {
           // this.boardList = this.boardList.filter((b) => b.id !== this.board.id);
           this.getBoardList();
+          this.deleteModal().closeModal();
         }
       },
       error: (err) => {
@@ -136,7 +141,7 @@ export class BoardEditorComponent {
     this.board.coloredTiles = this.boardForm.get('coloredBoard')?.value.tiles;
     this.board.filledTiles = this.boardForm.get('filledBoard')?.value.tiles;
 
-    console.log(this.board);
+    console.log('board on submit', this.board);
     if (this.board.id == null) {
       //create
       this.boardService.createBoard(this.board).subscribe({
@@ -146,8 +151,8 @@ export class BoardEditorComponent {
             this.getBoardList();
             // const board: Board = { id: res.datos._id, ...res.datos };
             // this.boardList.push(board);
-            
-            this.closeFormDialog();
+
+            this.formModal().closeModal();
           }
         },
         error: (err) => {
@@ -169,7 +174,7 @@ export class BoardEditorComponent {
             // const board: Board = { id: res.datos._id, ...res.datos };
             // this.boardList[index] = board;
 
-            this.closeFormDialog();
+            this.formModal().closeModal();
           }
         },
         error: (err) => {

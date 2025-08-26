@@ -9,7 +9,7 @@ export const connectDB = async () => {
 
     const mongodbUrl = `mongodb://${host}:27017/${dbName}`;
 
-    mongoose.connect(mongodbUrl, {
+    await mongoose.connect(mongodbUrl, {
       auth: { username: user, password: pass },
       authSource: "admin",
       connectTimeoutMS: 10000,
