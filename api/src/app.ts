@@ -2,6 +2,7 @@ import express, { json } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import boardRoutes from "./modules/boards/board.routes";
+import levelRoutes from "./modules/levels/level.routes";
 
 export default class App {
   public express;
@@ -34,6 +35,7 @@ export default class App {
 
   private mountRoutes() {
     this.express.use("/boards", boardRoutes);
+    this.express.use("/levels", levelRoutes);
     // this.express.use("/auth", auth);
     // this.express.use("/boards", board);
     // this.express.use("/game", game);

@@ -1,5 +1,6 @@
 export interface Level {
-  level: number;
+  id: string,
+  order: number;
   complete: boolean;
   progressPorcentage: number;
   coloredTiles: string[]
