@@ -6,7 +6,7 @@ import { ObjectId } from "mongodb";
 
 export const getBoards: RequestHandler = async (req, res) => {
   try {
-    const result = await Board.find().sort({order: 1});
+    const result = await Board.find().sort({ order: 1 });
     ok(res, result);
   } catch (error) {
     serverError(res);
@@ -18,7 +18,7 @@ export const createBoard: RequestHandler = async (req, res) => {
   // console.log(validObject)
 
   if (!validObject.success) {
-    badRequest(res, validObject.error.message);
+    return badRequest(res, validObject.error.message);
   }
 
   try {
@@ -34,13 +34,24 @@ export const updateBoard: RequestHandler = async (req, res) => {
   // console.log('update', validObject)
 
   if (!validObject.success) {
-    badRequest(res, validObject.error.message);
+    return badRequest(res, validObject.error.message);
   }
 
   const query = { _id: new ObjectId(req.params.id) };
 
   try {
     const result = await Board.findOneAndUpdate(query, validObject.data);
+    ok(res, result);
+  } catch (error) {
+    serverError(res);
+  }
+};
+
+export const deleteBoard: RequestHandler = async (req, res) => {
+  const query = { _id: new ObjectId(req.params.id) };
+
+  try {
+    const result = await Board.findOneAndDelete(query);
     ok(res, result);
   } catch (error) {
     serverError(res);
