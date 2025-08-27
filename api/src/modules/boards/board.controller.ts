@@ -14,15 +14,15 @@ export const getBoards: RequestHandler = async (req, res) => {
 };
 
 export const createBoard: RequestHandler = async (req, res) => {
-  const validObject = createBoardSchema.safeParse(req.body);
+  const validReq = createBoardSchema.safeParse(req.body);
   // console.log(validObject)
 
-  if (!validObject.success) {
-    return badRequest(res, validObject.error.message);
+  if (!validReq.success) {
+    return badRequest(res, validReq.error.message);
   }
 
   try {
-    const result = await Board.create(validObject.data);
+    const result = await Board.create(validReq.data);
     ok(res, result);
   } catch (error) {
     serverError(res);
@@ -30,17 +30,17 @@ export const createBoard: RequestHandler = async (req, res) => {
 };
 
 export const updateBoard: RequestHandler = async (req, res) => {
-  const validObject = createBoardSchema.safeParse(req.body);
+  const validReq = createBoardSchema.safeParse(req.body);
   // console.log('update', validObject)
 
-  if (!validObject.success) {
-    return badRequest(res, validObject.error.message);
+  if (!validReq.success) {
+    return badRequest(res, validReq.error.message);
   }
 
   const query = { _id: new ObjectId(req.params.id) };
 
   try {
-    const result = await Board.findOneAndUpdate(query, validObject.data);
+    const result = await Board.findOneAndUpdate(query, validReq.data);
     ok(res, result);
   } catch (error) {
     serverError(res);

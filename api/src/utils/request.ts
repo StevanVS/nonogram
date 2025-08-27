@@ -8,12 +8,12 @@ export function badRequest(res: Response, message?: any) {
   res.status(400).json({ ok: false, error: message || "Bad Request" });
 }
 
-export function invalidCredentials(res: Response, message?: any) {
-  res.status(401).json({ ok: false, error: message || "Invalid Credentials" });
-}
-
 export function unauthorized(res: Response, message?: any) {
   res.status(401).json({ ok: false, error: message || "Unauthorized" });
+}
+
+export function forbidden(res: Response, message?: any) {
+  res.status(403).json({ ok: false, error: message || "Forbidden" });
 }
 
 export function notFound(res: Response, message?: any) {

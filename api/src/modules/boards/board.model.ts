@@ -1,4 +1,4 @@
-import { AggregateExtract, model, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import {
   getColumnNumbers,
   getFilledTilesNumber,

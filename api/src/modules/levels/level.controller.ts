@@ -4,12 +4,12 @@ import { Board } from "../boards/board.model";
 import { getLevelsSchema } from "./level.validation";
 
 export const getLevels: RequestHandler = async (req, res) => {
-  const validObject = getLevelsSchema.safeParse(req.body);
-  if (!validObject.success) {
-    return badRequest(res, validObject.error.message);
+  const validReq = getLevelsSchema.safeParse(req.body);
+  if (!validReq.success) {
+    return badRequest(res, validReq.error.message);
   }
 
-  const completedLevels: string[] = validObject.data.completedLevels || [];
+  const completedLevels: string[] = validReq.data.completedLevels || [];
 
   try {
     const result = await Board.find().sort({ order: 1 });
