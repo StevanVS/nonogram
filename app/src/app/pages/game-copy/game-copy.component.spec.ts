@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BoardDetailsComponent } from './board-details.component';
+import { GameCopyComponent } from './game-copy.component';
 
-describe('BoardDetailsComponent', () => {
-  let component: BoardDetailsComponent;
-  let fixture: ComponentFixture<BoardDetailsComponent>;
+describe('GameCopyComponent', () => {
+  let component: GameCopyComponent;
+  let fixture: ComponentFixture<GameCopyComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BoardDetailsComponent]
+      imports: [GameCopyComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(BoardDetailsComponent);
+    fixture = TestBed.createComponent(GameCopyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

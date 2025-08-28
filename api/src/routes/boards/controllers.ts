@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 import { notFound, ok, serverError } from "../../utils/request";
 import {
   getColumnNumbers,
-  getFilledTilesNumber,
+  getFilledTilesCount,
   getRowNumbers,
 } from "../../utils/boards";
 import { Board } from "../../interfaces/board";
@@ -42,7 +42,7 @@ export const newBoard: RequestHandler = async (req, res) => {
 
     board = {
       ...board,
-      filledTilesNumber: getFilledTilesNumber(board),
+      filledTilesNumber: getFilledTilesCount(board),
       columnNumbers: getColumnNumbers(board),
       rowNumbers: getRowNumbers(board),
     };
@@ -67,7 +67,7 @@ export const updateBoard: RequestHandler = async (req, res) => {
 
     board = {
       ...board,
-      filledTilesNumber: getFilledTilesNumber(board),
+      filledTilesNumber: getFilledTilesCount(board),
       columnNumbers: getColumnNumbers(board),
       rowNumbers: getRowNumbers(board),
     };

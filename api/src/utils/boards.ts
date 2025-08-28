@@ -24,7 +24,7 @@ export function getRowNumbers(board: any): number[][] {
   return ftl;
 }
 
-export function getFilledTilesNumber(board: any): number {
+export function getFilledTilesCount(board: any): number {
   return board.filledTiles.reduce(
     (count: number, num: number) => (num === 1 ? count + 1 : count),
     0,

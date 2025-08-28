@@ -1,0 +1,34 @@
+<div class="game-page" (mouseup)="onMouseUp()">
+  @if (!gameWin.isWin) {
+    <div class="game-header">
+      <div class="tile-counter">
+        <i class="fa fa-square"></i>
+        <!-- {{ getFilledTilesCounter(gameTiles()) }} / {{ game.filledTilesNumber }} -->
+      </div>
+    </div>
+    <app-game-board
+      class="game-board"
+      [game]="game"
+      [gameTiles]="gameTiles()"
+      [columnNumbers]="columnNumbers()"
+      [rowNumbers]="rowNumbers()"
+      (onHistoryBack)="onHistoryBack()"
+      (onMouseDown)="onMouseDown($event)"
+      (onMouseMove)="onMouseMove($event)"
+    />
+  } @else {
+    <!-- <app-img-board
+      class="coloredImage"
+      [width]="game.width"
+      [height]="game.height"
+      [tiles]="gameWin.coloredTiles || []"
+    /> -->
+
+    <div class="board-name">
+      {{ gameWin.name }}
+    </div>
+    <div class="win-btns">
+      <button class="primary" [routerLink]="['/levels']">Continue</button>
+    </div>
+  }
+</div>

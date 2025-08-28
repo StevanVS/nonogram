@@ -77,7 +77,8 @@ export class BoardEditorComponent {
   getBoardList() {
     this.boardService.getList().subscribe((values) => {
       if (values.ok) {
-        this.boardList = values.datos.map((b) => ({ id: b._id, ...b }));
+        // this.boardList = values.datos.map((b) => ({ id: b.id, ...b }));
+        this.boardList = values.datos
         console.log(this.boardList);
       }
     });

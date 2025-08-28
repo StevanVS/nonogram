@@ -1,30 +1,21 @@
-import { GameHistory } from "./gameHistory.interface";
-import { Tile } from "./tile.interface";
+export type Tile = -1 | 0 | 1;
+
+export interface GameHistory {
+  previous: Tile;
+  indexes: number[];
+  autoCompletedIdxs: number[];
+}
 
 export interface Game {
+  id: string;
   gameTiles: Tile[];
   history: GameHistory[];
-  filledTilesNumber: number;
-  columnNumbers: number[][];
-  rowNumbers: number[][];
-  width: number;
-  height: number;
-  innerColumn: number;
-  innerRow: number;
-  level: number;
 }
 
 export function voidGame(): Game {
   return {
+    id: '',
     gameTiles: [],
     history: [],
-    filledTilesNumber: 0,
-    columnNumbers: [],
-    rowNumbers: [],
-    width: 0,
-    height: 0,
-    innerColumn: 0,
-    innerRow: 0,
-    level: 0,
-  }
+  };
 }

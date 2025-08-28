@@ -1,9 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { Game } from '../interfaces/game.interface';
+import { Game, Tile } from '../interfaces/game.interface';
 import { ServerResponse } from '../interfaces/server-response.interface';
-import { Tile } from '../interfaces/tile.interface';
 import { CheckGameWin } from '../interfaces/check-game-win.interface';
 import { sendRequest } from '../utils/request';
 
@@ -28,28 +27,28 @@ export class GameService {
   }
 
   getNewGameByLevel(level: number) {
-    //return this.http.get<ServerResponse<Game>>(
-    //  `${this.api_url}/game/newgamebylevel/${level}`,
-    //);
-    //
-    return sendRequest<Game>(
-      this.http,
-      'GET',
-      `${this.api_url}/game/newgamebylevel/${level}`,
+    return this.http.get<ServerResponse<Game>>(
+     `${this.api_url}/game/newgamebylevel/${level}`,
     );
+    
+    // return sendRequest<Game>(
+    //   this.http,
+    //   'GET',
+    //   `${this.api_url}/game/newgamebylevel/${level}`,
+    // );
   }
 
   checkGameWin(level: number, gameTiles: Tile[]) {
-    //return this.http.post<ServerResponse<CheckGameWin>>(
-    //  `${this.api_url}/game/checkgamewin/${level}`,
-    //  { gameTiles },
-    //);
-
-    return sendRequest<CheckGameWin>(
-      this.http,
-      'POST',
-      `${this.api_url}/game/checkgamewin/${level}`,
-      { gameTiles },
+    return this.http.post<ServerResponse<CheckGameWin>>(
+     `${this.api_url}/game/checkgamewin/${level}`,
+     { gameTiles },
     );
+
+    // return sendRequest<CheckGameWin>(
+    //   this.http,
+    //   'POST',
+    //   `${this.api_url}/game/checkgamewin/${level}`,
+    //   { gameTiles },
+    // );
   }
 }

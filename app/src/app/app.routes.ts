@@ -10,7 +10,7 @@ import { BoardEditorComponent } from './pages/board-editor/board-editor.componen
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'levels', component: LevelsComponent },
-  { path: 'game/:level', component: GameComponent },
+  { path: 'game/:id', component: GameComponent },
   { path: 'board-editor', component: BoardEditorComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'login', component: LoginComponent },
