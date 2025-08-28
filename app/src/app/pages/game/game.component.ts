@@ -88,31 +88,11 @@ export class GameComponent {
     history: [],
   };
 
-  gameTiles: WritableSignal<Tile[]> = signal([]);
-
-  // gameColumnNumbers: GameAxisNumbers = [
-  //   { complete: false, gameTilesNumbers: [{ number: 1, complete: false }] },
-  //   { complete: true, gameTilesNumbers: [{ number: 3, complete: true }] },
-  //   { complete: false, gameTilesNumbers: [{ number: 5, complete: false }] },
-  //   {
-  //     complete: false,
-  //     gameTilesNumbers: [
-  //       { number: 1, complete: false },
-  //       { number: 1, complete: true },
-  //     ],
-  //   },
-  //   { complete: false, gameTilesNumbers: [{ number: 1, complete: false }] },
-  // ];
-
-  // gameRowNumbers: GameAxisNumbers = [
-  //   { complete: false, gameTilesNumbers: [{ number: 1, complete: false }] },
-  //   { complete: false, gameTilesNumbers: [{ number: 3, complete: false }] },
-  //   { complete: false, gameTilesNumbers: [{ number: 2, complete: false }] },
-  //   { complete: false, gameTilesNumbers: [{ number: 5, complete: false }] },
-  //   { complete: false, gameTilesNumbers: [{ number: 1, complete: false }] },
-  // ];
-
   // gameWin: CheckGameWin = voidCheckGameWin();
+
+  isCursorBlock = true;
+
+  gameTiles: WritableSignal<Tile[]> = signal([]);
 
   gameFilledTilesCounter: Signal<number> = computed(() => {
     return this.gameTiles().reduce<number>(
@@ -268,6 +248,10 @@ export class GameComponent {
     // });
   }
 
+  onChangeCursor() {
+    this.isCursorBlock = !this.isCursorBlock;
+  }
+
   onContextMenu(e: Event) {
     e.preventDefault();
   }
@@ -315,8 +299,8 @@ export class GameComponent {
     this.initialTileY = Math.floor(this.currentTileIndex / this.board.width);
 
     const index = this.getTileIndex(targetTileEl);
-    if (e.button === 0) this.click(index);
-    if (e.button === 2) this.click(index, false);
+    if (e.buttons === 1) this.click(index, this.isCursorBlock);
+    if (e.buttons === 2) this.click(index, !this.isCursorBlock);
   }
 
   onMouseMove(e: PointerEvent) {
@@ -350,8 +334,8 @@ export class GameComponent {
       index = y * this.board.width + this.initialTileX;
     }
 
-    if (e.buttons === 1) this.drag(index, true);
-    if (e.buttons === 2) this.drag(index, false);
+    if (e.buttons === 1) this.drag(index, this.isCursorBlock);
+    if (e.buttons === 2) this.drag(index, !this.isCursorBlock);
 
     this.currentTileIndex = currentIndex;
   }
