@@ -18,6 +18,10 @@ const boardSquema = new Schema({
   subGrid: { type: Number, default: 0 },
 });
 
+boardSquema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+});
 
 boardSquema.pre("save", function (next) {
   this.filledTilesCount = getFilledTilesCount(this);
@@ -29,7 +33,7 @@ boardSquema.pre("save", function (next) {
 boardSquema.pre("findOneAndUpdate", function (next) {
   const board = this.getUpdate();
   this.set({
-    filledTilesNumber: getFilledTilesCount(board),
+    filledTilesCount: getFilledTilesCount(board),
     columnNumbers: getColumnNumbers(board),
     rowNumbers: getRowNumbers(board),
   });

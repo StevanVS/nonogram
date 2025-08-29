@@ -4,10 +4,15 @@
 >
   LEVELS
 </h1>
+
+@if (levelList.length === 0) {
+  <div class="text-secondary-dark mt-4 text-center">There are no Levels</div>
+}
+
 <div
   class="mx-auto grid grid-cols-4 gap-4 sm:w-fit md:grid-cols-5 lg:grid-cols-6"
 >
-  @for (l of levels; track $index) {
+  @for (l of levelList; track $index) {
     <a
       [routerLink]="['/game', l.id]"
       class="text-secondary hover:text-primary-dark bg-primary hover:bg-tertiary relative aspect-square rounded-md sm:w-24"

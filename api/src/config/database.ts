@@ -14,7 +14,7 @@ export const connectDB = async () => {
       authSource: "admin",
       connectTimeoutMS: 10000,
     });
-    
+
     console.log("Connected de DB");
   } catch (error) {
     console.error("Failed to connect do DB", error);

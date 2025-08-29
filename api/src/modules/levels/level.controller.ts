@@ -15,7 +15,7 @@ export const getLevels: RequestHandler = async (req, res) => {
     const result = await Board.find().sort({ order: 1 });
 
     const levels = result.map((b) => {
-      const complete = completedLevels.includes(b._id.toString());
+      const complete = completedLevels.includes(b.id);
       return {
         id: b.id,
         order: b.order,

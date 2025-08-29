@@ -75,7 +75,7 @@ export class GameComponent {
     ],
     order: 1,
     subGrid: 0,
-    filledTilesCounter: 12,
+    filledTilesCount: 12,
     columnNumbers: [[1], [3], [5], [1, 1], [1]],
     rowNumbers: [[1], [3], [2], [5], [1]],
   };

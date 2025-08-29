@@ -16,7 +16,7 @@ import {
   CheckGameWin,
   voidCheckGameWin,
 } from '../../interfaces/check-game-win.interface';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { HeaderComponent } from '../../components/header/header.component';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { GameBoardComponent } from '../../components/game-board/game-board.component';
 import { catchError, lastValueFrom, of } from 'rxjs';

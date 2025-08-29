@@ -13,7 +13,7 @@ import { LocalStorageService } from '../../services/local-storage.service';
   styleUrl: './levels.component.css',
 })
 export class LevelsComponent {
-  levels: Level[] = [];
+  levelList: Level[] = [];
 
   levelService = inject(LevelService);
   localStorageService = inject(LocalStorageService);
@@ -26,9 +26,9 @@ export class LevelsComponent {
     this.levelService.getLevels(completedLevels || []).subscribe((res) => {
       if (res.ok) {
         // console.log(res.datos)
-        this.levels = res.datos;
+        this.levelList = res.datos;
         games?.forEach((g) => {
-          const level = this.levels.find((l) => l.order === g.level);
+          const level = this.levelList.find((l) => l.order === g.level);
           if (level == null) return;
           level.progressPorcentage = g.progressPorcentage;
         });

@@ -5,7 +5,7 @@ export interface Board {
   height: number;
   filledTiles: number[];
   coloredTiles: string[];
-  filledTilesCounter: number;
+  filledTilesCount: number;
   columnNumbers: number[][];
   rowNumbers: number[][];
   order: number;
@@ -18,7 +18,7 @@ export const voidBoard = (): Board => ({
   height: 0,
   filledTiles: [],
   coloredTiles: [],
-  filledTilesCounter: 0,
+  filledTilesCount: 0,
   columnNumbers: [],
   rowNumbers: [],
   subGrid: 0,

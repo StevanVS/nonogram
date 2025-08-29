@@ -23,6 +23,11 @@ const userSchema = new Schema(
   }
 );
 
+userSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+});
+
 // Hash the password before saving it to the database
 userSchema.pre("save", async function (next) {
   const user = this;
