@@ -6,7 +6,7 @@ import {
   getColumnNumbers,
   getFilledTilesCount,
   getRowNumbers,
-} from "../../utils/boards";
+} from "../../modules/boards/board.utils";
 import { Board } from "../../interfaces/board";
 
 export const getBoards: RequestHandler = async (req, res) => {

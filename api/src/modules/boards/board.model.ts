@@ -3,9 +3,10 @@ import {
   getColumnNumbers,
   getFilledTilesCount,
   getRowNumbers,
-} from "../../utils/boards";
+} from "./board.utils";
+import { Board } from "../../interfaces/board";
 
-const boardSquema = new Schema({
+const boardSquema = new Schema<Board>({
   name: { type: String, required: true },
   width: { type: Number, required: true },
   height: { type: Number, required: true },
@@ -31,7 +32,7 @@ boardSquema.pre("save", function (next) {
 });
 
 boardSquema.pre("findOneAndUpdate", function (next) {
-  const board = this.getUpdate();
+  const board = this.getUpdate() as Board;
   this.set({
     filledTilesCount: getFilledTilesCount(board),
     columnNumbers: getColumnNumbers(board),
@@ -40,4 +41,4 @@ boardSquema.pre("findOneAndUpdate", function (next) {
   next();
 });
 
-export const Board = model("Board", boardSquema);
+export const BoardModel = model("Board", boardSquema);

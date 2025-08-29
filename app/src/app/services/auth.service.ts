@@ -3,7 +3,16 @@ import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../interfaces/user.interface';
 import { ServerResponse } from '../interfaces/server-response.interface';
-import { BehaviorSubject, map, mergeMap, of, pipe, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  map,
+  mergeMap,
+  of,
+  pipe,
+  take,
+  tap,
+} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -74,6 +83,13 @@ export class AuthService {
           return res.ok ? res.datos : null;
         }),
       );
+  }
+
+  isUserAuthenticated() {
+    return this.authState$.pipe(
+      filter((value) => value !== null),
+      take(1),
+    );
   }
 
   restoreAuthState() {

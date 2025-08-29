@@ -17,20 +17,21 @@
       [routerLink]="['/game', l.id]"
       class="text-secondary hover:text-primary-dark bg-primary hover:bg-tertiary relative aspect-square rounded-md sm:w-24"
     >
-      @if (!l.complete) {
+      @if (l.coloredTiles.length === 0) {
         <div
           class="flex h-full items-center justify-center text-4xl font-black sm:text-5xl"
         >
           {{ l.order }}
         </div>
 
-        @if (l.progressPorcentage > 0) {
+        @if (l.progressPercentage > 0) {
           <svg
             viewBox="0 0 42 42"
             class="stroke-tertiary hover:stroke-primary-dark absolute top-0 fill-none stroke-4 p-1 [stroke-linecap:round]"
           >
             <path
-              [attr.stroke-dasharray]="l.progressPorcentage + ', 100'"
+              stroke-dasharray="113"
+              [attr.stroke-dasharray]="113 * (1 - l.progressPercentage / 100)"
               d="M21 3 a 18 18 0 0 1 0 36 a 18 18 0 0 1 0 -36"
             />
           </svg>

@@ -4,7 +4,7 @@ import { JwtToken } from "../../interfaces/jwt-token";
 import { RequestHandler } from "express";
 import { loginSchema, registerSchema } from "./auth.validation";
 import { badRequest, ok, serverError } from "../../utils/request";
-import { User } from "../users/user.model";
+import { UserModel } from "../users/user.model";
 
 const generateToken = (token: JwtToken) => {
   return jwt.sign(token, JWT_SECRET, {
@@ -16,16 +16,16 @@ const generateToken = (token: JwtToken) => {
 export const register: RequestHandler = async (req, res) => {
   const validReq = registerSchema.safeParse(req.body);
   if (!validReq.success) {
-    return badRequest(res, validReq.error.message);
+    return badRequest(res, JSON.parse(validReq.error.message));
   }
 
   const { username, email, password } = validReq.data;
 
   try {
-    const existingUser = await User.findOne({ email: email });
+    const existingUser = await UserModel.findOne({ email: email });
     if (existingUser) return badRequest(res, "Email already registered");
 
-    const user = await User.create({ username, email, password });
+    const user = await UserModel.create({ username, email, password });
 
     const token = generateToken({ id: user.id, role: user.role });
 
@@ -44,13 +44,13 @@ export const register: RequestHandler = async (req, res) => {
 export const login: RequestHandler = async (req, res) => {
   const validReq = loginSchema.safeParse(req.body);
   if (!validReq.success) {
-    return badRequest(res, validReq.error.message);
+    return badRequest(res, JSON.parse(validReq.error.message));
   }
 
   const { email, password } = validReq.data;
 
   try {
-    const user = await User.findOne({ email: email });
+    const user = await UserModel.findOne({ email: email });
 
     if (!user) return badRequest(res, "User not found");
 

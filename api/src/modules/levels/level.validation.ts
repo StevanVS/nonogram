@@ -1,5 +1,7 @@
 import { z } from "zod";
 
 export const getLevelsSchema = z.object({
-  completedLevels: z.array(z.string()),
+  games: z
+    .array(z.object({ boardId: z.string(), gameTiles: z.array(z.number()) }))
+    .optional(),
 });

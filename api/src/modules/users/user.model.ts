@@ -8,9 +8,13 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
 
-    games: {
-      type: [Schema.Types.Mixed],
-    },
+    games: [
+      {
+        boardId: String,
+        gameTiles: [Number],
+        history: [Schema.Types.Mixed],
+      },
+    ],
   },
   {
     timestamps: true,
@@ -43,4 +47,4 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-export const User = model("User", userSchema);
+export const UserModel = model("User", userSchema);

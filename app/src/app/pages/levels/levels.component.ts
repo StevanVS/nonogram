@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { ImgBoardComponent } from '../../components/img-board/img-board.component';
 import { LevelService } from '../../services/level.service';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { AuthService } from '../../services/auth.service';
+import { Game } from '../../interfaces/game.interface';
 
 @Component({
   selector: 'app-levels',
@@ -17,22 +19,32 @@ export class LevelsComponent {
 
   levelService = inject(LevelService);
   localStorageService = inject(LocalStorageService);
+  authService = inject(AuthService);
 
   ngOnInit() {
-    const completedLevels =
-      this.localStorageService.getItem<string[]>('completedLevels');
-    const games = this.localStorageService.getItem<any[]>('games');
+    this.authService.isUserAuthenticated().subscribe({
+      next: (isAuth) => {
+        if (isAuth) {
+          this.getLevels(this.authService.user$.value?.games || []);
+        } else {
+          this.getLevels(
+            this.localStorageService.getItem<Game[]>('games') || [],
+          );
+        }
+      },
+      error: console.error,
+    });
+  }
 
-    this.levelService.getLevels(completedLevels || []).subscribe((res) => {
-      if (res.ok) {
-        // console.log(res.datos)
-        this.levelList = res.datos;
-        games?.forEach((g) => {
-          const level = this.levelList.find((l) => l.order === g.level);
-          if (level == null) return;
-          level.progressPorcentage = g.progressPorcentage;
-        });
-      }
+  getLevels(games: Game[]) {
+    this.levelService.getLevels(games).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          console.log('levels', res.datos);
+          this.levelList = res.datos;
+        }
+      },
+      error: console.error,
     });
   }
 }

@@ -7,14 +7,14 @@ export interface GameHistory {
 }
 
 export interface Game {
-  id: string;
+  boardId: string;
   gameTiles: Tile[];
   history: GameHistory[];
 }
 
 export function voidGame(): Game {
   return {
-    id: '',
+    boardId: '',
     gameTiles: [],
     history: [],
   };

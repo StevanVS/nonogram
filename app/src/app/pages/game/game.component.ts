@@ -81,7 +81,7 @@ export class GameComponent {
   };
 
   game: Game = {
-    id: '68ad4e0bc53f066de2986551',
+    boardId: '68ad4e0bc53f066de2986551',
     gameTiles: Array.from<Tile>({ length: 5 * 5 }).map((t, i) =>
       i % 3 == 0 ? 1 : i % 2 == 0 ? 0 : -1,
     ),
