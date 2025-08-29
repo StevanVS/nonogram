@@ -1,4 +1,6 @@
-<h1 class="text-secondary mb-4 text-center text-5xl font-black sm:text-6xl">
+<h1
+  class="text-secondary mt-10 mb-4 text-center text-5xl font-black sm:text-6xl"
+>
   BOARD EDITOR
 </h1>
 
@@ -70,8 +72,11 @@
   }
 </div>
 
-<app-modal #formModal [titleText]="board.id == null ? 'NEW BOARD' : 'EDIT BOARD'">
-<form
+<app-modal
+  #formModal
+  [titleText]="board.id == null ? 'NEW BOARD' : 'EDIT BOARD'"
+>
+  <form
     (submit)="onSubmit()"
     [formGroup]="boardForm"
     class="grid grid-cols-2 gap-4 font-bold"
@@ -203,7 +208,7 @@
 </dialog> -->
 
 <app-modal #deleteModal titleText="DELETE BOARD">
-  <div class="text-xl py-8">Are you sure you want to delete this board?</div>
+  <div class="py-8 text-xl">Are you sure you want to delete this board?</div>
   <div class="flex flex-row-reverse gap-2">
     <button
       (click)="delete()"

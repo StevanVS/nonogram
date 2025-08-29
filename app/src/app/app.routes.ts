@@ -6,6 +6,8 @@ import { SettingsComponent } from './pages/settings/settings.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { BoardEditorComponent } from './pages/board-editor/board-editor.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { isAuth, isNotAuth } from './guard/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -13,8 +15,8 @@ export const routes: Routes = [
   { path: 'game/:id', component: GameComponent },
   { path: 'board-editor', component: BoardEditorComponent },
   { path: 'settings', component: SettingsComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-
+  { path: 'profile', canActivate: [isAuth], component: ProfileComponent },
+  { path: 'login', canActivate: [isNotAuth], component: LoginComponent },
+  { path: 'register', canActivate: [isNotAuth], component: RegisterComponent },
   { path: '**', redirectTo: '' },
 ];

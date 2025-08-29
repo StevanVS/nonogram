@@ -7,7 +7,10 @@ import { badRequest, ok, serverError } from "../../utils/request";
 import { User } from "../users/user.model";
 
 const generateToken = (token: JwtToken) => {
-  return jwt.sign(token, JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign(token, JWT_SECRET, {
+    expiresIn: "1h",
+    subject: token.id,
+  });
 };
 
 export const register: RequestHandler = async (req, res) => {
@@ -70,4 +73,20 @@ export const login: RequestHandler = async (req, res) => {
 
 export const logout: RequestHandler = async (req, res) => {
   ok(res.clearCookie("access_token"), "Successfully Log Out");
+};
+
+export const checkToken: RequestHandler = async (req, res) => {
+  const token = req.cookies.access_token;
+
+  if (!token) {
+    res.send({ ok: false, message: "Token not found" });
+    return;
+  }
+
+  try {
+    jwt.verify(token, JWT_SECRET);
+    ok(res);
+  } catch (error) {
+    res.clearCookie("access_token").send({ ok: false });
+  }
 };

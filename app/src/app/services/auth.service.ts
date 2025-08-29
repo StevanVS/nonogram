@@ -13,24 +13,23 @@ export class AuthService {
   private http = inject(HttpClient);
 
   readonly user$ = new BehaviorSubject<User | null>(null);
-  readonly authState$ = new BehaviorSubject<boolean>(false);
+  readonly authState$ = new BehaviorSubject<boolean | null>(null);
 
   private handleAfterAuth = pipe(
     tap((res: ServerResponse<any>) => {
       this.authState$.next(res.ok);
     }),
     mergeMap((res) => {
-      if (res.ok) return this.getCurrentUser();
+      if (res.ok) return this.getUserProfile();
       else return of(null);
     }),
     tap((user) => {
       this.user$.next(user);
-    })
+    }),
   );
 
   constructor() {
     this.restoreAuthState();
-   
   }
 
   login(email: string, password: string) {
@@ -42,7 +41,7 @@ export class AuthService {
       .pipe(this.handleAfterAuth);
   }
 
-  signup(username: string, email: string, password: string) {
+  register(username: string, email: string, password: string) {
     return this.http
       .post<ServerResponse<any>>(`${this.apiUrl}/auth/register`, {
         username,
@@ -59,7 +58,7 @@ export class AuthService {
         tap(() => {
           this.user$.next(null);
           this.authState$.next(false);
-        })
+        }),
       );
   }
 
@@ -67,13 +66,13 @@ export class AuthService {
     return this.http.get<ServerResponse<any>>(`${this.apiUrl}/auth/checktoken`);
   }
 
-  getCurrentUser() {
+  getUserProfile() {
     return this.http
-      .get<ServerResponse<User>>(`${this.apiUrl}/users/currentuser`)
+      .get<ServerResponse<User>>(`${this.apiUrl}/users/profile`)
       .pipe(
         map((res) => {
           return res.ok ? res.datos : null;
-        })
+        }),
       );
   }
 
@@ -81,16 +80,16 @@ export class AuthService {
     this.checkToken()
       .pipe(
         mergeMap((res) => {
-          return res.ok ? this.getCurrentUser() : of(null);
-        })
+          return res.ok ? this.getUserProfile() : of(null);
+        }),
       )
       .subscribe({
         next: (user) => {
           this.user$.next(user);
           this.authState$.next(user ? true : false);
         },
-        error: () => {
-          console.log('Error restoring auth state');
+        error: (error) => {
+          console.error('Error restoring auth state', error);
           this.user$.next(null);
           this.authState$.next(false);
         },
