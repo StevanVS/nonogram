@@ -5,12 +5,12 @@ import { User } from '../interfaces/user.interface';
 import { ServerResponse } from '../interfaces/server-response.interface';
 import {
   BehaviorSubject,
-  filter,
+  catchError,
   map,
   mergeMap,
+  Observable,
   of,
   pipe,
-  take,
   tap,
 } from 'rxjs';
 
@@ -38,7 +38,8 @@ export class AuthService {
   );
 
   constructor() {
-    this.restoreAuthState();
+    // console.log('init auth');
+    this.restoreAuthState().subscribe();
   }
 
   login(email: string, password: string) {
@@ -85,21 +86,17 @@ export class AuthService {
       );
   }
 
-  isUserAuthenticated() {
-    return this.authState$.pipe(
-      filter((value) => value !== null),
-      take(1),
+  isUserAuthenticated(): Observable<boolean> {
+    return this.restoreAuthState().pipe(
+      map((user) => !!user), // devuelve true o false
+      catchError(() => of(false)),
     );
   }
 
   restoreAuthState() {
-    this.checkToken()
-      .pipe(
-        mergeMap((res) => {
-          return res.ok ? this.getUserProfile() : of(null);
-        }),
-      )
-      .subscribe({
+    return this.checkToken().pipe(
+      mergeMap((res) => (res.ok ? this.getUserProfile() : of(null))),
+      tap({
         next: (user) => {
           this.user$.next(user);
           this.authState$.next(user ? true : false);
@@ -109,6 +106,7 @@ export class AuthService {
           this.user$.next(null);
           this.authState$.next(false);
         },
-      });
+      }),
+    );
   }
 }

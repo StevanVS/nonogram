@@ -24,13 +24,13 @@ export class LevelsComponent {
   ngOnInit() {
     this.authService.isUserAuthenticated().subscribe({
       next: (isAuth) => {
+        let games: Game[];
         if (isAuth) {
-          this.getLevels(this.authService.user$.value?.games || []);
+          games = this.authService.user$.value?.games || [];
         } else {
-          this.getLevels(
-            this.localStorageService.getItem<Game[]>('games') || [],
-          );
+          games = this.localStorageService.getItem<Game[]>('games') || [];
         }
+        this.getLevels(games);
       },
       error: console.error,
     });

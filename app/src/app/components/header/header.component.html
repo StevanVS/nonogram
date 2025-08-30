@@ -23,7 +23,9 @@
         class="fill-secondary hover:fill-tertiary hover:text-tertiary flex h-8 cursor-pointer items-center gap-1"
         routerLink="/profile"
       >
-        <div>{{ user?.username }}</div>
+        @if (authService.user$ | async; as user) {
+          <div>{{ user.username }}</div>
+        }
 
         <svg
           class="size-8"

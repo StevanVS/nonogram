@@ -30,8 +30,9 @@
             class="stroke-tertiary hover:stroke-primary-dark absolute top-0 fill-none stroke-4 p-1 [stroke-linecap:round]"
           >
             <path
-              stroke-dasharray="113"
-              [attr.stroke-dasharray]="113 * (1 - l.progressPercentage / 100)"
+              [attr.stroke-dasharray]="
+                (113 * l.progressPercentage) / 100 + ', 113'
+              "
               d="M21 3 a 18 18 0 0 1 0 36 a 18 18 0 0 1 0 -36"
             />
           </svg>

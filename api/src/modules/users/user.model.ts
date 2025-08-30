@@ -1,5 +1,12 @@
 import { model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
+import { Game } from "../../interfaces/game";
+
+const gameSquema = new Schema<Game>({
+  boardId: String,
+  gameTiles: [Number],
+  history: [Schema.Types.Mixed],
+});
 
 const userSchema = new Schema(
   {
@@ -8,13 +15,7 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
 
-    games: [
-      {
-        boardId: String,
-        gameTiles: [Number],
-        history: [Schema.Types.Mixed],
-      },
-    ],
+    games: [gameSquema],
   },
   {
     timestamps: true,

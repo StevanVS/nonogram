@@ -2,7 +2,6 @@ import {
   Component,
   computed,
   inject,
-  Renderer2,
   Signal,
   signal,
   WritableSignal,
@@ -12,19 +11,22 @@ import {
   GameTilesNumber,
   GameGroupNumber,
 } from '../../interfaces/game-axis-numbers';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GameService } from '../../services/game.service';
 import { Game, Tile, voidGame } from '../../interfaces/game.interface';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { Board, voidBoard } from '../../interfaces/board.interface';
-import { NgClass } from '@angular/common';
+import { NgClass, UpperCasePipe } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import { ImgBoardComponent } from '../../components/img-board/img-board.component';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-game',
   standalone: true,
   templateUrl: './game.component.html',
   styleUrl: './game.component.css',
-  imports: [NgClass],
+  imports: [NgClass, ImgBoardComponent, UpperCasePipe, RouterLink],
 })
 export class GameComponent {
   private loadingWin = false;
@@ -37,58 +39,11 @@ export class GameComponent {
   private isDragAxisX: boolean | null = null;
   private changedTileIndexes: number[] = [];
   private autoCompletedIdxs: number[] = [];
+  private autoSaveSubscription: Subscription;
 
-  board: Board = {
-    id: '68ad4e0bc53f066de2986551',
-    name: 'Tree',
-    width: 5,
-    height: 5,
-    filledTiles: [
-      0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0,
-    ],
-    coloredTiles: [
-      '#94daff',
-      '#94daff',
-      '#057c02',
-      '#94daff',
-      '#94daff',
-      '#94daff',
-      '#be67ff',
-      '#057c02',
-      '#057c02',
-      '#94daff',
-      '#94daff',
-      '#057c02',
-      '#057c02',
-      '#fff400',
-      '#94daff',
-      '#057c02',
-      '#ff0000',
-      '#057c02',
-      '#057c02',
-      '#057c02',
-      '#94daff',
-      '#94daff',
-      '#5a3a0a',
-      '#94daff',
-      '#94daff',
-    ],
-    order: 1,
-    subGrid: 0,
-    filledTilesCount: 12,
-    columnNumbers: [[1], [3], [5], [1, 1], [1]],
-    rowNumbers: [[1], [3], [2], [5], [1]],
-  };
+  board: Board = voidBoard();
 
-  game: Game = {
-    boardId: '68ad4e0bc53f066de2986551',
-    gameTiles: Array.from<Tile>({ length: 5 * 5 }).map((t, i) =>
-      i % 3 == 0 ? 1 : i % 2 == 0 ? 0 : -1,
-    ),
-    history: [],
-  };
-
-  // gameWin: CheckGameWin = voidCheckGameWin();
+  game: Game = voidGame();
 
   isCursorBlock = true;
 
@@ -129,123 +84,123 @@ export class GameComponent {
     return gameAxisNumbers;
   });
 
-  private renderer = inject(Renderer2);
-  private router = inject(Router);
+  get isGameWin(): boolean {
+    return this.board.coloredTiles.length > 0;
+  }
+
+  private authService = inject(AuthService);
   private activatedRoute = inject(ActivatedRoute);
   private gameService = inject(GameService);
   private localStorageService = inject(LocalStorageService);
 
   constructor() {
-    this.gameTiles.set(Array.from<Tile>({ length: 5 * 5 }).fill(0));
+    console.log('init autosave');
+    this.autoSaveSubscription = interval(10000).subscribe({
+      next: () => {
+        this.saveProgress(() => {
+          console.log('autosave');
+        });
+      },
+    });
   }
 
-  // ngOnInit() {
-  //   let boardId = this.activatedRoute.snapshot.params['id'];
-  //   console.log('board id', boardId);
+  ngOnInit() {
+    let boardId: string = this.activatedRoute.snapshot.params['id'];
+    this.authService.isUserAuthenticated().subscribe({
+      next: (isAuth) => {
+        let games: Game[];
+        if (isAuth) {
+          games = this.authService.user$.value?.games || [];
+        } else {
+          games = this.localStorageService.getItem<Game[]>('games') || [];
+        }
 
-  //   this.gameService.getNewGame(boardId).subscribe({
-  //     next: (res) => {
-  //       if (!res.ok) {
-  //         console.log('not ok', res.error);
-  //         //this.router.navigate(['/'], { state: { error: result.error } });
-  //         return;
-  //       }
+        const game = games.find((g) => g.boardId === boardId);
+        // console.log('game', game);
+        this.getGame(boardId, game);
+      },
+      error: console.error,
+    });
+  }
 
-  //       Object.assign(this.game, res.datos);
+  ngOnDestroy() {
+    console.log('destroy');
+    this.autoSaveSubscription.unsubscribe();
+  }
 
-  //       this.filledColumnNumbers.set(res.datos.columnNumbers);
-  //       this.filledRowNumbers.set(res.datos.rowNumbers);
-  //       this.gameTiles.set(res.datos.gameTiles);
+  getGame(boardId: string, game?: Game | null) {
+    this.gameService.getGame(boardId, game).subscribe({
+      next: (res) => {
+        this.board = res.datos.board;
+        this.game = res.datos.game;
 
-  //       this.useProgress();
-  //     },
-  //     error: (err) => {
-  //       console.error(err);
-  //     },
-  //   });
-  // }
+        this.gameTiles.set(this.game.gameTiles);
+      },
+      error: console.error,
+    });
+  }
 
-  // private useProgress() {
-  //   const games = this.localStorageService.getItem<any[]>('games');
-  //   if (games == null) return;
-  //   const progress = games.find((g) => g.level === this.game.level);
-  //   if (progress === null) return;
+  private saveProgress(callback: Function) {
+    if (this.isGameWin) return;
 
-  //   Object.assign(this.game, progress);
-  //   this.gameTiles.set(this.game.gameTiles);
-  // }
+    // Si no hay cambio no guardar
+    if (
+      JSON.stringify(this.game.gameTiles) === JSON.stringify(this.gameTiles())
+    )
+      return;
 
-  // private clearProgress() {
-  //   const games = this.localStorageService.getItem<any[]>('games');
-  //   if (games == null) return;
+    const isAuth = this.authService.authState$.value;
 
-  //   const newGames = games.filter((g) => g.level !== this.game.level);
+    if (isAuth) {
+      this.gameService.saveGame(this.getCurrentGame()).subscribe({
+        next: () => callback(),
+        error: console.error,
+      });
+    } else {
+      let storedGames = this.localStorageService.getItem<Game[]>('games');
+      if (storedGames == null) storedGames = [];
 
-  //   this.localStorageService.setItem('games', newGames);
-  // }
+      const index = storedGames.findIndex((g) => g.boardId === this.board.id);
+      index === -1
+        ? storedGames.push(this.getCurrentGame())
+        : (storedGames[index] = this.getCurrentGame());
 
-  private saveProgress() {
-    // if (this.gameWin.isWin) return;
-    // let games = this.localStorageService.getItem<any[]>('games');
-    // if (games == null) {
-    //   games = [];
-    // }
-    // const getCurrentGame = () => {
-    //   const gameTilesCount = this.getFilledTilesCounter(this.gameTiles());
-    //   const progressRatio = parseFloat(
-    //     (gameTilesCount / this.game.filledTilesNumber).toFixed(2),
-    //   );
-    //   return {
-    //     level: this.game.level,
-    //     history: this.game.history,
-    //     gameTiles: this.gameTiles(),
-    //     progressPorcentage: progressRatio * 100,
-    //   };
-    // };
-    // const progress = games.find((g) => g.level === this.game.level);
-    // const index = games.findIndex((g) => g.level === this.game.level);
-    // if (progress == null) {
-    //   games.push(getCurrentGame());
-    // } else {
-    //   games[index] = getCurrentGame();
-    // }
-    // this.localStorageService.setItem('games', games);
+      this.localStorageService.setItem('games', storedGames);
+      callback();
+    }
+  }
+
+  private getCurrentGame(): Game {
+    this.game.gameTiles = this.gameTiles();
+    return { ...this.game };
   }
 
   checkGameWin() {
-    // if (
-    //   this.getFilledTilesCounter(this.gameTiles()) !==
-    //   this.game.filledTilesNumber
-    // ) {
-    //   return;
-    // }
-    // this.gameService.checkGameWin(this.game.level, this.gameTiles()).subscribe({
-    //   next: (result) => {
-    //     if (!result.ok) {
-    //       console.log('not ok', result.error);
-    //       //this.router.navigate(['/'], { state: { error: result.error } });
-    //       return;
-    //     }
-    //     Object.assign(this.gameWin, result.datos);
-    //     if (!result.datos.isWin) {
-    //       alert('Solution Not Found');
-    //       return;
-    //     }
-    //     let completedLevels =
-    //       this.localStorageService.getItem<string[]>('completedLevels') || [];
-    //     if (!completedLevels.includes(result.datos.boardId)) {
-    //       completedLevels.push(result.datos.boardId);
-    //     }
-    //     this.localStorageService.setItem<string[]>(
-    //       'completedLevels',
-    //       completedLevels,
-    //     );
-    //     this.clearProgress();
-    //   },
-    //   error: (err) => {
-    //     console.error(err);
-    //   },
-    // });
+    if (this.gameFilledTilesCounter() !== this.board.filledTilesCount) {
+      return;
+    }
+
+    this.saveProgress(() => {
+      this.gameService.getGame(this.game.boardId, this.game).subscribe({
+        next: (res) => {
+          console.log('check win', res.datos);
+          this.board = res.datos.board;
+
+          if (!this.isGameWin) {
+            alert('Solution Not Found');
+            return;
+          }
+
+          console.log('terminate autosave');
+          this.autoSaveSubscription.unsubscribe();
+        },
+        error: console.error,
+      });
+    });
+  }
+
+  onReset() {
+    this.getGame(this.game.boardId, null);
   }
 
   onChangeCursor() {
@@ -266,7 +221,8 @@ export class GameComponent {
       autoCompletedIdxs: [...this.autoCompletedIdxs],
     });
 
-    this.saveProgress();
+    // this.saveProgress();
+    this.checkGameWin();
 
     this.isMouseDown = false;
     this.activePointerId = null;
@@ -351,7 +307,8 @@ export class GameComponent {
       this.updateGameTiles(i, 0);
     });
 
-    this.saveProgress();
+    // this.saveProgress();
+    this.checkGameWin();
   }
 
   click(index: number, fill = true) {
@@ -368,8 +325,6 @@ export class GameComponent {
     if (fill || initTile === 1) {
       this.autoComplete(index);
     }
-
-    this.checkGameWin();
   }
 
   drag(index: number, fill = true) {
@@ -389,8 +344,6 @@ export class GameComponent {
     if (fill || initTile === 1) {
       this.autoComplete(index);
     }
-
-    this.checkGameWin();
   }
 
   private autoComplete(tileIndex: number) {
@@ -571,69 +524,4 @@ export class GameComponent {
 
     return gameGroupNumber;
   }
-
-  // private getCompletedTilesNumbers(
-  //   filledTilesNumbers: number[],
-  //   tiles: Tile[],
-  // ): FilledTilesNumber[] {
-  //   let numbers = filledTilesNumbers.map<FilledTilesNumber>((n) => ({
-  //     number: n,
-  //     complete: false,
-  //   }));
-
-  //   const checkCompleteNumbers = (inverse = false) => {
-  //     let checkedNumbers: GameGroupNumber = JSON.parse(JSON.stringify(numbers));
-  //     let checkGameTiles: Tile[] = JSON.parse(JSON.stringify(tiles));
-
-  //     if (inverse) {
-  //       checkedNumbers.reverse();
-  //       checkGameTiles.reverse();
-  //     }
-
-  //     let filledNumbersIndex = 0;
-
-  //     let baseCounter = 0;
-  //     let counter = 0;
-
-  //     checkGameTiles.forEach((t, i) => {
-  //       if (filledNumbersIndex >= checkedNumbers.length) return;
-
-  //       if (t == -1) baseCounter++;
-
-  //       if (t == 1) {
-  //         if (baseCounter === i) {
-  //           counter++;
-  //         }
-  //         baseCounter++;
-  //       }
-
-  //       if (
-  //         (t == 0 || t == -1 || i + 1 === checkGameTiles.length) &&
-  //         counter > 0
-  //       ) {
-  //         const number = checkedNumbers[filledNumbersIndex].number;
-  //         if (number == counter) {
-  //           checkedNumbers[filledNumbersIndex].complete = true;
-  //           filledNumbersIndex++;
-  //         }
-  //         counter = 0;
-  //       }
-  //     });
-
-  //     if (inverse) {
-  //       checkedNumbers.reverse();
-  //       checkGameTiles.reverse();
-  //     }
-
-  //     return checkedNumbers;
-  //   };
-
-  //   numbers = checkCompleteNumbers();
-
-  //   if (tiles.includes(0)) {
-  //     numbers = checkCompleteNumbers(true);
-  //   }
-
-  //   return numbers;
-  // }
 }
