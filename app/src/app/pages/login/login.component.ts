@@ -20,6 +20,8 @@ export class LoginComponent {
 
   loginForm: FormGroup;
 
+  submitted = false;
+
   formBuilder = inject(FormBuilder);
   authService = inject(AuthService);
   router = inject(Router);
@@ -51,10 +53,9 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    if (!this.loginForm.valid) {
-      console.log('loginForm not valid');
-      return;
-    }
+    this.submitted = true;
+    if (!this.loginForm.valid) return;
+
     const { email, password } = this.loginForm.value;
 
     this.authService.login(email, password).subscribe({

@@ -27,7 +27,7 @@ export class ImgBoardInputComponent implements ControlValueAccessor {
 
   isDrag: boolean = false;
 
-  async onInputFiles(event: Event | DragEvent) {
+  async onInputFile(event: Event | DragEvent) {
     event.preventDefault();
 
     let file: File | null = null;
@@ -129,13 +129,13 @@ export class ImgBoardInputComponent implements ControlValueAccessor {
 
   setImage(processedImage: ImgBoard) {
     this.imgBoard = processedImage;
-    this.onChange(this.imgBoard);
+    this.onChange(processedImage);
     this.onTouched();
   }
 
   clearImage() {
     this.imgBoard = null;
-    this.onChange(this.imgBoard);
+    this.onChange(null);
     this.onTouched();
   }
 

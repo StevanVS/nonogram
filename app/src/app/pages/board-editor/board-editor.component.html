@@ -89,15 +89,76 @@
         formControlName="name"
         type="text"
         placeholder="Board Name"
+        required
       />
+      @if (
+        boardForm.get("name")?.invalid &&
+        (boardForm.get("name")?.touched || submitted)
+      ) {
+        <ul
+          class="bg-danger text-secondary mt-2 list-inside list-disc rounded-md px-4 py-2 font-normal"
+        >
+          @if (boardForm.get("name")?.hasError("required")) {
+            <li>Name is required</li>
+          }
+          @if (boardForm.get("name")?.hasError("minlength")) {
+            <li>Name must be at least 3 characters</li>
+          }
+          @if (boardForm.get("name")?.hasError("maxlength")) {
+            <li>Name must be a maximum of 20 characters</li>
+          }
+        </ul>
+      }
     </div>
 
-    <app-img-board-input
-      tileType="coloredTiles"
-      formControlName="coloredBoard"
-    />
+    <div>
+      <app-img-board-input
+        tileType="coloredTiles"
+        formControlName="coloredBoard"
+      />
+      @if (
+        boardForm.get("coloredBoard")?.invalid &&
+        (boardForm.get("coloredBoard")?.touched || submitted)
+      ) {
+        <ul
+          class="bg-danger text-secondary mt-2 list-inside list-disc rounded-md px-4 py-2 font-normal"
+        >
+          @if (boardForm.get("coloredBoard")?.hasError("required")) {
+            <li>Colored Image is required</li>
+          }
+        </ul>
+      }
+    </div>
+    <div>
+      <app-img-board-input
+        tileType="filledTiles"
+        formControlName="filledBoard"
+      />
+      @if (
+        boardForm.get("filledBoard")?.invalid &&
+        (boardForm.get("filledBoard")?.touched || submitted)
+      ) {
+        <ul
+          class="bg-danger text-secondary mt-2 list-inside list-disc rounded-md px-4 py-2 font-normal"
+        >
+          @if (boardForm.get("filledBoard")?.hasError("required")) {
+            <li>Filled Image is required</li>
+          }
+        </ul>
+      }
+    </div>
 
-    <app-img-board-input tileType="filledTiles" formControlName="filledBoard" />
+    @if (
+      boardForm.invalid &&
+      (boardForm.touched || submitted) &&
+      boardForm.hasError("sameDimensions")
+    ) {
+      <ul
+        class="bg-danger text-secondary col-span-2 mt-2 list-inside list-disc rounded-md px-4 py-2 font-normal"
+      >
+        <li>Image dimensions do not match</li>
+      </ul>
+    }
 
     <div>
       <label for="order">ORDER</label>
@@ -109,6 +170,24 @@
         type="number"
         placeholder="0"
       />
+      @if (
+        boardForm.get("order")?.invalid &&
+        (boardForm.get("order")?.touched || submitted)
+      ) {
+        <ul
+          class="bg-danger text-secondary mt-2 list-inside list-disc rounded-md px-4 py-2 font-normal"
+        >
+          @if (boardForm.get("order")?.hasError("required")) {
+            <li>Order is required</li>
+          }
+          @if (boardForm.get("order")?.hasError("pattern")) {
+            <li>Order must be a number</li>
+          }
+          @if (boardForm.get("order")?.hasError("min")) {
+            <li>Order must be greater or equal to 0</li>
+          }
+        </ul>
+      }
     </div>
 
     <div>
@@ -121,6 +200,21 @@
         type="number"
         placeholder="0"
       />
+      @if (
+        boardForm.get("subGrid")?.invalid &&
+        (boardForm.get("subGrid")?.touched || submitted)
+      ) {
+        <ul
+          class="bg-danger text-secondary mt-2 list-inside list-disc rounded-md px-4 py-2 font-normal"
+        >
+          @if (boardForm.get("subGrid")?.hasError("pattern")) {
+            <li>Sub Grid must be a number</li>
+          }
+          @if (boardForm.get("subGrid")?.hasError("min")) {
+            <li>Sub Grid must be greater or equal to 0</li>
+          }
+        </ul>
+      }
     </div>
 
     <button

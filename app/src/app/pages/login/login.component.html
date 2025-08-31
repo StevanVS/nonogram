@@ -18,22 +18,36 @@
       type="email"
       placeholder="Email"
     />
+    @if (
+      loginForm.get("email")?.invalid &&
+      (loginForm.get("email")?.touched || submitted)
+    ) {
+      <ul
+        class="bg-danger text-secondary mt-2 list-inside list-disc rounded-md px-4 py-2 font-normal"
+      >
+        @if (loginForm.get("email")?.hasError("required")) {
+          <li>Email is required</li>
+        }
+        @if (loginForm.get("email")?.hasError("pattern")) {
+          <li>Email is invalid</li>
+        }
+      </ul>
+    }
   </div>
   <div class="mb-4 w-full">
     <label for="password">PASSWORD</label>
-    <div class="flex items-center gap-2">
+    <div class="relative">
       <input
-        class="bg-primary text-secondary-light focus:bg-primary-light hover:bg-primary-light placeholder:text-secondary-dark w-full flex-1 rounded-md px-4 py-2 text-xl leading-tight placeholder:font-normal focus:outline-none"
+        class="bg-primary text-secondary-light focus:bg-primary-light hover:bg-primary-light placeholder:text-secondary-dark w-full flex-1 rounded-md px-4 py-2 pr-10 text-xl leading-tight placeholder:font-normal focus:outline-none"
         id="password"
         formControlName="password"
         [type]="isPasswordShown ? 'text' : 'password'"
         placeholder="Password"
       />
-
       <button
         (click)="onChangePasswordVisibility()"
         type="button"
-        class="fill-secondary hover:fill-tertiary size-8 cursor-pointer"
+        class="fill-secondary hover:fill-tertiary absolute right-0 mr-2 size-6 h-full cursor-pointer"
       >
         @if (isPasswordShown) {
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -50,6 +64,24 @@
         }
       </button>
     </div>
+    @if (
+      loginForm.get("password")?.invalid &&
+      (loginForm.get("password")?.touched || submitted)
+    ) {
+      <ul
+        class="bg-danger text-secondary mt-2 list-inside list-disc rounded-md px-4 py-2 font-normal"
+      >
+        @if (loginForm.get("password")?.hasError("required")) {
+          <li>Password is required</li>
+        }
+        @if (loginForm.get("password")?.hasError("minlength")) {
+          <li>Password must be at least 8 characters</li>
+        }
+        @if (loginForm.get("password")?.hasError("maxlength")) {
+          <li>Password must be a maximum of 20 characters</li>
+        }
+      </ul>
+    }
   </div>
   <button
     type="submit"

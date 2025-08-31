@@ -1,12 +1,12 @@
 <label
   [for]="'image-reader-' + tileType"
-  (drop)="onInputFiles($event)"
+  (drop)="onInputFile($event)"
   (dragover)="$event.preventDefault()"
   (dragenter)="dragEnter()"
   (dragleave)="dragLeave()"
 >
   <div class="mb-1 text-center">
-    {{ tileType() === "coloredTiles" ? "COLOR" : "FILLED" }}
+    {{ tileType() === "coloredTiles" ? "COLOR" : "FILL" }}
   </div>
 
   @if (imgBoard != null) {
@@ -49,11 +49,13 @@
   }
 
   <input
+    #input
     type="file"
     [id]="'image-reader-' + tileType"
     accept="image/png"
     class="hidden"
-    (change)="onInputFiles($event)"
+    (change)="onInputFile($event)"
+    (click)="input.value = ''"
   />
 </label>
 

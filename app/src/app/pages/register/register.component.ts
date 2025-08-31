@@ -19,6 +19,7 @@ export class RegisterComponent {
   isPasswordShown = false;
 
   registerForm: FormGroup;
+  submitted = false;
 
   formBuilder = inject(FormBuilder);
   authService = inject(AuthService);
@@ -52,10 +53,8 @@ export class RegisterComponent {
   }
 
   onSubmit() {
-    if (!this.registerForm.valid) {
-      console.log('form invalid');
-      return;
-    }
+    this.submitted = true;
+    if (!this.registerForm.valid) return;
 
     const { username, email, password } = this.registerForm.value;
 

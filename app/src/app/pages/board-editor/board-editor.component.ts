@@ -1,8 +1,4 @@
-import {
-  Component,
-  inject,
-  viewChild,
-} from '@angular/core';
+import { Component, inject, viewChild } from '@angular/core';
 import { Board, voidBoard } from '../../interfaces/board.interface';
 import { ImgBoardComponent } from '../../components/img-board/img-board.component';
 import {
@@ -37,16 +33,18 @@ export class BoardEditorComponent {
 
   boardList: Board[] = [];
 
+  boardForm: FormGroup;
+
+  submitted = false;
+
   private formBuilder = inject(FormBuilder);
   private boardService = inject(BoardService);
-
-  boardForm: FormGroup;
 
   constructor() {
     this.boardForm = this.formBuilder.group(
       {
         name: [
-          this.board.name,
+          '',
           [
             Validators.required,
             Validators.minLength(3),
@@ -56,13 +54,10 @@ export class BoardEditorComponent {
         coloredBoard: [null, [Validators.required]],
         filledBoard: [null, [Validators.required]],
         order: [
-          this.board.order,
+          null,
           [Validators.required, Validators.pattern(/^\d+$/), Validators.min(0)],
         ],
-        subGrid: [
-          this.board.subGrid,
-          [Validators.pattern(/^\d+$/), Validators.min(0)],
-        ],
+        subGrid: [null, [Validators.pattern(/^\d+$/), Validators.min(0)]],
       },
       {
         validators: [CustomValidators.sameDimensions],
@@ -78,13 +73,14 @@ export class BoardEditorComponent {
     this.boardService.getList().subscribe((values) => {
       if (values.ok) {
         // this.boardList = values.datos.map((b) => ({ id: b.id, ...b }));
-        this.boardList = values.datos
+        this.boardList = values.datos;
         console.log(this.boardList);
       }
     });
   }
 
   onCreate() {
+    this.submitted = false;
     this.board = voidBoard();
     this.boardForm.reset();
     this.boardForm.patchValue(voidBoard());
@@ -92,6 +88,7 @@ export class BoardEditorComponent {
   }
 
   onEdit(board: Board) {
+    this.submitted = false;
     this.board = board;
     this.boardForm.patchValue(board);
     this.boardForm.patchValue({
@@ -131,10 +128,8 @@ export class BoardEditorComponent {
   }
 
   onSubmit() {
-    if (this.boardForm.invalid) {
-      alert('form not valid');
-      return;
-    }
+    this.submitted = true;
+    if (this.boardForm.invalid) return;
 
     Object.assign(this.board, this.boardForm.value);
     this.board.width = this.boardForm.get('coloredBoard')?.value.width;

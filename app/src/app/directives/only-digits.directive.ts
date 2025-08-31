@@ -7,6 +7,7 @@ export class OnlyDigitsDirective {
   // Evita escribir caracteres no numéricos
   @HostListener('keypress', ['$event'])
   onKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter') return;
     if (!/[0-9]/.test(event.key)) {
       event.preventDefault();
     }

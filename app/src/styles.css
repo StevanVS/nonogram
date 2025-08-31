@@ -14,7 +14,7 @@
   --color-tertiary: hsl(235 80% 80%);
   --color-accent: hsl(115 80% 80%);
 
-  --color-danger: hsl(0, 50%, 50%);
+  --color-danger: hsl(0, 50%, 25%);
 }
 
 @layer theme {
