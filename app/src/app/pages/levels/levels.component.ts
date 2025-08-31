@@ -24,10 +24,8 @@ export class LevelsComponent {
   ngOnInit() {
     this.authService.isUserAuthenticated().subscribe({
       next: (isAuth) => {
-        let games: Game[];
-        if (isAuth) {
-          games = this.authService.user$.value?.games || [];
-        } else {
+        let games: Game[] = [];
+        if (!isAuth) {
           games = this.localStorageService.getItem<Game[]>('games') || [];
         }
         this.getLevels(games);
@@ -40,7 +38,7 @@ export class LevelsComponent {
     this.levelService.getLevels(games).subscribe({
       next: (res) => {
         if (res.ok) {
-          console.log('levels', res.datos);
+          // console.log('levels', res.datos);
           this.levelList = res.datos;
         }
       },

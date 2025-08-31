@@ -6,11 +6,13 @@ import { ServerResponse } from '../interfaces/server-response.interface';
 import {
   BehaviorSubject,
   catchError,
+  filter,
   map,
   mergeMap,
   Observable,
   of,
   pipe,
+  take,
   tap,
 } from 'rxjs';
 
@@ -87,6 +89,7 @@ export class AuthService {
   }
 
   isUserAuthenticated(): Observable<boolean> {
+    return this.authState$.pipe(filter((isAuth) => isAuth != null), take(1));
     return this.restoreAuthState().pipe(
       map((user) => !!user), // devuelve true o false
       catchError(() => of(false)),

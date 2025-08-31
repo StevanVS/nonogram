@@ -1,42 +1,61 @@
 <header class="py-4">
   <nav class="flex justify-between">
-    <div>
-      @if (!isHome) {
+    <div class="flex gap-4">
+      @if (url !== "/") {
         <a
-          class="fill-secondary hover:fill-tertiary hover:text-tertiary cursor-pointer"
+          class="fill-secondary hover:fill-tertiary hover:text-tertiary size-8 cursor-pointer"
           routerLink="/"
         >
-          <svg
-            class="size-8"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 640 640"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
             <path
               d="M304 70.1C313.1 61.9 326.9 61.9 336 70.1L568 278.1C577.9 286.9 578.7 302.1 569.8 312C560.9 321.9 545.8 322.7 535.9 313.8L527.9 306.6L527.9 511.9C527.9 547.2 499.2 575.9 463.9 575.9L175.9 575.9C140.6 575.9 111.9 547.2 111.9 511.9L111.9 306.6L103.9 313.8C94 322.6 78.9 321.8 70 312C61.1 302.2 62 287 71.8 278.1L304 70.1zM320 120.2L160 263.7L160 512C160 520.8 167.2 528 176 528L224 528L224 424C224 384.2 256.2 352 296 352L344 352C383.8 352 416 384.2 416 424L416 528L464 528C472.8 528 480 520.8 480 512L480 263.7L320 120.3zM272 528L368 528L368 424C368 410.7 357.3 400 344 400L296 400C282.7 400 272 410.7 272 424L272 528z"
             />
           </svg>
         </a>
       }
+      @if (url.startsWith("/game/")) {
+        <a
+          class="fill-secondary hover:fill-tertiary hover:text-tertiary size-8 cursor-pointer"
+          routerLink="/levels"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+            <path
+              d="M104 112C90.7 112 80 122.7 80 136L80 184C80 197.3 90.7 208 104 208L152 208C165.3 208 176 197.3 176 184L176 136C176 122.7 165.3 112 152 112L104 112zM256 128C238.3 128 224 142.3 224 160C224 177.7 238.3 192 256 192L544 192C561.7 192 576 177.7 576 160C576 142.3 561.7 128 544 128L256 128zM256 288C238.3 288 224 302.3 224 320C224 337.7 238.3 352 256 352L544 352C561.7 352 576 337.7 576 320C576 302.3 561.7 288 544 288L256 288zM256 448C238.3 448 224 462.3 224 480C224 497.7 238.3 512 256 512L544 512C561.7 512 576 497.7 576 480C576 462.3 561.7 448 544 448L256 448zM80 296L80 344C80 357.3 90.7 368 104 368L152 368C165.3 368 176 357.3 176 344L176 296C176 282.7 165.3 272 152 272L104 272C90.7 272 80 282.7 80 296zM104 432C90.7 432 80 442.7 80 456L80 504C80 517.3 90.7 528 104 528L152 528C165.3 528 176 517.3 176 504L176 456C176 442.7 165.3 432 152 432L104 432z"
+            />
+          </svg>
+        </a>
+      }
     </div>
     <div class="flex gap-4">
-      <a
-        class="fill-secondary hover:fill-tertiary hover:text-tertiary flex h-8 cursor-pointer items-center gap-1"
-        routerLink="/profile"
-      >
-        @if (authService.user$ | async; as user) {
-          <div>{{ user.username }}</div>
-        }
-
-        <svg
-          class="size-8"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 640 640"
+      @if (authService.authState$ | async) {
+        <a
+          class="fill-secondary hover:fill-tertiary hover:text-tertiary flex cursor-pointer items-center gap-1"
+          routerLink="/profile"
         >
-          <path
-            d="M240 192C240 147.8 275.8 112 320 112C364.2 112 400 147.8 400 192C400 236.2 364.2 272 320 272C275.8 272 240 236.2 240 192zM448 192C448 121.3 390.7 64 320 64C249.3 64 192 121.3 192 192C192 262.7 249.3 320 320 320C390.7 320 448 262.7 448 192zM144 544C144 473.3 201.3 416 272 416L368 416C438.7 416 496 473.3 496 544L496 552C496 565.3 506.7 576 520 576C533.3 576 544 565.3 544 552L544 544C544 446.8 465.2 368 368 368L272 368C174.8 368 96 446.8 96 544L96 552C96 565.3 106.7 576 120 576C133.3 576 144 565.3 144 552L144 544z"
-          />
-        </svg>
-      </a>
+          <div>{{ authService.user$.value?.username }}</div>
+
+          <svg
+            class="size-8"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+          >
+            <path
+              d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z"
+            />
+          </svg>
+        </a>
+      } @else {
+        <a
+          class="fill-secondary hover:fill-tertiary hover:text-tertiary flex size-8 cursor-pointer items-center gap-1"
+          routerLink="/login"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+            <path
+              d="M240 192C240 147.8 275.8 112 320 112C364.2 112 400 147.8 400 192C400 236.2 364.2 272 320 272C275.8 272 240 236.2 240 192zM448 192C448 121.3 390.7 64 320 64C249.3 64 192 121.3 192 192C192 262.7 249.3 320 320 320C390.7 320 448 262.7 448 192zM144 544C144 473.3 201.3 416 272 416L368 416C438.7 416 496 473.3 496 544L496 552C496 565.3 506.7 576 520 576C533.3 576 544 565.3 544 552L544 544C544 446.8 465.2 368 368 368L272 368C174.8 368 96 446.8 96 544L96 552C96 565.3 106.7 576 120 576C133.3 576 144 565.3 144 552L144 544z"
+            />
+          </svg>
+        </a>
+      }
     </div>
   </nav>
 </header>

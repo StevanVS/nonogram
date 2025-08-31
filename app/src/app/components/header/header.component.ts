@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { User } from '../../interfaces/user.interface';
 import { filter } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
@@ -13,7 +12,7 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './header.component.css',
 })
 export class HeaderComponent {
-  isHome = false;
+  url = '';
 
   authService = inject(AuthService);
   router = inject(Router);
@@ -22,7 +21,7 @@ export class HeaderComponent {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((result) => {
-        this.isHome = result.url === '/';
+        this.url = result.url;
       });
   }
 }

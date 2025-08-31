@@ -39,7 +39,9 @@ export class GameComponent {
   private isDragAxisX: boolean | null = null;
   private changedTileIndexes: number[] = [];
   private autoCompletedIdxs: number[] = [];
-  private autoSaveSubscription: Subscription;
+  private autoSaveSubscription!: Subscription;
+
+  borderClasses: { [key: number]: { [klass: string]: any } } = {};
 
   board: Board = voidBoard();
 
@@ -94,24 +96,15 @@ export class GameComponent {
   private localStorageService = inject(LocalStorageService);
 
   constructor() {
-    console.log('init autosave');
-    this.autoSaveSubscription = interval(10000).subscribe({
-      next: () => {
-        this.saveProgress(() => {
-          console.log('autosave');
-        });
-      },
-    });
+    this.initAutosave();
   }
 
   ngOnInit() {
     let boardId: string = this.activatedRoute.snapshot.params['id'];
     this.authService.isUserAuthenticated().subscribe({
       next: (isAuth) => {
-        let games: Game[];
-        if (isAuth) {
-          games = this.authService.user$.value?.games || [];
-        } else {
+        let games: Game[] = [];
+        if (!isAuth) {
           games = this.localStorageService.getItem<Game[]>('games') || [];
         }
 
@@ -125,6 +118,24 @@ export class GameComponent {
 
   ngOnDestroy() {
     console.log('destroy');
+    this.disableAutosave();
+    this.saveProgress(() => {
+      console.log('Saved');
+    });
+  }
+
+  initAutosave() {
+    console.log('init autosave');
+    this.autoSaveSubscription = interval(20000).subscribe({
+      next: () => {
+        this.saveProgress(() => {
+          console.log('autosave');
+        });
+      },
+    });
+  }
+
+  disableAutosave() {
     this.autoSaveSubscription.unsubscribe();
   }
 
@@ -135,6 +146,28 @@ export class GameComponent {
         this.game = res.datos.game;
 
         this.gameTiles.set(this.game.gameTiles);
+
+        Array.from({ length: this.board.width * this.board.height }).map(
+          (_, index) => {
+            const x = index % this.board.width;
+            const y = Math.floor(index / this.board.width);
+            const width = this.board.width;
+            const height = this.board.height;
+            const subGrid = this.board.subGrid;
+            this.borderClasses[index] = {
+              'border-t': y >= 1,
+              'border-b': y < height - 1,
+              'border-l': x >= 1,
+              'border-r': x < width - 1,
+
+              'border-t-2': index >= width && y % subGrid === 0,
+              'border-b-2':
+                index < width * (height - 1) && y % subGrid === subGrid - 1,
+              'border-r-2': x !== width - 1 && x % subGrid === subGrid - 1,
+              'border-l-2': x !== 0 && x % subGrid === 0,
+            };
+          },
+        );
       },
       error: console.error,
     });
@@ -180,19 +213,19 @@ export class GameComponent {
       return;
     }
 
+    this.disableAutosave();
     this.saveProgress(() => {
       this.gameService.getGame(this.game.boardId, this.game).subscribe({
         next: (res) => {
           console.log('check win', res.datos);
           this.board = res.datos.board;
 
+          // TODO: mensaje con modal
           if (!this.isGameWin) {
             alert('Solution Not Found');
+            this.initAutosave();
             return;
           }
-
-          console.log('terminate autosave');
-          this.autoSaveSubscription.unsubscribe();
         },
         error: console.error,
       });

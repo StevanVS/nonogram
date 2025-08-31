@@ -109,14 +109,10 @@
         <div
           [attr.data-index]="$index"
           class="tile border-primary-light"
-          [ngClass]="{
-            'bg-tertiary': tile === 1,
-            'border-t': $index / board.width >= 1,
-            'border-r': $index % board.width < board.width - 1,
-            'border-b': $index / board.width < board.height - 1,
-            'border-l': $index % board.width >= 1,
-          }"
+          [class.bg-tertiary]="tile === 1"
+          [ngClass]="borderClasses[$index]"
         >
+
           @if (tile === -1) {
             <div
               class="pointer-events-none flex h-full items-center justify-center"

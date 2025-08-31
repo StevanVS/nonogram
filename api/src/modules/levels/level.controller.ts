@@ -2,9 +2,13 @@ import { RequestHandler } from "express";
 import { badRequest, ok, serverError } from "../../utils/request";
 import { BoardModel } from "../boards/board.model";
 import { getLevelsSchema } from "./level.validation";
-import { Board } from "../../interfaces/board";
+import { GameModel } from "../games/game.model";
 
 export const getLevels: RequestHandler = async (req, res) => {
+  if (req.userId) {
+    req.body.games = await GameModel.find({ userId: req.userId }).lean();
+  }
+
   const validReq = getLevelsSchema.safeParse(req.body);
   if (!validReq.success) {
     return badRequest(res, JSON.parse(validReq.error.message));
@@ -24,7 +28,6 @@ export const getLevels: RequestHandler = async (req, res) => {
       return {
         id: board.id,
         order: board.order,
-        // complete: complete,
         progressPercentage: game
           ? board.getProgressPercentage(game.gameTiles)
           : 0,

@@ -3,19 +3,26 @@ import { getGameSchema, saveGameSchema } from "./game.validation";
 import { badRequest, ok, serverError } from "../../utils/request";
 import { BoardModel } from "../boards/board.model";
 import { Board } from "../../interfaces/board";
-import { UserModel } from "../users/user.model";
 import { Game } from "../../interfaces/game";
+import { GameModel } from "./game.model";
 
 export const getGame: RequestHandler = async (req, res) => {
-  const validReq = getGameSchema.safeParse(req.body);
-  if (!validReq.success) {
-    return badRequest(res, JSON.parse(validReq.error.message));
-  }
-
   const boardId = req.params.boardId;
-  let game = validReq.data.game;
-
   try {
+    if (req.userId) {
+      req.body.game = await GameModel.findOne({
+        userId: req.userId,
+        boardId: boardId,
+      }).lean();
+    }
+
+    const validReq = getGameSchema.safeParse(req.body);
+    if (!validReq.success) {
+      return badRequest(res, JSON.parse(validReq.error.message));
+    }
+
+    let game = validReq.data.game;
+
     const board = await BoardModel.findById(boardId);
     if (board == null) {
       return badRequest(res, "Board Not Found");
@@ -57,16 +64,11 @@ export const saveGame: RequestHandler = async (req, res) => {
   const game = validReq.data.game;
 
   try {
-    await UserModel.updateOne(
-      { _id: req.userId, "games.boardId": game.boardId },
-      { $set: { "games.$": game } } // actualiza si existe
+    await GameModel.findOneAndUpdate(
+      { userId: req.userId, boardId: game.boardId }, 
+      { $set: { ...game, userId: req.userId } },
+      { upsert: true }
     );
-
-    await UserModel.updateOne(
-      { _id: req.userId, "games.boardId": { $ne: game.boardId } },
-      { $push: { games: game } } // inserta si no existe
-    );
-
     ok(res);
   } catch (error) {
     serverError(res, error);
