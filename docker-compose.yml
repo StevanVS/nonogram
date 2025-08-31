@@ -32,10 +32,8 @@ services:
     container_name: nonogram-app
     build: ./app
     image: nonogram-app
-    depends_on:
-      - api
     ports:
-      - 80:80
+      - 8080:8080
     networks:
       - nonogram-network
     

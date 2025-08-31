@@ -6,6 +6,7 @@ import levelRoutes from "./modules/levels/level.routes";
 import gameRoutes from "./modules/games/game.routes";
 import authRoutes from "./modules/auth/auth.routes";
 import userRoutes from "./modules/users/user.routes";
+import { NODE_ENV } from "./config";
 
 export default class App {
   public express;
@@ -19,6 +20,7 @@ export default class App {
     this.mountRoutes();
 
     this.express.listen(port, () => {
+      console.log("NODE_ENV", NODE_ENV);
       console.log(`Server listening in port ${port}`);
     });
   }
@@ -27,7 +29,10 @@ export default class App {
     this.express.use(json());
     this.express.use(
       cors({
-        origin: ["http://localhost:4200", "http://127.0.0.1:4200"],
+        origin:
+          NODE_ENV === "production"
+            ? ["http://localhost:8080", "http://127.0.0.1:8080"]
+            : ["http://localhost:4200", "http://127.0.0.1:4200"],
         credentials: true,
         allowedHeaders: ["Authorization", "Content-Type"],
       })

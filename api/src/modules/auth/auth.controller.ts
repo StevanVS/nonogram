@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../../config";
+import { JWT_SECRET, NODE_ENV } from "../../config";
 import { JwtToken } from "../../interfaces/jwt-token";
 import { RequestHandler } from "express";
 import { loginSchema, registerSchema } from "./auth.validation";
@@ -32,7 +32,7 @@ export const register: RequestHandler = async (req, res) => {
     ok(
       res.cookie("access_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: NODE_ENV === "production",
       }),
       "Successfully Register"
     );
@@ -62,7 +62,7 @@ export const login: RequestHandler = async (req, res) => {
     ok(
       res.cookie("access_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: NODE_ENV === "production",
       }),
       "Successfully Register"
     );

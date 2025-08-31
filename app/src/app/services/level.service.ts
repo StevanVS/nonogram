@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Level } from '../interfaces/level.interface';
 import { ServerResponse } from '../interfaces/server-response.interface';
