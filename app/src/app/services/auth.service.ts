@@ -12,6 +12,7 @@ import {
   Observable,
   of,
   pipe,
+  switchMap,
   take,
   tap,
 } from 'rxjs';
@@ -89,10 +90,23 @@ export class AuthService {
   }
 
   isUserAuthenticated(): Observable<boolean> {
-    return this.authState$.pipe(filter((isAuth) => isAuth != null), take(1));
-    return this.restoreAuthState().pipe(
-      map((user) => !!user), // devuelve true o false
-      catchError(() => of(false)),
+    return this.authState$.pipe(
+      filter((isAuth) => isAuth != null),
+      take(1),
+    );
+  }
+
+  isUserAdmin(): Observable<boolean> {
+    return this.authState$.pipe(
+      filter((isAuth) => isAuth != null),
+      take(1),
+      switchMap(() =>
+        this.user$.pipe(
+          filter((user) => user != null), // esperar hasta que haya user
+          take(1),
+          map((user) => user!.role === 'admin'), // aquí decides el booleano
+        ),
+      ),
     );
   }
 

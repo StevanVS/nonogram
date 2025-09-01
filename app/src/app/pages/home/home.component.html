@@ -1,4 +1,4 @@
-<div class="pb-20 mt-10">
+<div class="mt-10 pb-20">
   <h1 class="text-secondary mb-4 text-center text-5xl font-black sm:text-6xl">
     NONOGRAM
   </h1>
@@ -11,12 +11,17 @@
   >
     PLAY
   </button>
-  <button
-    class="bg-primary-light text-secondary hover:bg-tertiary hover:text-primary-dark w-60 cursor-pointer rounded-md px-4 py-2 text-xl font-extrabold"
-    routerLink="/board-editor"
-  >
-    BOARD EDITOR
-  </button>
+  @if (authService.user$ | async; as user) {
+    @if (user.role === "admin") {
+      <button
+        class="bg-primary-light text-secondary hover:bg-tertiary hover:text-primary-dark w-60 cursor-pointer rounded-md px-4 py-2 text-xl font-extrabold"
+        routerLink="/board-editor"
+      >
+        BOARD EDITOR
+      </button>
+    }
+  }
+
   <button
     class="bg-primary-light text-secondary hover:bg-tertiary hover:text-primary-dark w-60 cursor-pointer rounded-md px-4 py-2 text-xl font-extrabold"
     routerLink="/settings"

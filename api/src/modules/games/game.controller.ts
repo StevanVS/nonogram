@@ -74,3 +74,12 @@ export const saveGame: RequestHandler = async (req, res) => {
     serverError(res, error);
   }
 };
+
+export const deleteAllGames: RequestHandler = async (req, res) => {
+  try {
+    await GameModel.deleteMany({userId: req.userId})
+    ok(res);
+  } catch (error) {
+    serverError(res, error);
+  }
+};

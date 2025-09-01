@@ -25,4 +25,8 @@ export class GameService {
       { game },
     );
   }
+
+  deleteAllGames() {
+    return this.http.delete<ServerResponse<void>>(`${this.api_url}/games/`);
+  }
 }

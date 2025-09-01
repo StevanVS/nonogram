@@ -1,12 +1,18 @@
-<div class="page">
-  <h1 class="title">Settings</h1>
-  <section>
-    <h2 class="section-title">Data</h2>
-    <div class="setting">
-      <p class="text">
-        Delete all data, including settings, completed levels and game progress
-      </p>
-      <button class="btn danger" (click)="onDeleteData()">Delete</button>
-    </div>
-  </section>
-</div>
+<h1
+  class="text-secondary mt-10 mb-4 pb-10 text-center text-5xl font-black sm:text-6xl"
+>
+  SETTINGS
+</h1>
+
+<section>
+  <h2 class="text-2xl font-bold mb-2">Games</h2>
+  <div class="grid grid-cols-[8fr_2fr] gap-4">
+    <p>Delete all completed games and game progress.</p>
+    <button
+      class="bg-primary-light text-secondary hover:bg-danger hover:text-secondary cursor-pointer rounded-md px-4 py-2 font-extrabold"
+      (click)="onDeleteAllGames()"
+    >
+      DELETE
+    </button>
+  </div>
+</section>
