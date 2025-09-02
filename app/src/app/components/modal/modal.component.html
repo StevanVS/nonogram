@@ -1,6 +1,7 @@
 <dialog
   #modal
   class="bg-primary-dark text-secondary m-auto w-full rounded-md px-4 py-6 backdrop:bg-black/75 sm:w-100 md:w-150"
+  (click)="onDialogClick($event)"
 >
   <div class="mb-2 flex justify-between">
     <h2 class="font-bold text-3xl">{{ titleText() }}</h2>
