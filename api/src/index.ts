@@ -1,10 +1,5 @@
-import App from "./app";
-import { connectDB } from "./config/database";
+import app from "./app";
 
 const port = process.env.API_PORT || 3050;
 
-const server = new App();
-
-connectDB().then(() => {
-  server.init(port);
-});
+app.init(port);

@@ -6,9 +6,10 @@ import levelRoutes from "./modules/levels/level.routes";
 import gameRoutes from "./modules/games/game.routes";
 import authRoutes from "./modules/auth/auth.routes";
 import userRoutes from "./modules/users/user.routes";
-import { NODE_ENV } from "./config";
+import { NODE_ENV, CDatabase } from "./config";
+import mongoose from "mongoose";
 
-export default class App {
+class App {
   public express;
 
   constructor() {
@@ -16,6 +17,7 @@ export default class App {
   }
 
   async init(port: number | string) {
+    await this.connectDB();
     this.mountMiddlewares();
     this.mountRoutes();
 
@@ -48,4 +50,23 @@ export default class App {
     this.express.use("/auth", authRoutes);
     this.express.use("/users", userRoutes);
   }
+
+  private async connectDB() {
+    try {
+      console.log("CDatabase", CDatabase);
+      await mongoose.connect(CDatabase.url, {
+        autoIndex: NODE_ENV !== "production",
+        auth: { username: CDatabase.username, password: CDatabase.password },
+        // authSource: "admin",
+        dbName: CDatabase.dbname,
+      });
+
+      console.log("Connected de DB");
+    } catch (error) {
+      console.error("Failed to connect do DB", error);
+      // process.exit(1);
+    }
+  }
 }
+
+export default new App();

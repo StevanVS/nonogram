@@ -1,21 +1,21 @@
 services:
   mongodb:
+    restart: unless-stopped
     container_name: nonogram-mongodb
     image: mongo:latest
     environment:
-      MONGO_INITDB_ROOT_USERNAME: $MONGODB_USER
-      MONGO_INITDB_ROOT_PASSWORD: $MONGODB_PASS
-      MONGO_INITDB_DATABASE: $MONGODB_DBNAME
+      MONGO_INITDB_ROOT_USERNAME: $DB_USER
+      MONGO_INITDB_ROOT_PASSWORD: $DB_PASS
+      MONGO_INITDB_DATABASE: $DB_NAME
     ports:
       - "27017:27017"
     volumes:
-      # - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - mongo-config:/data/configdb
-      - mongo-data:/data/db
+      - mongo_data:/data/db
     networks:
-      - nonogram-network
-    
+      - nonogram_network
+
   api:
+    restart: unless-stopped
     container_name: nonogram-api
     build: ./api
     image: nonogram-api
@@ -23,23 +23,30 @@ services:
       - mongodb
     ports:
       - "3050:3050"
-    env_file:
-      - .env
+    environment:
+      - API_PORT=$API_PORT
+      - JWT_SECRET=$JWT_SECRET
+      - DB_HOST=$DB_HOST
+      - DB_USER=$DB_USER
+      - DB_PASS=$DB_PASS
+      - DB_NAME=$DB_NAME
     networks:
-      - nonogram-network
+      - nonogram_network
 
-  app: 
+  app:
+    restart: unless-stopped
     container_name: nonogram-app
     build: ./app
     image: nonogram-app
+    depends_on:
+      - api
     ports:
       - 8080:8080
     networks:
-      - nonogram-network
-    
+      - nonogram_network
+
 volumes:
-  mongo-data:
-  mongo-config:
+  mongo_data:
 
 networks:
-  nonogram-network:
+  nonogram_network:
