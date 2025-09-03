@@ -1,5 +1,5 @@
 <label
-  [for]="'image-reader-' + tileType"
+  [for]="'image-reader-' + tileType()"
   (drop)="onInputFile($event)"
   (dragover)="$event.preventDefault()"
   (dragenter)="dragEnter()"
@@ -51,7 +51,7 @@
   <input
     #input
     type="file"
-    [id]="'image-reader-' + tileType"
+    [id]="'image-reader-' + tileType()"
     accept="image/png"
     class="hidden"
     (change)="onInputFile($event)"
