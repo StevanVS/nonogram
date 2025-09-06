@@ -55,6 +55,37 @@ export const getGame: RequestHandler = async (req, res) => {
   }
 };
 
+export const getNewGame: RequestHandler = async (req, res) => {
+  const boardId = req.params.boardId;
+  try {
+    const board = await BoardModel.findById(boardId);
+    if (board == null) {
+      return badRequest(res, "Board Not Found");
+    }
+
+    const game: Game = {
+      boardId: boardId,
+      gameTiles: Array.from<number>({
+        length: board.width * board.height,
+      }).fill(0),
+      history: [],
+    };
+
+    const result: { game: Game; board: Board } = {
+      game,
+      board: {
+        ...board.toJSON(),
+        filledTiles: [],
+        coloredTiles: [],
+      },
+    };
+
+    ok(res, result);
+  } catch (error) {
+    serverError(res, error);
+  }
+};
+
 export const saveGame: RequestHandler = async (req, res) => {
   const validReq = saveGameSchema.safeParse(req.body);
   if (!validReq.success) {
@@ -65,7 +96,7 @@ export const saveGame: RequestHandler = async (req, res) => {
 
   try {
     await GameModel.findOneAndUpdate(
-      { userId: req.userId, boardId: game.boardId }, 
+      { userId: req.userId, boardId: game.boardId },
       { $set: { ...game, userId: req.userId } },
       { upsert: true }
     );
@@ -77,7 +108,7 @@ export const saveGame: RequestHandler = async (req, res) => {
 
 export const deleteAllGames: RequestHandler = async (req, res) => {
   try {
-    await GameModel.deleteMany({userId: req.userId})
+    await GameModel.deleteMany({ userId: req.userId });
     ok(res);
   } catch (error) {
     serverError(res, error);

@@ -12,6 +12,12 @@ export class GameService {
   private api_url = environment.api_url;
   private http = inject(HttpClient);
 
+  getNewGame(boardId: string) {
+    return this.http.get<ServerResponse<{ board: Board; game: Game }>>(
+      `${this.api_url}/games/getnewgame/${boardId}`,
+    );
+  }
+
   getGame(boardId: string, game?: Game | null) {
     return this.http.post<ServerResponse<{ board: Board; game: Game }>>(
       `${this.api_url}/games/getgame/${boardId}`,

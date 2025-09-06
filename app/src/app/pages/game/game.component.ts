@@ -233,7 +233,15 @@ export class GameComponent {
   }
 
   onReset() {
-    this.getGame(this.game.boardId, null);
+    this.gameService.getNewGame(this.game.boardId).subscribe({
+      next: (res) => {
+        this.board = res.datos.board;
+        this.game = res.datos.game;
+
+        this.gameTiles.set(this.game.gameTiles);
+      },
+      error: console.error,
+    });
   }
 
   onChangeCursor() {
