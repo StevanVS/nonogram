@@ -1,13 +1,18 @@
-import express, { json } from "express";
+import express from "express";
 import cors from "cors";
+import http from "node:http";
+import https from "node:https";
+import fs from "node:fs";
+
+import { NODE_ENV, CDatabase } from "./config";
+import mongoose from "mongoose";
+
 import cookieParser from "cookie-parser";
 import boardRoutes from "./modules/boards/board.routes";
 import levelRoutes from "./modules/levels/level.routes";
 import gameRoutes from "./modules/games/game.routes";
 import authRoutes from "./modules/auth/auth.routes";
 import userRoutes from "./modules/users/user.routes";
-import { NODE_ENV, CDatabase } from "./config";
-import mongoose from "mongoose";
 
 class App {
   public express;
@@ -21,14 +26,27 @@ class App {
     this.mountMiddlewares();
     this.mountRoutes();
 
-    this.express.listen(port, () => {
-      console.log("NODE_ENV", NODE_ENV);
-      console.log(`Server listening in port ${port}`);
-    });
+    if (NODE_ENV === "production") {
+      // Load your SSL certificate and private key
+      const credentials = {
+        key: fs.readFileSync("/ssl/localhost-key.pem", "utf8"),
+        cert: fs.readFileSync("/ssl/localhost.pem", "utf8"),
+      };
+
+      https.createServer(credentials, this.express).listen(port, () => {
+        console.log("NODE_ENV", NODE_ENV);
+        console.log(`HTTPS server listening in port ${port}`);
+      });
+    } else {
+      http.createServer(this.express).listen(port, () => {
+        console.log("NODE_ENV", NODE_ENV);
+        console.log(`HTTP server listening in port ${port}`);
+      });
+    }
   }
 
   private mountMiddlewares() {
-    this.express.use(json());
+    this.express.use(express.json());
     this.express.use(
       cors({
         origin:
@@ -53,7 +71,7 @@ class App {
 
   private async connectDB() {
     try {
-      console.log("CDatabase", CDatabase);
+      // console.log("CDatabase", CDatabase);
       await mongoose.connect(CDatabase.url, {
         autoIndex: NODE_ENV !== "production",
         auth: { username: CDatabase.username, password: CDatabase.password },
