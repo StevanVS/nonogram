@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { profile } from "./user.controller";
-import { isAuth } from "../../common/auth.middleware";
+import { user } from "./user.controller";
+import { isAuth, optionalAuth } from "../../common/auth.middleware";
 
 const router = Router();
 
-router.get("/profile", isAuth, profile);
+router.get("/user", optionalAuth, user);
 
 export default router;

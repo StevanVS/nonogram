@@ -27,12 +27,12 @@
       }
     </div>
     <div class="flex gap-4">
-      @if (authService.authState$ | async) {
+      @if (authService.currentUser$ | async; as user) {
         <a
           class="fill-secondary hover:fill-tertiary hover:text-tertiary flex cursor-pointer items-center gap-1"
           routerLink="/profile"
         >
-          <div>{{ authService.user$.value?.username }}</div>
+          <div>{{ user.username }}</div>
 
           <svg
             class="size-8"

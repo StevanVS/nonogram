@@ -101,7 +101,7 @@ export class GameComponent {
 
   ngOnInit() {
     let boardId: string = this.activatedRoute.snapshot.params['id'];
-    this.authService.isUserAuthenticated().subscribe({
+    this.authService.isUserAuth().subscribe({
       next: (isAuth) => {
         let games: Game[] = [];
         if (!isAuth) {
@@ -182,25 +182,30 @@ export class GameComponent {
     )
       return;
 
-    const isAuth = this.authService.authState$.value;
+    this.authService.isUserAuth().subscribe({
+      next: (isAuth) => {
+        if (isAuth) {
+          this.gameService.saveGame(this.getCurrentGame()).subscribe({
+            next: () => callback(),
+            error: console.error,
+          });
+        } else {
+          let storedGames = this.localStorageService.getItem<Game[]>('games');
+          if (storedGames == null) storedGames = [];
 
-    if (isAuth) {
-      this.gameService.saveGame(this.getCurrentGame()).subscribe({
-        next: () => callback(),
-        error: console.error,
-      });
-    } else {
-      let storedGames = this.localStorageService.getItem<Game[]>('games');
-      if (storedGames == null) storedGames = [];
+          const index = storedGames.findIndex(
+            (g) => g.boardId === this.board.id,
+          );
+          index === -1
+            ? storedGames.push(this.getCurrentGame())
+            : (storedGames[index] = this.getCurrentGame());
 
-      const index = storedGames.findIndex((g) => g.boardId === this.board.id);
-      index === -1
-        ? storedGames.push(this.getCurrentGame())
-        : (storedGames[index] = this.getCurrentGame());
-
-      this.localStorageService.setItem('games', storedGames);
-      callback();
-    }
+          this.localStorageService.setItem('games', storedGames);
+          callback();
+        }
+      },
+      error: console.error,
+    });
   }
 
   private getCurrentGame(): Game {

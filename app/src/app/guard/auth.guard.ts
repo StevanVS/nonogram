@@ -8,7 +8,7 @@ export const isAuth: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   return authService
-    .isUserAuthenticated()
+    .isUserAuth()
     .pipe(map((value) => (value ? true : router.createUrlTree(['/login']))));
 };
 
@@ -17,8 +17,8 @@ export const isNotAuth: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   return authService
-    .isUserAuthenticated()
-    .pipe(map((value) => (value ? router.createUrlTree(['/']) : true)));
+    .isUserAuth()
+    .pipe(map((value) => (value ? router.createUrlTree(['/login']) : true)));
 };
 
 export const isAdmin: CanActivateFn = (route, state) => {
@@ -27,5 +27,5 @@ export const isAdmin: CanActivateFn = (route, state) => {
 
   return authService
     .isUserAdmin()
-    .pipe(map((value) => (value ? true : router.createUrlTree(['/']))));
+    .pipe(map((value) => (value ? true : router.createUrlTree(['/login']))));
 };

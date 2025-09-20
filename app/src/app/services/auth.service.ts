@@ -5,14 +5,10 @@ import { User } from '../interfaces/user.interface';
 import { ServerResponse } from '../interfaces/server-response.interface';
 import {
   BehaviorSubject,
-  catchError,
-  filter,
+  distinctUntilChanged,
   map,
-  mergeMap,
   Observable,
-  of,
-  pipe,
-  switchMap,
+  shareReplay,
   take,
   tap,
 } from 'rxjs';
@@ -24,106 +20,58 @@ export class AuthService {
   private apiUrl = environment.api_url;
   private http = inject(HttpClient);
 
-  readonly user$ = new BehaviorSubject<User | null>(null);
-  readonly authState$ = new BehaviorSubject<boolean | null>(null);
+  private currentUserSubject$ = new BehaviorSubject<User | null>(null);
 
-  private handleAfterAuth = pipe(
-    tap((res: ServerResponse<any>) => {
-      this.authState$.next(res.ok);
-    }),
-    mergeMap((res) => {
-      if (res.ok) return this.getUserProfile();
-      else return of(null);
-    }),
-    tap((user) => {
-      this.user$.next(user);
-    }),
-  );
+  public readonly currentUser$ = this.currentUserSubject$
+    .asObservable()
+    .pipe(distinctUntilChanged());
 
-  constructor() {
-    // console.log('init auth');
-    this.restoreAuthState().subscribe();
+  public readonly authState$ = this.currentUser$.pipe(map((user) => !!user));
+
+  constructor() {}
+
+  login(credentials: { email: string; password: string }) {
+    return this.http
+      .post<ServerResponse<User>>(`${this.apiUrl}/auth/login`, credentials)
+      .pipe(tap((res) => this.currentUserSubject$.next(res.datos)));
   }
 
-  login(email: string, password: string) {
+  register(credentials: { username: string; email: string; password: string }) {
     return this.http
-      .post<ServerResponse<any>>(`${this.apiUrl}/auth/login`, {
-        email,
-        password,
-      })
-      .pipe(this.handleAfterAuth);
-  }
-
-  register(username: string, email: string, password: string) {
-    return this.http
-      .post<ServerResponse<any>>(`${this.apiUrl}/auth/register`, {
-        username,
-        email,
-        password,
-      })
-      .pipe(this.handleAfterAuth);
+      .post<ServerResponse<User>>(`${this.apiUrl}/auth/register`, credentials)
+      .pipe(tap((res) => this.currentUserSubject$.next(res.datos)));
   }
 
   logout() {
     return this.http
       .post<ServerResponse<any>>(`${this.apiUrl}/auth/logout`, {})
-      .pipe(
-        tap(() => {
-          this.user$.next(null);
-          this.authState$.next(false);
-        }),
-      );
+      .pipe(tap(() => this.currentUserSubject$.next(null)));
   }
 
   checkToken() {
     return this.http.get<ServerResponse<any>>(`${this.apiUrl}/auth/checktoken`);
   }
 
-  getUserProfile() {
+  getCurrentUser() {
     return this.http
-      .get<ServerResponse<User>>(`${this.apiUrl}/users/profile`)
+      .get<ServerResponse<User>>(`${this.apiUrl}/users/user`)
       .pipe(
-        map((res) => {
-          return res.ok ? res.datos : null;
+        tap({
+          next: (res) => this.currentUserSubject$.next(res.datos),
+          error: console.error,
         }),
+        shareReplay(1),
       );
   }
 
-  isUserAuthenticated(): Observable<boolean> {
-    return this.authState$.pipe(
-      filter((isAuth) => isAuth != null),
-      take(1),
-    );
+  isUserAuth(): Observable<boolean> {
+    return this.authState$.pipe(take(1));
   }
 
   isUserAdmin(): Observable<boolean> {
-    return this.authState$.pipe(
-      filter((isAuth) => isAuth != null),
+    return this.currentUser$.pipe(
       take(1),
-      switchMap(() =>
-        this.user$.pipe(
-          filter((user) => user != null), // esperar hasta que haya user
-          take(1),
-          map((user) => user!.role === 'admin'), // aquí decides el booleano
-        ),
-      ),
-    );
-  }
-
-  restoreAuthState() {
-    return this.checkToken().pipe(
-      mergeMap((res) => (res.ok ? this.getUserProfile() : of(null))),
-      tap({
-        next: (user) => {
-          this.user$.next(user);
-          this.authState$.next(user ? true : false);
-        },
-        error: (error) => {
-          console.error('Error restoring auth state', error);
-          this.user$.next(null);
-          this.authState$.next(false);
-        },
-      }),
+      map((user) => user!.role === 'admin'),
     );
   }
 }

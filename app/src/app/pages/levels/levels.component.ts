@@ -22,7 +22,7 @@ export class LevelsComponent {
   authService = inject(AuthService);
 
   ngOnInit() {
-    this.authService.isUserAuthenticated().subscribe({
+    this.authService.isUserAuth().subscribe({
       next: (isAuth) => {
         let games: Game[] = [];
         if (!isAuth) {

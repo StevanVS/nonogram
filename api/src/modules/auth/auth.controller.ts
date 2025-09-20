@@ -29,12 +29,14 @@ export const register: RequestHandler = async (req, res) => {
 
     const token = generateToken({ id: user.id, role: user.role });
 
+    const userToSend = { ...user.toJSON(), password: "" };
+
     ok(
       res.cookie("access_token", token, {
         httpOnly: true,
         secure: NODE_ENV === "production",
       }),
-      "Successfully Register"
+      userToSend
     );
   } catch (error) {
     serverError(res, error);
@@ -59,12 +61,14 @@ export const login: RequestHandler = async (req, res) => {
 
     const token = generateToken({ id: user.id, role: user.role });
 
+    const userToSend = { ...user.toJSON(), password: "" };
+
     ok(
       res.cookie("access_token", token, {
         httpOnly: true,
         secure: NODE_ENV === "production",
       }),
-      "Successfully Register"
+      userToSend
     );
   } catch (error) {
     serverError(res, error);

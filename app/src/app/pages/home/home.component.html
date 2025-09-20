@@ -11,7 +11,7 @@
   >
     PLAY
   </button>
-  @if (authService.user$ | async; as user) {
+  @if (authService.currentUser$ | async; as user) {
     @if (user.role === "admin") {
       <button
         class="bg-primary-light text-secondary hover:bg-tertiary hover:text-primary-dark w-60 cursor-pointer rounded-md px-4 py-2 text-xl font-extrabold"

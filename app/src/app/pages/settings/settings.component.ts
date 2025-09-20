@@ -25,7 +25,7 @@ export class SettingsComponent {
   constructor() {}
 
   onDeleteAllGames() {
-    this.authService.isUserAuthenticated().subscribe({
+    this.authService.isUserAuth().subscribe({
       next: (isAuth) => {
         if (isAuth) {
           this.gameService.deleteAllGames().subscribe({

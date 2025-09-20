@@ -11,8 +11,8 @@
   --color-secondary: hsl(175 50% 90%);
   --color-secondary-light: hsl(175 50% 95%);
 
-  --color-tertiary: hsl(235 80% 80%);
-  --color-accent: hsl(115 80% 80%);
+  --color-tertiary: hsl(235 80% 75%);
+  --color-accent: hsl(115 80% 75%);
 
   --color-danger: hsl(0, 50%, 25%);
 }
