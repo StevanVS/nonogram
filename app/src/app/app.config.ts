@@ -6,7 +6,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { credentialInterceptor } from './utils/credentials-interceptor';
+import { credentialInterceptor } from './interceptors/credentials-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
