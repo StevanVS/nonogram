@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node build/index.js",
     "build": "tsc",
-    "dev": "tsnd --respawn --rs --poll --env-file=.env src/index.ts"
+    "dev": "tsnd --respawn --rs --poll --env-file=.env.dev src/index.ts"
   },
   "keywords": [],
   "author": "",
