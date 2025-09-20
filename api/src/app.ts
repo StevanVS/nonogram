@@ -4,7 +4,7 @@ import http from "node:http";
 import https from "node:https";
 import fs from "node:fs";
 
-import { NODE_ENV, CDatabase } from "./config";
+import { NODE_ENV, CDatabase, APP_HOST } from "./config";
 import mongoose from "mongoose";
 
 import cookieParser from "cookie-parser";
@@ -27,7 +27,6 @@ class App {
     this.mountRoutes();
 
     if (NODE_ENV === "production") {
-      // Load your SSL certificate and private key
       const credentials = {
         key: fs.readFileSync("/ssl/localhost-key.pem", "utf8"),
         cert: fs.readFileSync("/ssl/localhost.pem", "utf8"),
@@ -51,8 +50,8 @@ class App {
       cors({
         origin:
           NODE_ENV === "production"
-            ? ["http://localhost:8080", "http://127.0.0.1:8080"]
-            : ["http://localhost:4200", "http://127.0.0.1:4200"],
+            ? [`https://${APP_HOST}`]
+            : ["http://localhost:4200"],
         credentials: true,
         allowedHeaders: ["Authorization", "Content-Type"],
       })

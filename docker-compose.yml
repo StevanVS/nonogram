@@ -25,6 +25,7 @@ services:
     ports:
       - "3050:3050"
     environment:
+      - APP_HOST=$APP_HOST
       - API_PORT=$API_PORT
       - JWT_SECRET=$JWT_SECRET
       - DB_HOST=$DB_HOST
@@ -44,7 +45,10 @@ services:
     depends_on:
       - api
     ports:
-      - 8080:8080
+      - 443:443
+      - 80:80
+    volumes:
+      - ./ssl:/ssl:ro
     networks:
       - nonogram_network
 

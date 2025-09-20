@@ -7,4 +7,4 @@ export const CDatabase = {
   dbname: DB_NAME
 }
 
-export const { NODE_ENV, JWT_SECRET = "secreto" } = process.env;
+export const { NODE_ENV, JWT_SECRET = "secreto", APP_HOST } = process.env;
