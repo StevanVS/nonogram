@@ -19,7 +19,14 @@ Iniciar todos los contenedores en producción
 docker compose up -d --build
 ```
 
+# DataBase
+
+Iniciar la Base de datos
+```shell
+docker compose up db -d
+```
+
 Ingresar a mongodb mediente consola
 ```shell
-docker exec -ti nonogram-mongodb mongosh nonogram -u stevan -p root --authenticationDatabase admin
+docker exec -ti nonogram-mongodb mongosh nonogram -u <user> -p <password>
 ```
