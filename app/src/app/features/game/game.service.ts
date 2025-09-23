@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { ServerResponse } from '../../core/models/server-response.model';
 import { Board } from '../board-editor/board.model';
 import { Game } from './models/game.model';
+import { SkipLoading } from '../../core/interceptors/loading.interceptor';
 
 @Injectable({
   providedIn: 'root',
@@ -29,6 +30,9 @@ export class GameService {
     return this.http.post<ServerResponse<void>>(
       `${this.api_url}/games/savegame`,
       { game },
+      {
+        context: new HttpContext().set(SkipLoading, true),
+      },
     );
   }
 
