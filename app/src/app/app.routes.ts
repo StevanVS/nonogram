@@ -1,13 +1,11 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { LevelsComponent } from './pages/levels/levels.component';
-import { GameComponent } from './pages/game/game.component';
-import { SettingsComponent } from './pages/settings/settings.component';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
-import { BoardEditorComponent } from './pages/board-editor/board-editor.component';
-import { ProfileComponent } from './pages/profile/profile.component';
-import { isAdmin, isAuth, isNotAuth } from './guard/auth.guard';
+import { HomeComponent } from './features/home/home.component';
+import { GameComponent } from './features/game/game.component';
+import { SettingsComponent } from './features/settings/settings.component';
+import { BoardEditorComponent } from './features/board-editor/board-editor.component';
+import { ProfileComponent } from './features/profile/profile.component';
+import { isAdmin, isAuth, isNotAuth } from './core/auth/auth.guard';
+import { LevelsComponent } from './features/levels/levels.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -20,7 +18,10 @@ export const routes: Routes = [
   },
   { path: 'settings', component: SettingsComponent },
   { path: 'profile', canActivate: [isAuth], component: ProfileComponent },
-  { path: 'login', canActivate: [isNotAuth], component: LoginComponent },
-  { path: 'register', canActivate: [isNotAuth], component: RegisterComponent },
+  {
+    path: 'auth',
+    canActivate: [isNotAuth],
+    loadChildren: () => import('./core/auth/auth.routes').then((m) => m.routes),
+  },
   { path: '**', redirectTo: '' },
 ];
