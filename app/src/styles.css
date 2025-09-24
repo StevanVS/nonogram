@@ -15,6 +15,24 @@
   --color-accent: hsl(115 80% 75%);
 
   --color-danger: hsl(0, 50%, 25%);
+
+  --color-danger: hsl(8 50% 35%);
+  --color-warning: hsl(54 50% 35%);
+  --color-success: hsl(156 50% 35%);
+  --color-info: hsl(217 50% 35%);
+
+  /* --color-primary-dark: oklch(0.2 0.1 175);
+  --color-primary: oklch(0.25 0.1 175);
+  --color-primary-light: oklch(0.3 0.1 175);
+
+  --color-secondary-dark: oklch(0.85 0.1 175);
+  --color-secondary: oklch(0.96 0.1 175);
+  --color-secondary-light: oklch(1 0.1 175);
+
+  --color-tertiary: oklch(0.7 0.1 278);
+  --color-accent: oklch(0.7 0.1 142);
+
+  --color-danger: oklch(0.3 0.1 23); */
 }
 
 @layer theme {
